@@ -20,7 +20,7 @@ static inline void atomicThreadFence(MemoryOrder order) noexcept {
     return __atomic_thread_fence(order);
 }
 
-static inline void full_memory_barrier() noexcept {
+static inline void fullMemoryBarrier() noexcept {
 
     atomicSignalFence(MemoryOrder::memory_order_acq_rel);
     atomicThreadFence(MemoryOrder::memory_order_acq_rel);
@@ -165,7 +165,12 @@ public:
     constexpr Atomic(T val) noexcept
         : m_value(val) { }
 
-    volatile T* ptr() noexcept {
+    // volatile T* ptr() noexcept {
+        
+    //     return &m_value;
+    // }
+
+    volatile T* pointer() noexcept {
         
         return &m_value;
     }
@@ -245,7 +250,12 @@ public:
     constexpr Atomic(T val) noexcept
         : m_value(val) { }
 
-    volatile T* ptr() noexcept {
+    // volatile T* ptr() noexcept {
+
+    //     return &m_value;
+    // }
+
+    volatile T* pointer() noexcept {
 
         return &m_value;
     }
@@ -380,7 +390,12 @@ public:
     constexpr Atomic(T* val) noexcept
         : m_value(val) { }
 
-    volatile T** ptr() noexcept {
+    // volatile T** ptr() noexcept {
+
+    //     return &m_value;
+    // }
+
+    volatile T** pointer() noexcept {
 
         return &m_value;
     }
@@ -390,7 +405,7 @@ public:
         return __atomic_exchange_n(&m_value, desired, order);
     }
 
-    [[nodiscard]] bool compare_exchange_strong(T*& expected, T* desired, MemoryOrder order = DefaultMemoryOrder) volatile noexcept {
+    [[nodiscard]] bool compareExchangeStrong(T*& expected, T* desired, MemoryOrder order = DefaultMemoryOrder) volatile noexcept {
 
         if (order == memory_order_acq_rel || order == memory_order_release) {
 

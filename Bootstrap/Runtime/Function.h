@@ -46,7 +46,7 @@ inline constexpr bool IsFunctionObject = (!IsFunctionPointer<F> && IsRvalueRefer
 
 template<typename Out, typename... In>
 class Function<Out(In...)> {
-    AK_MAKE_NONCOPYABLE(Function);
+    MAKE_NONCOPYABLE(Function);
 
 public:
     Function() = default;
@@ -135,8 +135,8 @@ private:
 
     template<typename CallableType>
     class CallableWrapper final : public CallableWrapperBase {
-        AK_MAKE_NONMOVABLE(CallableWrapper);
-        AK_MAKE_NONCOPYABLE(CallableWrapper);
+        MAKE_NONMOVABLE(CallableWrapper);
+        MAKE_NONCOPYABLE(CallableWrapper);
 
     public:
         explicit CallableWrapper(CallableType&& callable)

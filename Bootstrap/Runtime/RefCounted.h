@@ -17,8 +17,8 @@
 #    include "StdLibExtras.h"
 
 class RefCountedBase {
-    AK_MAKE_NONCOPYABLE(RefCountedBase);
-    AK_MAKE_NONMOVABLE(RefCountedBase);
+    MAKE_NONCOPYABLE(RefCountedBase);
+    MAKE_NONMOVABLE(RefCountedBase);
 
 public:
     using RefCountType = unsigned int;
