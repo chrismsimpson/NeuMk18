@@ -118,51 +118,78 @@ constexpr bool is_unicode_noncharacter(u32 code_point)
     return is_unicode(code_point) && ((code_point >= 0xFDD0 && code_point <= 0xFDEF) || ((code_point & 0xFFFE) == 0xFFFE) || ((code_point & 0xFFFF) == 0xFFFF));
 }
 
-constexpr u32 to_ascii_lowercase(u32 code_point)
-{
-    if (is_ascii_upper_alpha(code_point))
+constexpr u32 toAsciiLowercase(u32 code_point) {
+
+    if (is_ascii_upper_alpha(code_point)) {
+
         return code_point + 0x20;
+    }
+
     return code_point;
 }
 
-constexpr u32 to_ascii_uppercase(u32 code_point)
-{
-    if (is_ascii_lower_alpha(code_point))
+constexpr u32 toAsciiUppercase(u32 code_point) {
+
+    if (is_ascii_lower_alpha(code_point)) {
+
         return code_point - 0x20;
+    }
+
     return code_point;
 }
 
-constexpr u32 parse_ascii_digit(u32 code_point)
-{
-    if (is_ascii_digit(code_point))
+constexpr u32 parseAsciiDigit(u32 code_point) {
+
+    if (is_ascii_digit(code_point)) {
+
         return code_point - '0';
+    }
+
     VERIFY_NOT_REACHED();
 }
 
-constexpr u32 parse_ascii_hex_digit(u32 code_point)
-{
-    if (is_ascii_digit(code_point))
-        return parse_ascii_digit(code_point);
-    if (code_point >= 'A' && code_point <= 'F')
+constexpr u32 parseAsciiHexDigit(u32 code_point) {
+    
+    if (is_ascii_digit(code_point)) {
+
+        return parseAsciiDigit(code_point);
+    }
+
+    if (code_point >= 'A' && code_point <= 'F') {
+
         return code_point - 'A' + 10;
-    if (code_point >= 'a' && code_point <= 'f')
+    }
+
+    if (code_point >= 'a' && code_point <= 'f') {
+
         return code_point - 'a' + 10;
+    }
+
     VERIFY_NOT_REACHED();
 }
 
-constexpr u32 parse_ascii_base36_digit(u32 code_point)
-{
-    if (is_ascii_digit(code_point))
-        return parse_ascii_digit(code_point);
-    if (code_point >= 'A' && code_point <= 'Z')
+constexpr u32 parseAsciiBase36Digit(u32 code_point) {
+
+    if (is_ascii_digit(code_point)) {
+
+        return parseAsciiDigit(code_point);
+    }
+
+    if (code_point >= 'A' && code_point <= 'Z') {
+
         return code_point - 'A' + 10;
-    if (code_point >= 'a' && code_point <= 'z')
+    }
+
+    if (code_point >= 'a' && code_point <= 'z') {
+
         return code_point - 'a' + 10;
+    }
+
     VERIFY_NOT_REACHED();
 }
 
-constexpr u32 to_ascii_base36_digit(u32 digit)
-{
+constexpr u32 toAsciiBase36Digit(u32 digit) {
+
     constexpr LinearArray<char, 36> base36_map = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
     VERIFY(digit < base36_map.size());
     return base36_map[digit];

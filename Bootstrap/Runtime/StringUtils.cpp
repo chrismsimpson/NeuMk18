@@ -60,7 +60,7 @@ bool matches(StringView str, StringView mask, CaseSensitivity case_sensitivity, 
         default:
             auto p = *mask_ptr;
             auto ch = *string_ptr;
-            if (case_sensitivity == CaseSensitivity::CaseSensitive ? p != ch : to_ascii_lowercase(p) != to_ascii_lowercase(ch))
+            if (case_sensitivity == CaseSensitivity::CaseSensitive ? p != ch : toAsciiLowercase(p) != toAsciiLowercase(ch))
                 return false;
             break;
         }
@@ -232,7 +232,7 @@ bool equals_ignoring_case(StringView a, StringView b)
     if (a.length() != b.length())
         return false;
     for (size_t i = 0; i < a.length(); ++i) {
-        if (to_ascii_lowercase(a.characters_without_null_termination()[i]) != to_ascii_lowercase(b.characters_without_null_termination()[i]))
+        if (toAsciiLowercase(a.characters_without_null_termination()[i]) != toAsciiLowercase(b.characters_without_null_termination()[i]))
             return false;
     }
     return true;
@@ -255,7 +255,7 @@ bool ends_with(StringView str, StringView end, CaseSensitivity case_sensitivity)
 
     size_t si = str.length() - end.length();
     for (size_t ei = 0; ei < end.length(); ++si, ++ei) {
-        if (to_ascii_lowercase(str_chars[si]) != to_ascii_lowercase(end_chars[ei]))
+        if (toAsciiLowercase(str_chars[si]) != toAsciiLowercase(end_chars[ei]))
             return false;
     }
     return true;
@@ -280,7 +280,7 @@ bool starts_with(StringView str, StringView start, CaseSensitivity case_sensitiv
 
     size_t si = 0;
     for (size_t starti = 0; starti < start.length(); ++si, ++starti) {
-        if (to_ascii_lowercase(str_chars[si]) != to_ascii_lowercase(start_chars[starti]))
+        if (toAsciiLowercase(str_chars[si]) != toAsciiLowercase(start_chars[starti]))
             return false;
     }
     return true;
@@ -297,12 +297,12 @@ bool contains(StringView str, StringView needle, CaseSensitivity case_sensitivit
     if (case_sensitivity == CaseSensitivity::CaseSensitive)
         return memmem(str_chars, str.length(), needle_chars, needle.length()) != nullptr;
 
-    auto needle_first = to_ascii_lowercase(needle_chars[0]);
+    auto needle_first = toAsciiLowercase(needle_chars[0]);
     for (size_t si = 0; si < str.length(); si++) {
-        if (to_ascii_lowercase(str_chars[si]) != needle_first)
+        if (toAsciiLowercase(str_chars[si]) != needle_first)
             continue;
         for (size_t ni = 0; si + ni < str.length(); ni++) {
-            if (to_ascii_lowercase(str_chars[si + ni]) != to_ascii_lowercase(needle_chars[ni])) {
+            if (toAsciiLowercase(str_chars[si + ni]) != toAsciiLowercase(needle_chars[ni])) {
                 if (ni > 0)
                     si += ni - 1;
                 break;
@@ -451,9 +451,9 @@ String to_titlecase(StringView str)
 
     for (auto ch : str) {
         if (next_is_upper)
-            builder.append_code_point(to_ascii_uppercase(ch));
+            builder.append_code_point(toAsciiUppercase(ch));
         else
-            builder.append_code_point(to_ascii_lowercase(ch));
+            builder.append_code_point(toAsciiLowercase(ch));
         next_is_upper = ch == ' ';
     }
 

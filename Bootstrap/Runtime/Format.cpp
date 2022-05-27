@@ -118,19 +118,25 @@ StringView FormatParser::consume_literal()
 
     return m_input.substring_view(begin);
 }
-bool FormatParser::consume_number(size_t& value)
-{
+
+bool FormatParser::consume_number(size_t& value) {
+
     value = 0;
 
     bool consumed_at_least_one = false;
+
     while (next_is(is_ascii_digit)) {
+
         value *= 10;
-        value += parse_ascii_digit(consume());
+
+        value += parseAsciiDigit(consume());
+
         consumed_at_least_one = true;
     }
 
     return consumed_at_least_one;
 }
+
 bool FormatParser::consume_specifier(FormatSpecifier& specifier)
 {
     VERIFY(!next_is('}'));

@@ -43,6 +43,7 @@
         "array": "cpp",
         "initializer_list": "cpp",
         "ios": "cpp",
-        "unordered_map": "cpp"
+        "unordered_map": "cpp",
+        "__locale": "cpp"
     }
 }
