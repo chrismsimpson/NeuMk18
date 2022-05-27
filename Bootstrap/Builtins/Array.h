@@ -22,7 +22,7 @@ public:
         if (m_capacity >= capacity) {
             return {};
         }
-        if (Checked<size_t>::multiplication_would_overflow(capacity, sizeof(T))) {
+        if (Checked<size_t>::multiplicationWouldOverflow(capacity, sizeof(T))) {
             return Error::fromErrorCode(EOVERFLOW);
         }
         auto* new_elements = static_cast<T*>(malloc(capacity * sizeof(T)));

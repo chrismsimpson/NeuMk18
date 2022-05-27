@@ -361,7 +361,7 @@ public:
     }
 
     template<typename U, typename V>
-    [[nodiscard]] static constexpr bool multiplication_would_overflow(U u, V v) {
+    [[nodiscard]] static constexpr bool multiplicationWouldOverflow(U u, V v) {
 
 #ifdef __clang__
         Checked checked;
@@ -374,7 +374,7 @@ public:
     }
 
     template<typename U, typename V, typename X>
-    [[nodiscard]] static constexpr bool multiplication_would_overflow(U u, V v, X x) {
+    [[nodiscard]] static constexpr bool multiplicationWouldOverflow(U u, V v, X x) {
 
         Checked checked;
         checked = u;
