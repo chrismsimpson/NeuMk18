@@ -103,18 +103,18 @@ constexpr bool is_unicode_control(u32 code_point)
     return is_ascii_c0_control(code_point) || (code_point >= 0x7E && code_point <= 0x9F);
 }
 
-constexpr bool is_unicode_surrogate(u32 code_point)
-{
+constexpr bool is_unicode_surrogate(u32 code_point) {
+
     return code_point >= 0xD800 && code_point <= 0xDFFF;
 }
 
-constexpr bool is_unicode_scalar_value(u32 code_point)
-{
+constexpr bool is_unicode_scalar_value(u32 code_point) {
+
     return is_unicode(code_point) && !is_unicode_surrogate(code_point);
 }
 
-constexpr bool is_unicode_noncharacter(u32 code_point)
-{
+constexpr bool isUnicodeNonCharacter(u32 code_point) {
+
     return is_unicode(code_point) && ((code_point >= 0xFDD0 && code_point <= 0xFDEF) || ((code_point & 0xFFFE) == 0xFFFE) || ((code_point & 0xFFFF) == 0xFFFF));
 }
 
@@ -190,7 +190,9 @@ constexpr u32 parseAsciiBase36Digit(u32 code_point) {
 
 constexpr u32 toAsciiBase36Digit(u32 digit) {
 
-    constexpr LinearArray<char, 36> base36_map = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
-    VERIFY(digit < base36_map.size());
-    return base36_map[digit];
+    constexpr LinearArray<char, 36> base36Map = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+    
+    VERIFY(digit < base36Map.size());
+    
+    return base36Map[digit];
 }
