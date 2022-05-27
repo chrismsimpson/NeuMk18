@@ -42,14 +42,14 @@ using std::nothrow;
 inline void* kmalloc_array(Checked<size_t> a, Checked<size_t> b)
 {
     auto size = a * b;
-    VERIFY(!size.has_overflow());
+    VERIFY(!size.hasOverflow());
     return kmalloc(size.value());
 }
 
 inline void* kmalloc_array(Checked<size_t> a, Checked<size_t> b, Checked<size_t> c)
 {
     auto size = a * b * c;
-    VERIFY(!size.has_overflow());
+    VERIFY(!size.hasOverflow());
     return kmalloc(size.value());
 }
 

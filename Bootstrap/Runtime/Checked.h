@@ -161,7 +161,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] constexpr bool has_overflow() const {
+    [[nodiscard]] constexpr bool hasOverflow() const {
 
         return m_overflow;
     }
@@ -354,7 +354,7 @@ public:
         Checked checked;
         checked = u;
         checked += v;
-        return checked.has_overflow();
+        return checked.hasOverflow();
 #else
         return __builtin_add_overflow_p(u, v, (T)0);
 #endif
@@ -367,7 +367,7 @@ public:
         Checked checked;
         checked = u;
         checked *= v;
-        return checked.has_overflow();
+        return checked.hasOverflow();
 #else
         return __builtin_mul_overflow_p(u, v, (T)0);
 #endif
@@ -380,7 +380,7 @@ public:
         checked = u;
         checked *= v;
         checked *= x;
-        return checked.has_overflow();
+        return checked.hasOverflow();
     }
 
 private:
