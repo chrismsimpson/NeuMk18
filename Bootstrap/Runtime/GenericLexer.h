@@ -9,11 +9,11 @@
 #include "StringView.h"
 
 class GenericLexer {
+
 public:
+
     constexpr explicit GenericLexer(StringView input)
-        : m_input(input)
-    {
-    }
+        : m_input(input) { }
 
     constexpr size_t tell() const { return m_index; }
     constexpr size_t tell_remaining() const { return m_input.length() - m_index; }
@@ -22,41 +22,53 @@ public:
 
     constexpr bool is_eof() const { return m_index >= m_input.length(); }
 
-    constexpr char peek(size_t offset = 0) const
-    {
+    constexpr char peek(size_t offset = 0) const {
+
         return (m_index + offset < m_input.length()) ? m_input[m_index + offset] : '\0';
     }
 
-    constexpr bool next_is(char expected) const
-    {
+    constexpr bool next_is(char expected) const {
+
         return peek() == expected;
     }
 
-    constexpr bool next_is(StringView expected) const
-    {
-        for (size_t i = 0; i < expected.length(); ++i)
-            if (peek(i) != expected[i])
+    constexpr bool next_is(StringView expected) const {
+
+        for (size_t i = 0; i < expected.length(); ++i) {
+
+            if (peek(i) != expected[i]) {
+
                 return false;
+            }
+        }
+
         return true;
     }
 
-    constexpr bool next_is(char const* expected) const
-    {
-        for (size_t i = 0; expected[i] != '\0'; ++i)
-            if (peek(i) != expected[i])
+    constexpr bool next_is(char const* expected) const {
+
+        for (size_t i = 0; expected[i] != '\0'; ++i) {
+
+            if (peek(i) != expected[i]) {
+
                 return false;
+            }
+        }
+
         return true;
     }
 
-    constexpr void retreat()
-    {
+    constexpr void retreat() {
+
         VERIFY(m_index > 0);
+
         --m_index;
     }
 
-    constexpr void retreat(size_t count)
-    {
+    constexpr void retreat(size_t count) {
+
         VERIFY(m_index >= count);
+        
         m_index -= count;
     }
 

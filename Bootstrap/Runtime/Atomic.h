@@ -165,11 +165,6 @@ public:
     constexpr Atomic(T val) noexcept
         : m_value(val) { }
 
-    // volatile T* ptr() noexcept {
-        
-    //     return &m_value;
-    // }
-
     volatile T* pointer() noexcept {
         
         return &m_value;
@@ -249,11 +244,6 @@ public:
 
     constexpr Atomic(T val) noexcept
         : m_value(val) { }
-
-    // volatile T* ptr() noexcept {
-
-    //     return &m_value;
-    // }
 
     volatile T* pointer() noexcept {
 
@@ -389,11 +379,6 @@ public:
 
     constexpr Atomic(T* val) noexcept
         : m_value(val) { }
-
-    // volatile T** ptr() noexcept {
-
-    //     return &m_value;
-    // }
 
     volatile T** pointer() noexcept {
 
