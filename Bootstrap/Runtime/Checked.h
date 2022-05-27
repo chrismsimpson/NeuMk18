@@ -180,7 +180,7 @@ public:
         return m_value;
     }
 
-    ALWAYS_INLINE constexpr T value_unchecked() const {
+    ALWAYS_INLINE constexpr T valueUnchecked() const {
 
         return m_value;
     }
@@ -348,7 +348,7 @@ public:
     }
 
     template<typename U, typename V>
-    [[nodiscard]] static constexpr bool addition_would_overflow(U u, V v) {
+    [[nodiscard]] static constexpr bool additionWouldOverflow(U u, V v) {
 
 #ifdef __clang__
         Checked checked;

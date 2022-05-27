@@ -26,7 +26,7 @@ public:
     ALWAYS_INLINE void ref() const
     {
         VERIFY(m_ref_count > 0);
-        VERIFY(!Checked<RefCountType>::addition_would_overflow(m_ref_count, 1));
+        VERIFY(!Checked<RefCountType>::additionWouldOverflow(m_ref_count, 1));
         ++m_ref_count;
     }
 

@@ -41,7 +41,7 @@ public:
 
     ErrorOr<void> add_capacity(size_t capacity)
     {
-        if (Checked<size_t>::addition_would_overflow(m_capacity, capacity)) {
+        if (Checked<size_t>::additionWouldOverflow(m_capacity, capacity)) {
             return Error::fromErrorCode(EOVERFLOW);
         }
         TRY(ensure_capacity(m_capacity + capacity));
@@ -60,7 +60,7 @@ public:
 
     ErrorOr<void> add_size(size_t size) {
 
-        if (Checked<size_t>::addition_would_overflow(m_size, size)) {
+        if (Checked<size_t>::additionWouldOverflow(m_size, size)) {
 
             return Error::fromErrorCode(EOVERFLOW);
         }

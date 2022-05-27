@@ -61,7 +61,7 @@ String String::substring(size_t start, size_t length) const
     if (!length)
         return String::empty();
     VERIFY(m_impl);
-    VERIFY(!Checked<size_t>::addition_would_overflow(start, length));
+    VERIFY(!Checked<size_t>::additionWouldOverflow(start, length));
     VERIFY(start + length <= m_impl->length());
     return { characters() + start, length };
 }
@@ -76,7 +76,7 @@ String String::substring(size_t start) const
 StringView String::substring_view(size_t start, size_t length) const
 {
     VERIFY(m_impl);
-    VERIFY(!Checked<size_t>::addition_would_overflow(start, length));
+    VERIFY(!Checked<size_t>::additionWouldOverflow(start, length));
     VERIFY(start + length <= m_impl->length());
     return { characters() + start, length };
 }
