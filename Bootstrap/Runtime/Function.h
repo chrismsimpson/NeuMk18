@@ -177,9 +177,9 @@ private:
         case FunctionKind::NullPointer:
             return nullptr;
         case FunctionKind::Inline:
-            return bit_cast<CallableWrapperBase*>(&m_storage);
+            return bitCast<CallableWrapperBase*>(&m_storage);
         case FunctionKind::Outline:
-            return *bit_cast<CallableWrapperBase**>(&m_storage);
+            return *bitCast<CallableWrapperBase**>(&m_storage);
         default:
             VERIFY_NOT_REACHED();
         }
@@ -212,7 +212,7 @@ private:
         VERIFY(m_call_nesting_level == 0);
         using WrapperType = CallableWrapper<Callable>;
         if constexpr (sizeof(WrapperType) > inline_capacity) {
-            *bit_cast<CallableWrapperBase**>(&m_storage) = new WrapperType(forward<Callable>(callable));
+            *bitCast<CallableWrapperBase**>(&m_storage) = new WrapperType(forward<Callable>(callable));
             m_kind = FunctionKind::Outline;
         } else {
             new (m_storage) WrapperType(forward<Callable>(callable));
@@ -232,7 +232,7 @@ private:
             m_kind = FunctionKind::Inline;
             break;
         case FunctionKind::Outline:
-            *bit_cast<CallableWrapperBase**>(&m_storage) = other_wrapper;
+            *bitCast<CallableWrapperBase**>(&m_storage) = other_wrapper;
             m_kind = FunctionKind::Outline;
             break;
         default:

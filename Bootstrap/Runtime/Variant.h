@@ -49,7 +49,7 @@ struct Variant<IndexType, InitialIndex, F, Ts...> {
     ALWAYS_INLINE static void delete_(IndexType id, void* data)
     {
         if (id == current_index)
-            bit_cast<F*>(data)->~F();
+            bitCast<F*>(data)->~F();
         else
             Variant<IndexType, InitialIndex + 1, Ts...>::delete_(id, data);
     }
@@ -57,7 +57,7 @@ struct Variant<IndexType, InitialIndex, F, Ts...> {
     ALWAYS_INLINE static void move_(IndexType old_id, void* old_data, void* new_data)
     {
         if (old_id == current_index)
-            new (new_data) F(move(*bit_cast<F*>(old_data)));
+            new (new_data) F(move(*bitCast<F*>(old_data)));
         else
             Variant<IndexType, InitialIndex + 1, Ts...>::move_(old_id, old_data, new_data);
     }
@@ -65,7 +65,7 @@ struct Variant<IndexType, InitialIndex, F, Ts...> {
     ALWAYS_INLINE static void copy_(IndexType old_id, void const* old_data, void* new_data)
     {
         if (old_id == current_index)
-            new (new_data) F(*bit_cast<F const*>(old_data));
+            new (new_data) F(*bitCast<F const*>(old_data));
         else
             Variant<IndexType, InitialIndex + 1, Ts...>::copy_(old_id, old_data, new_data);
     }
@@ -106,11 +106,11 @@ struct VisitImpl {
             // if so, try to call that with `T const&` first before copying the Variant's const-ness.
             // This emulates normal C++ call semantics where templated functions are considered last, after all non-templated overloads
             // are checked and found to be unusable.
-            using ReturnType = decltype(visitor(*bit_cast<T*>(data)));
+            using ReturnType = decltype(visitor(*bitCast<T*>(data)));
             if constexpr (should_invoke_const_overload<ReturnType, T, Visitor>(MakeIndexSequence<Visitor::Types::size>()))
-                return visitor(*bit_cast<AddConst<T>*>(data));
+                return visitor(*bitCast<AddConst<T>*>(data));
 
-            return visitor(*bit_cast<CopyConst<Self, T>*>(data));
+            return visitor(*bitCast<CopyConst<Self, T>*>(data));
         }
 
         if constexpr ((CurrentIndex + 1) < sizeof...(Ts))
@@ -354,7 +354,7 @@ public:
     T* get_pointer() requires(can_contain<T>())
     {
         if (index_of<T>() == m_index)
-            return bit_cast<T*>(&m_data);
+            return bitCast<T*>(&m_data);
         return nullptr;
     }
 
@@ -362,14 +362,14 @@ public:
     T& get() requires(can_contain<T>())
     {
         VERIFY(has<T>());
-        return *bit_cast<T*>(&m_data);
+        return *bitCast<T*>(&m_data);
     }
 
     template<typename T>
     const T* get_pointer() const requires(can_contain<T>())
     {
         if (index_of<T>() == m_index)
-            return bit_cast<const T*>(&m_data);
+            return bitCast<const T*>(&m_data);
         return nullptr;
     }
 
@@ -377,7 +377,7 @@ public:
     const T& get() const requires(can_contain<T>())
     {
         VERIFY(has<T>());
-        return *bit_cast<const T*>(&m_data);
+        return *bitCast<const T*>(&m_data);
     }
 
     template<typename T>

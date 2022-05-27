@@ -93,11 +93,12 @@ template<typename T, typename... Types>
 LinearArray(T, Types...) -> LinearArray<T, sizeof...(Types) + 1>;
 
 namespace Detail {
-template<typename T, size_t... Is>
-constexpr auto integer_sequence_generate_LinearArray([[maybe_unused]] T const offset, IntegerSequence<T, Is...>) -> LinearArray<T, sizeof...(Is)>
-{
-    return { { (offset + Is)... } };
-}
+
+    template<typename T, size_t... Is>
+    constexpr auto integer_sequence_generate_LinearArray([[maybe_unused]] T const offset, IntegerSequence<T, Is...>) -> LinearArray<T, sizeof...(Is)> {
+        
+        return { { (offset + Is)... } };
+    }
 }
 
 template<typename T, T N>

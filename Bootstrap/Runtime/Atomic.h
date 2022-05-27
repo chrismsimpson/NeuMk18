@@ -305,8 +305,8 @@ public:
         return __atomic_fetch_sub(&m_value, val, order);
     }
 
-    ALWAYS_INLINE T operator&=(T val) volatile noexcept
-    {
+    ALWAYS_INLINE T operator&=(T val) volatile noexcept {
+        
         return fetch_and(val) & val;
     }
 
