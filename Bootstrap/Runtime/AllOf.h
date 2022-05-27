@@ -16,12 +16,12 @@ constexpr bool allOf(
     TEndIterator const& end,
     auto const& predicate) {
 
-    constexpr auto negated_predicate = [](auto const& pred) {
+    constexpr auto negatedPredicate = [](auto const& pred) {
 
         return [&](auto const& elem) { return !pred(elem); };
     };
     
-    return !(findIf(begin, end, negated_predicate(predicate)) != end);
+    return !(findIf(begin, end, negatedPredicate(predicate)) != end);
 }
 
 template<IterableContainer Container>

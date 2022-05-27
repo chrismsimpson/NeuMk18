@@ -38,6 +38,11 @@
         "__hash_table": "cpp",
         "__string": "cpp",
         "string": "cpp",
-        "semaphore": "cpp"
+        "semaphore": "cpp",
+        "__split_buffer": "cpp",
+        "array": "cpp",
+        "initializer_list": "cpp",
+        "ios": "cpp",
+        "unordered_map": "cpp"
     }
 }

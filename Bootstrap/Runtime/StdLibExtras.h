@@ -149,21 +149,21 @@ constexpr bool is_constant_evaluated()
 
 // These can't be exported into the global namespace as they would clash with the C standard library.
 
-// #define __DEFINE_GENERIC_ABS(type, zero, intrinsic) \
-//     constexpr type abs(type num)                    \
-//     {                                               \
-//         if (is_constant_evaluated())                \
-//             return num < (zero) ? -num : num;       \
-//         return __builtin_##intrinsic(num);          \
-//     }
+#define __DEFINE_GENERIC_ABS(type, zero, intrinsic) \
+    constexpr type absolute(type num)               \
+    {                                               \
+        if (is_constant_evaluated())                \
+            return num < (zero) ? -num : num;       \
+        return __builtin_##intrinsic(num);          \
+    }
 
-// __DEFINE_GENERIC_ABS(int, 0, abs);
-// __DEFINE_GENERIC_ABS(long, 0L, labs);
-// __DEFINE_GENERIC_ABS(long long, 0LL, llabs);
-// #ifndef KERNEL
-// __DEFINE_GENERIC_ABS(float, 0.0F, fabsf);
-// __DEFINE_GENERIC_ABS(double, 0.0, fabs);
-// __DEFINE_GENERIC_ABS(long double, 0.0L, fabsl);
-// #endif
+__DEFINE_GENERIC_ABS(int, 0, abs);
+__DEFINE_GENERIC_ABS(long, 0L, labs);
+__DEFINE_GENERIC_ABS(long long, 0LL, llabs);
+#ifndef KERNEL
+__DEFINE_GENERIC_ABS(float, 0.0F, fabsf);
+__DEFINE_GENERIC_ABS(double, 0.0, fabs);
+__DEFINE_GENERIC_ABS(long double, 0.0L, fabsl);
+#endif
 
-// #undef __DEFINE_GENERIC_ABS
+#undef __DEFINE_GENERIC_ABS
