@@ -7,27 +7,27 @@
 #pragma once
 
 #ifdef __i386__
-#    define AK_ARCH_I386 1
+#    define ARCH_I386 1
 #endif
 
 #ifdef __x86_64__
-#    define AK_ARCH_X86_64 1
+#    define ARCH_X86_64 1
 #endif
 
 #ifdef __aarch64__
-#    define AK_ARCH_AARCH64 1
+#    define ARCH_AARCH64 1
 #endif
 
 #if defined(__APPLE__) && defined(__MACH__)
-#    define AK_OS_MACOS
-#    define AK_OS_BSD_GENERIC
+#    define OS_MACOS
+#    define OS_BSD_GENERIC
 #endif
 
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
-#    define AK_OS_BSD_GENERIC
+#    define OS_BSD_GENERIC
 #endif
 
-#define ARCH(arch) (defined(AK_ARCH_##arch) && AK_ARCH_##arch)
+#define ARCH(arch) (defined(ARCH_##arch) && ARCH_##arch)
 
 #if ARCH(I386) || ARCH(X86_64)
 #    define VALIDATE_IS_X86()
@@ -36,7 +36,7 @@
 #endif
 
 #if !defined(__clang__) && !defined(__CLION_IDE_)
-#    define AK_HAS_CONDITIONALLY_TRIVIAL
+#    define HAS_CONDITIONALLY_TRIVIAL
 #endif
 
 #ifdef ALWAYS_INLINE

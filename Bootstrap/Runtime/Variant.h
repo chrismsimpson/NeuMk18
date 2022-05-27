@@ -251,7 +251,7 @@ public:
     {
     }
 
-#ifdef AK_HAS_CONDITIONALLY_TRIVIAL
+#ifdef HAS_CONDITIONALLY_TRIVIAL
     Variant(Variant const&) requires(!(IsCopyConstructible<Ts> && ...)) = delete;
     Variant(Variant const&) = default;
 
@@ -269,7 +269,7 @@ public:
 #endif
 
     ALWAYS_INLINE Variant(Variant const& old)
-#ifdef AK_HAS_CONDITIONALLY_TRIVIAL
+#ifdef HAS_CONDITIONALLY_TRIVIAL
         requires(!(IsTriviallyCopyConstructible<Ts> && ...))
 #endif
         : Detail::MergeAndDeduplicatePacks<Detail::VariantConstructors<Ts, Variant<Ts...>>...>()
@@ -284,7 +284,7 @@ public:
     //       and if a variant with a nontrivial move ctor is moved from, it may or may not be valid
     //       but it will still contain the "moved-from" state of the object it previously contained.
     ALWAYS_INLINE Variant(Variant&& old)
-#ifdef AK_HAS_CONDITIONALLY_TRIVIAL
+#ifdef HAS_CONDITIONALLY_TRIVIAL
         requires(!(IsTriviallyMoveConstructible<Ts> && ...))
 #endif
         : Detail::MergeAndDeduplicatePacks<Detail::VariantConstructors<Ts, Variant<Ts...>>...>()
@@ -294,7 +294,7 @@ public:
     }
 
     ALWAYS_INLINE ~Variant()
-#ifdef AK_HAS_CONDITIONALLY_TRIVIAL
+#ifdef HAS_CONDITIONALLY_TRIVIAL
         requires(!(IsTriviallyDestructible<Ts> && ...))
 #endif
     {
@@ -302,7 +302,7 @@ public:
     }
 
     ALWAYS_INLINE Variant& operator=(Variant const& other)
-#ifdef AK_HAS_CONDITIONALLY_TRIVIAL
+#ifdef HAS_CONDITIONALLY_TRIVIAL
         requires(!(IsTriviallyCopyConstructible<Ts> && ...) || !(IsTriviallyDestructible<Ts> && ...))
 #endif
     {
@@ -317,7 +317,7 @@ public:
     }
 
     ALWAYS_INLINE Variant& operator=(Variant&& other)
-#ifdef AK_HAS_CONDITIONALLY_TRIVIAL
+#ifdef HAS_CONDITIONALLY_TRIVIAL
         requires(!(IsTriviallyMoveConstructible<Ts> && ...) || !(IsTriviallyDestructible<Ts> && ...))
 #endif
     {

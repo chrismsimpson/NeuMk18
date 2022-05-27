@@ -41,7 +41,7 @@ public:
     {
     }
 
-#ifdef AK_HAS_CONDITIONALLY_TRIVIAL
+#ifdef HAS_CONDITIONALLY_TRIVIAL
     Optional(Optional const& other) requires(!IsCopyConstructible<T>) = delete;
     Optional(Optional const& other) = default;
 
@@ -57,7 +57,7 @@ public:
 #endif
 
     ALWAYS_INLINE Optional(Optional const& other)
-#ifdef AK_HAS_CONDITIONALLY_TRIVIAL
+#ifdef HAS_CONDITIONALLY_TRIVIAL
         requires(!IsTriviallyCopyConstructible<T>)
 #endif
         : m_has_value(other.m_has_value)
@@ -97,7 +97,7 @@ public:
     }
 
     ALWAYS_INLINE Optional& operator=(Optional const& other)
-#ifdef AK_HAS_CONDITIONALLY_TRIVIAL
+#ifdef HAS_CONDITIONALLY_TRIVIAL
         requires(!IsTriviallyCopyConstructible<T> || !IsTriviallyDestructible<T>)
 #endif
     {
@@ -136,7 +136,7 @@ public:
     }
 
     ALWAYS_INLINE ~Optional()
-#ifdef AK_HAS_CONDITIONALLY_TRIVIAL
+#ifdef HAS_CONDITIONALLY_TRIVIAL
         requires(!IsTriviallyDestructible<T>)
 #endif
     {
