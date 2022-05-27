@@ -11,7 +11,7 @@
 #include "Iterator.h"
 
 template<typename TEndIterator, IteratorPairWith<TEndIterator> TIterator>
-constexpr bool all_of(
+constexpr bool allOf(
     TIterator const& begin,
     TEndIterator const& end,
     auto const& predicate) {
@@ -21,11 +21,11 @@ constexpr bool all_of(
         return [&](auto const& elem) { return !pred(elem); };
     };
     
-    return !(find_if(begin, end, negated_predicate(predicate)) != end);
+    return !(findIf(begin, end, negated_predicate(predicate)) != end);
 }
 
 template<IterableContainer Container>
-constexpr bool all_of(Container&& container, auto const& predicate)
-{
-    return all_of(container.begin(), container.end(), predicate);
+constexpr bool allOf(Container&& container, auto const& predicate) {
+
+    return allOf(container.begin(), container.end(), predicate);
 }

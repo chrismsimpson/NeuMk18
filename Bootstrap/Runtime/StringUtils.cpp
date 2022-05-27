@@ -316,7 +316,7 @@ bool contains(StringView str, StringView needle, CaseSensitivity case_sensitivit
 
 bool is_whitespace(StringView str)
 {
-    return all_of(str, is_ascii_space);
+    return allOf(str, is_ascii_space);
 }
 
 StringView trim(StringView str, StringView characters, TrimMode mode)

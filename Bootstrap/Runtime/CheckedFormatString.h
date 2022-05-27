@@ -176,7 +176,7 @@ private:
         {
             auto begin = check.used_arguments.begin();
             auto end = check.used_arguments.begin() + check.total_used_argument_count;
-            auto has_all_referenced_arguments = !any_of(begin, end, [](auto& entry) { return entry >= param_count; });
+            auto has_all_referenced_arguments = !anyOf(begin, end, [](auto& entry) { return entry >= param_count; });
             if (!has_all_referenced_arguments)
                 compiletime_fail("Format string references nonexistent parameter");
         }
@@ -199,7 +199,7 @@ private:
 
                 return false;
             };
-            auto references_all_arguments = all_of(
+            auto references_all_arguments = allOf(
                 all_parameters,
                 [&](auto& entry) {
                     return contains(

@@ -735,15 +735,15 @@ public:
     }
 
     template<typename TUnaryPredicate>
-    ConstIterator find_if(TUnaryPredicate&& finder) const
+    ConstIterator findIf(TUnaryPredicate&& finder) const
     {
-        return find_if(begin(), end(), forward<TUnaryPredicate>(finder));
+        return findIf(begin(), end(), forward<TUnaryPredicate>(finder));
     }
 
     template<typename TUnaryPredicate>
-    Iterator find_if(TUnaryPredicate&& finder)
+    Iterator findIf(TUnaryPredicate&& finder)
     {
-        return find_if(begin(), end(), forward<TUnaryPredicate>(finder));
+        return findIf(begin(), end(), forward<TUnaryPredicate>(finder));
     }
 
     ConstIterator find(VisibleType const& value) const

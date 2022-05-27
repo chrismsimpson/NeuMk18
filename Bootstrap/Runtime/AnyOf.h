@@ -11,16 +11,16 @@
 #include "Iterator.h"
 
 template<typename TEndIterator, IteratorPairWith<TEndIterator> TIterator>
-constexpr bool any_of(
+constexpr bool anyOf(
     TIterator const& begin,
     TEndIterator const& end,
-    auto const& predicate)
-{
-    return find_if(begin, end, predicate) != end;
+    auto const& predicate) {
+
+    return findIf(begin, end, predicate) != end;
 }
 
 template<IterableContainer Container>
-constexpr bool any_of(Container&& container, auto const& predicate)
-{
-    return any_of(container.begin(), container.end(), predicate);
+constexpr bool anyOf(Container&& container, auto const& predicate) {
+
+    return anyOf(container.begin(), container.end(), predicate);
 }
