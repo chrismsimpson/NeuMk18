@@ -47,22 +47,27 @@ namespace Format::Detail {
     };
 
     template<typename... Args>
-    void compiletime_fail(Args...);
+    void compileTimeFail(Args...);
 
     template<size_t N>
-    consteval auto extractUsedArgumentIndex(char const (&fmt)[N], size_t specifier_start_index, size_t specifier_end_index, size_t& next_implicit_argument_index) {
+    consteval auto extractUsedArgumentIndex(char const (&fmt)[N], size_t specifierStartIndex, size_t specifierEndIndex, size_t& nextImplicitArgumentIndex) {
 
         struct {
 
             size_t index_value { 0 };
+
             bool saw_explicit_index { false };
 
         } state;
 
-        for (size_t i = specifier_start_index; i < specifier_end_index; ++i) {
+        for (size_t i = specifierStartIndex; i < specifierEndIndex; ++i) {
+
             auto c = fmt[i];
-            if (c > '9' || c < '0')
+
+            if (c > '9' || c < '0') {
+
                 break;
+            }
 
             state.index_value *= 10;
             state.index_value += c - '0';
@@ -70,7 +75,7 @@ namespace Format::Detail {
         }
 
         if (!state.saw_explicit_index)
-            return next_implicit_argument_index++;
+            return nextImplicitArgumentIndex++;
 
         return state.index_value;
     }
@@ -86,7 +91,7 @@ namespace Format::Detail {
             LinearArray<size_t, 128> used_arguments { 0 };
             
             size_t total_used_argument_count { 0 };
-            size_t next_implicit_argument_index { 0 };
+            size_t nextImplicitArgumentIndex { 0 };
             bool has_explicit_argument_references { false };
 
             size_t unclosed_braces { 0 };
@@ -117,7 +122,7 @@ namespace Format::Detail {
                 
                 if (result.total_used_last_format_specifier_start_count >= result.last_format_specifier_start.size() - 1) {
 
-                    compiletime_fail("Format-String Checker internal error: Format specifier nested too deep");
+                    compileTimeFail("Format-String Checker internal error: Format specifier nested too deep");
                 }
 
                 result.last_format_specifier_start[result.total_used_last_format_specifier_start_count++] = i + 1;
@@ -148,19 +153,19 @@ namespace Format::Detail {
 
                     if (result.total_used_last_format_specifier_start_count == 0) {
 
-                        compiletime_fail("Format-String Checker internal error: Expected location information");
+                        compileTimeFail("Format-String Checker internal error: Expected location information");
                     }
 
-                    auto const specifier_start_index = result.last_format_specifier_start[--result.total_used_last_format_specifier_start_count];
+                    auto const specifierStartIndex = result.last_format_specifier_start[--result.total_used_last_format_specifier_start_count];
 
                     if (result.total_used_argument_count >= result.used_arguments.size()) {
 
-                        compiletime_fail("Format-String Checker internal error: Too many format arguments in format string");
+                        compileTimeFail("Format-String Checker internal error: Too many format arguments in format string");
                     }
 
-                    auto usedArgumentIndex = extractUsedArgumentIndex<N>(fmt, specifier_start_index, i, result.next_implicit_argument_index);
+                    auto usedArgumentIndex = extractUsedArgumentIndex<N>(fmt, specifierStartIndex, i, result.nextImplicitArgumentIndex);
                     
-                    if (usedArgumentIndex + 1 != result.next_implicit_argument_index) {
+                    if (usedArgumentIndex + 1 != result.nextImplicitArgumentIndex) {
 
                         result.has_explicit_argument_references = true;
                     }
@@ -214,18 +219,18 @@ namespace Format::Detail {
     #ifdef ENABLE_COMPILETIME_FORMAT_CHECK
 
         template<size_t N, size_t param_count>
-        consteval static bool check_format_parameter_consistency(char const (&fmt)[N])
-        {
+        consteval static bool check_format_parameter_consistency(char const (&fmt)[N]) {
+
             auto check = count_fmt_params<N>(fmt);
 
             if (check.unclosed_braces != 0) {
 
-                compiletime_fail("Extra unclosed braces in format string");
+                compileTimeFail("Extra unclosed braces in format string");
             }
 
             if (check.extra_closed_braces != 0) {
 
-                compiletime_fail("Extra closing braces in format string");
+                compileTimeFail("Extra closing braces in format string");
             }
 
             {
@@ -237,13 +242,13 @@ namespace Format::Detail {
 
                 if (!has_all_referenced_arguments) {
 
-                    compiletime_fail("Format string references nonexistent parameter");
+                    compileTimeFail("Format string references nonexistent parameter");
                 }
             }
 
             if (!check.has_explicit_argument_references && check.total_used_argument_count != param_count) {
 
-                compiletime_fail("Format string does not reference all passed parameters");
+                compileTimeFail("Format string does not reference all passed parameters");
             }
 
             // Ensure that no passed parameter is ignored or otherwise not referenced in the format
@@ -279,7 +284,7 @@ namespace Format::Detail {
 
                 if (!references_all_arguments) {
 
-                    compiletime_fail("Format string does not reference all passed parameters");
+                    compileTimeFail("Format string does not reference all passed parameters");
                 }
             }
 
