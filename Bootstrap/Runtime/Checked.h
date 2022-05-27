@@ -503,7 +503,7 @@ constexpr bool operator!=(T a, Checked<T> const& b) {
 }
 
 template<typename T>
-constexpr Checked<T> make_checked(T value) {
+constexpr Checked<T> makeChecked(T value) {
 
     return Checked<T>(value);
 }
