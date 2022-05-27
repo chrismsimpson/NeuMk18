@@ -484,7 +484,7 @@ public:
     ErrorOr<void> try_insert(size_t index, U&& value) requires(CanBePlacedInsideVector<U>)
     {
         if (index > size())
-            return Error::from_errno(EINVAL);
+            return Error::fromErrorCode(EINVAL);
         if (index == size())
             return try_append(forward<U>(value));
         TRY(try_grow_capacity(size() + 1));
@@ -632,22 +632,36 @@ public:
             return {};
         size_t new_capacity = kmalloc_good_size(needed_capacity * sizeof(StorageType)) / sizeof(StorageType);
         auto* new_buffer = static_cast<StorageType*>(kmalloc_array(new_capacity, sizeof(StorageType)));
-        if (new_buffer == nullptr)
-            return Error::from_errno(ENOMEM);
+
+        if (new_buffer == nullptr) {
+
+            return Error::fromErrorCode(ENOMEM);
+        }
 
         if constexpr (Traits<StorageType>::is_trivial()) {
+            
             TypedTransfer<StorageType>::copy(new_buffer, data(), m_size);
-        } else {
+        }
+        else {
+
             for (size_t i = 0; i < m_size; ++i) {
+
                 new (&new_buffer[i]) StorageType(move(at(i)));
+
                 at(i).~StorageType();
             }
         }
-        if (m_outline_buffer)
+
+        if (m_outline_buffer) {
+
             kfree_sized(m_outline_buffer, m_capacity * sizeof(StorageType));
+        }
+
         m_outline_buffer = new_buffer;
+        
         m_capacity = new_capacity;
-        return {};
+        
+        return { };
     }
 
     ErrorOr<void> try_resize(size_t new_size, bool keep_capacity = false) requires(!contains_reference)

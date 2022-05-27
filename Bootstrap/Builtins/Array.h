@@ -23,11 +23,11 @@ public:
             return {};
         }
         if (Checked<size_t>::multiplication_would_overflow(capacity, sizeof(T))) {
-            return Error::from_errno(EOVERFLOW);
+            return Error::fromErrorCode(EOVERFLOW);
         }
         auto* new_elements = static_cast<T*>(malloc(capacity * sizeof(T)));
         if (!new_elements) {
-            return Error::from_errno(ENOMEM);
+            return Error::fromErrorCode(ENOMEM);
         }
         for (size_t i = 0; i < m_size; ++i) {
             new (&new_elements[i]) T(move(m_elements[i]));
@@ -42,7 +42,7 @@ public:
     ErrorOr<void> add_capacity(size_t capacity)
     {
         if (Checked<size_t>::addition_would_overflow(m_capacity, capacity)) {
-            return Error::from_errno(EOVERFLOW);
+            return Error::fromErrorCode(EOVERFLOW);
         }
         TRY(ensure_capacity(m_capacity + capacity));
         return {};
@@ -58,13 +58,16 @@ public:
         return false;
     }
 
-    ErrorOr<void> add_size(size_t size)
-    {
+    ErrorOr<void> add_size(size_t size) {
+
         if (Checked<size_t>::addition_would_overflow(m_size, size)) {
-            return Error::from_errno(EOVERFLOW);
+
+            return Error::fromErrorCode(EOVERFLOW);
         }
+
         TRY(resize(m_size + size));
-        return {};
+
+        return { };
     }
 
     ErrorOr<void> resize(size_t size)

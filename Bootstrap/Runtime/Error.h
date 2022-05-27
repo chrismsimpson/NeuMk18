@@ -20,7 +20,7 @@
 
 class Error {
 public:
-    static Error from_errno(int code) { return Error(code); }
+    static Error fromErrorCode(int code) { return Error(code); }
     static Error from_syscall(StringView syscall_name, int rc) { return Error(syscall_name, rc); }
     static Error from_string_literal(StringView string_literal) { return Error(string_literal); }
 
@@ -67,7 +67,7 @@ public:
 
 #ifdef __serenity__
     ErrorOr(ErrnoCode code)
-        : Variant<T, ErrorType>(Error::from_errno(code))
+        : Variant<T, ErrorType>(Error::fromErrorCode(code))
     {
     }
 #endif
@@ -107,7 +107,7 @@ public:
 
 #ifdef __serenity__
     ErrorOr(ErrnoCode code)
-        : m_error(Error::from_errno(code))
+        : m_error(Error::fromErrorCode(code))
     {
     }
 #endif

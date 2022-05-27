@@ -481,7 +481,7 @@ private:
 
         auto* new_buckets = kcalloc(1, size_in_bytes(new_capacity));
         if (!new_buckets)
-            return Error::from_errno(ENOMEM);
+            return Error::fromErrorCode(ENOMEM);
 
         m_buckets = (BucketType*)new_buckets;
 
