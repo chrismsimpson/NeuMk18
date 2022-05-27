@@ -316,7 +316,7 @@ bool contains(StringView str, StringView needle, CaseSensitivity case_sensitivit
 
 bool is_whitespace(StringView str)
 {
-    return allOf(str, is_ascii_space);
+    return allOf(str, isAsciiSpace);
 }
 
 StringView trim(StringView str, StringView characters, TrimMode mode)
@@ -424,12 +424,12 @@ String to_snakecase(StringView str)
         if (i == 0)
             return false;
         auto previous_ch = str[i - 1];
-        if (is_ascii_lower_alpha(previous_ch) && is_ascii_upper_alpha(current_char))
+        if (isAsciiLowerAlpha(previous_ch) && isAsciiUpperAlpha(current_char))
             return true;
         if (i >= str.length() - 1)
             return false;
         auto next_ch = str[i + 1];
-        if (is_ascii_upper_alpha(current_char) && is_ascii_lower_alpha(next_ch))
+        if (isAsciiUpperAlpha(current_char) && isAsciiLowerAlpha(next_ch))
             return true;
         return false;
     };

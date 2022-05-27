@@ -125,7 +125,7 @@ bool FormatParser::consume_number(size_t& value) {
 
     bool consumed_at_least_one = false;
 
-    while (next_is(is_ascii_digit)) {
+    while (next_is(isAsciiDigit)) {
 
         value *= 10;
 

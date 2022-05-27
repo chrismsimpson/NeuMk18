@@ -113,7 +113,7 @@ RefPtr<StringImpl> StringImpl::create_uppercased(char const* cstring, size_t len
 NonnullRefPtr<StringImpl> StringImpl::to_lowercase() const
 {
     for (size_t i = 0; i < m_length; ++i) {
-        if (is_ascii_upper_alpha(characters()[i]))
+        if (isAsciiUpperAlpha(characters()[i]))
             return create_lowercased(characters(), m_length).release_nonnull();
     }
     return const_cast<StringImpl&>(*this);
@@ -122,7 +122,7 @@ NonnullRefPtr<StringImpl> StringImpl::to_lowercase() const
 NonnullRefPtr<StringImpl> StringImpl::to_uppercase() const
 {
     for (size_t i = 0; i < m_length; ++i) {
-        if (is_ascii_lower_alpha(characters()[i]))
+        if (isAsciiLowerAlpha(characters()[i]))
             return create_uppercased(characters(), m_length).release_nonnull();
     }
     return const_cast<StringImpl&>(*this);

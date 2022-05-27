@@ -13,176 +13,176 @@
 // NOTE: For a quick reference for most of this, see https://www.cplusplus.com/reference/cctype/ and https://infra.spec.whatwg.org/#code-points.
 // NOTE: To avoid ambiguity when including this header, all methods contains names should contain "ascii" or "unicode".
 
-constexpr bool is_ascii(u32 code_point)
+constexpr bool isAscii(u32 codePoint) {
+
+    return codePoint < 0x80;
+}
+
+constexpr bool isAsciiDigit(u32 codePoint) {
+
+    return codePoint >= '0' && codePoint <= '9';
+}
+
+constexpr bool isAsciiUpperAlpha(u32 codePoint) {
+
+    return (codePoint >= 'A' && codePoint <= 'Z');
+}
+
+constexpr bool isAsciiLowerAlpha(u32 codePoint) {
+
+    return (codePoint >= 'a' && codePoint <= 'z');
+}
+
+constexpr bool isAsciiAlpha(u32 codePoint) {
+
+    return isAsciiLowerAlpha(codePoint) || isAsciiUpperAlpha(codePoint);
+}
+
+constexpr bool isAsciiAlphanumeric(u32 codePoint)
 {
-    return code_point < 0x80;
+    return isAsciiAlpha(codePoint) || isAsciiDigit(codePoint);
 }
 
-constexpr bool is_ascii_digit(u32 code_point)
+constexpr bool isAsciiBinaryDigit(u32 codePoint)
 {
-    return code_point >= '0' && code_point <= '9';
+    return codePoint == '0' || codePoint == '1';
 }
 
-constexpr bool is_ascii_upper_alpha(u32 code_point)
-{
-    return (code_point >= 'A' && code_point <= 'Z');
+constexpr bool isAsciiOctalDigit(u32 codePoint) {
+
+    return codePoint >= '0' && codePoint <= '7';
 }
 
-constexpr bool is_ascii_lower_alpha(u32 code_point)
-{
-    return (code_point >= 'a' && code_point <= 'z');
+constexpr bool isAsciiHexDigit(u32 codePoint) {
+
+    return isAsciiDigit(codePoint) || (codePoint >= 'A' && codePoint <= 'F') || (codePoint >= 'a' && codePoint <= 'f');
 }
 
-constexpr bool is_ascii_alpha(u32 code_point)
-{
-    return is_ascii_lower_alpha(code_point) || is_ascii_upper_alpha(code_point);
+constexpr bool isAsciiBlank(u32 codePoint) {
+
+    return codePoint == '\t' || codePoint == ' ';
 }
 
-constexpr bool is_ascii_alphanumeric(u32 code_point)
-{
-    return is_ascii_alpha(code_point) || is_ascii_digit(code_point);
+constexpr bool isAsciiSpace(u32 codePoint) {
+
+    return codePoint == ' ' || codePoint == '\t' || codePoint == '\n' || codePoint == '\v' || codePoint == '\f' || codePoint == '\r';
 }
 
-constexpr bool is_ascii_binary_digit(u32 code_point)
-{
-    return code_point == '0' || code_point == '1';
+constexpr bool isAsciiPunctuation(u32 codePoint) {
+
+    return (codePoint >= 0x21 && codePoint <= 0x2F) || (codePoint >= 0x3A && codePoint <= 0x40) || (codePoint >= 0x5B && codePoint <= 0x60) || (codePoint >= 0x7B && codePoint <= 0x7E);
 }
 
-constexpr bool is_ascii_octal_digit(u32 code_point)
-{
-    return code_point >= '0' && code_point <= '7';
+constexpr bool isAsciiGraphical(u32 codePoint) {
+
+    return codePoint >= 0x21 && codePoint <= 0x7E;
 }
 
-constexpr bool is_ascii_hex_digit(u32 code_point)
-{
-    return is_ascii_digit(code_point) || (code_point >= 'A' && code_point <= 'F') || (code_point >= 'a' && code_point <= 'f');
+constexpr bool isAsciiPrintable(u32 codePoint) {
+
+    return codePoint >= 0x20 && codePoint <= 0x7E;
 }
 
-constexpr bool is_ascii_blank(u32 code_point)
-{
-    return code_point == '\t' || code_point == ' ';
+constexpr bool isAsciiC0Control(u32 codePoint) {
+
+    return codePoint < 0x20;
 }
 
-constexpr bool is_ascii_space(u32 code_point)
-{
-    return code_point == ' ' || code_point == '\t' || code_point == '\n' || code_point == '\v' || code_point == '\f' || code_point == '\r';
+constexpr bool isAsciiControl(u32 codePoint) {
+
+    return isAsciiC0Control(codePoint) || codePoint == 0x7F;
 }
 
-constexpr bool is_ascii_punctuation(u32 code_point)
-{
-    return (code_point >= 0x21 && code_point <= 0x2F) || (code_point >= 0x3A && code_point <= 0x40) || (code_point >= 0x5B && code_point <= 0x60) || (code_point >= 0x7B && code_point <= 0x7E);
+constexpr bool is_unicode(u32 codePoint) {
+
+    return codePoint <= 0x10FFFF;
 }
 
-constexpr bool is_ascii_graphical(u32 code_point)
-{
-    return code_point >= 0x21 && code_point <= 0x7E;
+constexpr bool isUnicodeControl(u32 codePoint) {
+
+    return isAsciiC0Control(codePoint) || (codePoint >= 0x7E && codePoint <= 0x9F);
 }
 
-constexpr bool is_ascii_printable(u32 code_point)
-{
-    return code_point >= 0x20 && code_point <= 0x7E;
+constexpr bool isUnicodeSurrogate(u32 codePoint) {
+
+    return codePoint >= 0xD800 && codePoint <= 0xDFFF;
 }
 
-constexpr bool is_ascii_c0_control(u32 code_point)
-{
-    return code_point < 0x20;
+constexpr bool isUnicodeScalarValue(u32 codePoint) {
+
+    return is_unicode(codePoint) && !isUnicodeSurrogate(codePoint);
 }
 
-constexpr bool is_ascii_control(u32 code_point)
-{
-    return is_ascii_c0_control(code_point) || code_point == 0x7F;
+constexpr bool isUnicodeNonCharacter(u32 codePoint) {
+
+    return is_unicode(codePoint) && ((codePoint >= 0xFDD0 && codePoint <= 0xFDEF) || ((codePoint & 0xFFFE) == 0xFFFE) || ((codePoint & 0xFFFF) == 0xFFFF));
 }
 
-constexpr bool is_unicode(u32 code_point)
-{
-    return code_point <= 0x10FFFF;
-}
+constexpr u32 toAsciiLowercase(u32 codePoint) {
 
-constexpr bool is_unicode_control(u32 code_point)
-{
-    return is_ascii_c0_control(code_point) || (code_point >= 0x7E && code_point <= 0x9F);
-}
+    if (isAsciiUpperAlpha(codePoint)) {
 
-constexpr bool is_unicode_surrogate(u32 code_point) {
-
-    return code_point >= 0xD800 && code_point <= 0xDFFF;
-}
-
-constexpr bool is_unicode_scalar_value(u32 code_point) {
-
-    return is_unicode(code_point) && !is_unicode_surrogate(code_point);
-}
-
-constexpr bool isUnicodeNonCharacter(u32 code_point) {
-
-    return is_unicode(code_point) && ((code_point >= 0xFDD0 && code_point <= 0xFDEF) || ((code_point & 0xFFFE) == 0xFFFE) || ((code_point & 0xFFFF) == 0xFFFF));
-}
-
-constexpr u32 toAsciiLowercase(u32 code_point) {
-
-    if (is_ascii_upper_alpha(code_point)) {
-
-        return code_point + 0x20;
+        return codePoint + 0x20;
     }
 
-    return code_point;
+    return codePoint;
 }
 
-constexpr u32 toAsciiUppercase(u32 code_point) {
+constexpr u32 toAsciiUppercase(u32 codePoint) {
 
-    if (is_ascii_lower_alpha(code_point)) {
+    if (isAsciiLowerAlpha(codePoint)) {
 
-        return code_point - 0x20;
+        return codePoint - 0x20;
     }
 
-    return code_point;
+    return codePoint;
 }
 
-constexpr u32 parseAsciiDigit(u32 code_point) {
+constexpr u32 parseAsciiDigit(u32 codePoint) {
 
-    if (is_ascii_digit(code_point)) {
+    if (isAsciiDigit(codePoint)) {
 
-        return code_point - '0';
+        return codePoint - '0';
     }
 
     VERIFY_NOT_REACHED();
 }
 
-constexpr u32 parseAsciiHexDigit(u32 code_point) {
+constexpr u32 parseAsciiHexDigit(u32 codePoint) {
     
-    if (is_ascii_digit(code_point)) {
+    if (isAsciiDigit(codePoint)) {
 
-        return parseAsciiDigit(code_point);
+        return parseAsciiDigit(codePoint);
     }
 
-    if (code_point >= 'A' && code_point <= 'F') {
+    if (codePoint >= 'A' && codePoint <= 'F') {
 
-        return code_point - 'A' + 10;
+        return codePoint - 'A' + 10;
     }
 
-    if (code_point >= 'a' && code_point <= 'f') {
+    if (codePoint >= 'a' && codePoint <= 'f') {
 
-        return code_point - 'a' + 10;
+        return codePoint - 'a' + 10;
     }
 
     VERIFY_NOT_REACHED();
 }
 
-constexpr u32 parseAsciiBase36Digit(u32 code_point) {
+constexpr u32 parseAsciiBase36Digit(u32 codePoint) {
 
-    if (is_ascii_digit(code_point)) {
+    if (isAsciiDigit(codePoint)) {
 
-        return parseAsciiDigit(code_point);
+        return parseAsciiDigit(codePoint);
     }
 
-    if (code_point >= 'A' && code_point <= 'Z') {
+    if (codePoint >= 'A' && codePoint <= 'Z') {
 
-        return code_point - 'A' + 10;
+        return codePoint - 'A' + 10;
     }
 
-    if (code_point >= 'a' && code_point <= 'z') {
+    if (codePoint >= 'a' && codePoint <= 'z') {
 
-        return code_point - 'a' + 10;
+        return codePoint - 'a' + 10;
     }
 
     VERIFY_NOT_REACHED();
