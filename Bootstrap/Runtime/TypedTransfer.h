@@ -8,8 +8,6 @@
 
 #include "Traits.h"
 
-namespace AK {
-
 template<typename T>
 class TypedTransfer {
 public:
@@ -70,5 +68,3 @@ public:
         return true;
     }
 };
-
-}

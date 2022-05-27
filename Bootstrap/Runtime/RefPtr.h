@@ -21,8 +21,6 @@
 #    include "Traits.h"
 #    include "Types.h"
 
-namespace AK {
-
 template<typename T>
 class [[nodiscard]] RefPtr {
     template<typename U>
@@ -106,13 +104,13 @@ public:
 
     void swap(RefPtr& other)
     {
-        AK::swap(m_ptr, other.m_ptr);
+        ::swap(m_ptr, other.m_ptr);
     }
 
     template<typename U>
     void swap(RefPtr<U>& other) requires(IsConvertible<U*, T*>)
     {
-        AK::swap(m_ptr, other.m_ptr);
+        ::swap(m_ptr, other.m_ptr);
     }
 
     ALWAYS_INLINE RefPtr& operator=(RefPtr&& other)
@@ -349,11 +347,5 @@ inline ErrorOr<NonnullRefPtr<T>> adopt_nonnull_ref_or_enomem(T* object)
     return result.release_nonnull();
 }
 
-}
-
-using AK::adopt_ref_if_nonnull;
-using AK::RefPtr;
-using AK::static_ptr_cast;
-using AK::try_make_ref_counted;
 
 #endif

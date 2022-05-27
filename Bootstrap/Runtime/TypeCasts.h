@@ -12,8 +12,6 @@
 #include "Platform.h"
 #include "StdLibExtras.h"
 
-namespace AK {
-
 template<typename OutputType, typename InputType>
 ALWAYS_INLINE bool is(InputType& input)
 {
@@ -50,8 +48,3 @@ ALWAYS_INLINE CopyConst<InputType, OutputType>& verify_cast(InputType& input)
     VERIFY(is<OutputType>(input));
     return static_cast<CopyConst<InputType, OutputType>&>(input);
 }
-
-}
-
-using AK::is;
-using AK::verify_cast;

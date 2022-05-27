@@ -15,8 +15,6 @@
 #    include "String.h"
 #endif
 
-namespace AK {
-
 #ifndef KERNEL
 StringView::StringView(String const& string)
     : m_characters(string.characters())
@@ -247,4 +245,3 @@ Vector<StringView> StringView::split_view_if(Function<bool(char)> const& predica
     return v;
 }
 
-}

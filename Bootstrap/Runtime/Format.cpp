@@ -22,8 +22,6 @@
 #    include <string.h>
 #endif
 
-namespace AK {
-
 class FormatParser : public GenericLexer {
 public:
     struct FormatSpecifier {
@@ -95,7 +93,7 @@ ErrorOr<void> vformat_impl(TypeErasedFormatParams& params, FormatBuilder& builde
     return {};
 }
 
-} // namespace AK::{anonymous}
+} // {anonymous}
 
 FormatParser::FormatParser(StringView input)
     : GenericLexer(input)
@@ -626,7 +624,7 @@ ErrorOr<void> Formatter<StringView>::format(FormatBuilder& builder, StringView v
 ErrorOr<void> Formatter<FormatString>::vformat(FormatBuilder& builder, StringView fmtstr, TypeErasedFormatParams& params)
 {
     StringBuilder string_builder;
-    TRY(AK::vformat(string_builder, fmtstr, params));
+    TRY(::vformat(string_builder, fmtstr, params));
     TRY(Formatter<StringView>::format(builder, string_builder.string_view()));
     return {};
 }
@@ -926,5 +924,3 @@ template struct Formatter<int, void>;
 template struct Formatter<long, void>;
 template struct Formatter<long long, void>;
 template struct Formatter<signed char, void>;
-
-} // namespace AK

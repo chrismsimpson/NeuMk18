@@ -16,8 +16,6 @@
 #    include "Platform.h"
 #    include "StdLibExtras.h"
 
-namespace AK {
-
 class RefCountedBase {
     AK_MAKE_NONCOPYABLE(RefCountedBase);
     AK_MAKE_NONMOVABLE(RefCountedBase);
@@ -72,10 +70,5 @@ public:
         return false;
     }
 };
-
-}
-
-using AK::RefCounted;
-using AK::RefCountedBase;
 
 #endif

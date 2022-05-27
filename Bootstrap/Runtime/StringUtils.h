@@ -10,8 +10,6 @@
 #include "Concepts.h"
 #include "Forward.h"
 
-namespace AK {
-
 namespace Detail {
 template<Concepts::AnyString T, Concepts::AnyString U>
 inline constexpr bool IsHashCompatible<T, U> = true;
@@ -83,9 +81,3 @@ String replace(StringView, StringView needle, StringView replacement, bool all_o
 size_t count(StringView, StringView needle);
 
 }
-
-}
-
-using AK::CaseSensitivity;
-using AK::TrimMode;
-using AK::TrimWhitespace;

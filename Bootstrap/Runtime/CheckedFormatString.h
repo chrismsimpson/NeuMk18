@@ -21,7 +21,7 @@
 #endif
 
 #ifdef ENABLE_COMPILETIME_FORMAT_CHECK
-namespace AK::Format::Detail {
+namespace Format::Detail {
 
 // We have to define a local "purely constexpr" Array that doesn't lead back to us (via e.g. VERIFY)
 template<typename T, size_t Size>
@@ -142,7 +142,7 @@ consteval auto count_fmt_params(char const (&fmt)[N])
 
 #endif
 
-namespace AK::Format::Detail {
+namespace Format::Detail {
 template<typename... Args>
 struct CheckedFormatString {
     template<size_t N>
@@ -176,7 +176,7 @@ private:
         {
             auto begin = check.used_arguments.begin();
             auto end = check.used_arguments.begin() + check.total_used_argument_count;
-            auto has_all_referenced_arguments = !AK::any_of(begin, end, [](auto& entry) { return entry >= param_count; });
+            auto has_all_referenced_arguments = !any_of(begin, end, [](auto& entry) { return entry >= param_count; });
             if (!has_all_referenced_arguments)
                 compiletime_fail("Format string references nonexistent parameter");
         }
@@ -199,7 +199,7 @@ private:
 
                 return false;
             };
-            auto references_all_arguments = AK::all_of(
+            auto references_all_arguments = all_of(
                 all_parameters,
                 [&](auto& entry) {
                     return contains(
@@ -219,9 +219,5 @@ private:
 };
 }
 
-namespace AK {
-
 template<typename... Args>
 using CheckedFormatString = Format::Detail::CheckedFormatString<IdentityType<Args>...>;
-
-}

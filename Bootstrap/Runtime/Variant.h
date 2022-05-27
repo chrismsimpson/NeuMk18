@@ -11,7 +11,7 @@
 #include "StdLibExtras.h"
 #include "TypeList.h"
 
-namespace AK::Detail {
+namespace Detail {
 
 template<typename T, typename IndexType, IndexType InitialIndex, typename... InTypes>
 struct VariantIndexOf {
@@ -209,8 +209,6 @@ template<typename... Ps>
 using MergeAndDeduplicatePacks = InheritFromPacks<MakeIndexSequence<sizeof...(Ps)>, Conditional<IsBaseOf<ParameterPackTag, Ps>, Ps, ParameterPack<Ps>>...>;
 
 }
-
-namespace AK {
 
 struct Empty {
 };
@@ -465,8 +463,3 @@ private:
     alignas(data_alignment) u8 m_data[data_size];
     IndexType m_index;
 };
-
-}
-
-using AK::Empty;
-using AK::Variant;

@@ -10,7 +10,7 @@
 #include "IterationDecision.h"
 #include "StdLibExtras.h"
 
-namespace AK::Concepts {
+namespace Concepts {
 
 template<typename T>
 concept Integral = IsIntegral<T>;
@@ -114,19 +114,19 @@ concept IterableContainer = requires
 // clang-format on
 }
 
-using AK::Concepts::Arithmetic;
-using AK::Concepts::ArrayLike;
-using AK::Concepts::Enum;
-using AK::Concepts::FloatingPoint;
-using AK::Concepts::Fundamental;
-using AK::Concepts::Integral;
-using AK::Concepts::IterableContainer;
-using AK::Concepts::IteratorFunction;
-using AK::Concepts::IteratorPairWith;
-using AK::Concepts::OneOf;
-using AK::Concepts::OneOfIgnoringCV;
-using AK::Concepts::SameAs;
-using AK::Concepts::Signed;
-using AK::Concepts::SpecializationOf;
-using AK::Concepts::Unsigned;
-using AK::Concepts::VoidFunction;
+using Concepts::Arithmetic;
+using Concepts::ArrayLike;
+using Concepts::Enum;
+using Concepts::FloatingPoint;
+using Concepts::Fundamental;
+using Concepts::Integral;
+using Concepts::IterableContainer;
+using Concepts::IteratorFunction;
+using Concepts::IteratorPairWith;
+using Concepts::OneOf;
+using Concepts::OneOfIgnoringCV;
+using Concepts::SameAs;
+using Concepts::Signed;
+using Concepts::SpecializationOf;
+using Concepts::Unsigned;
+using Concepts::VoidFunction;

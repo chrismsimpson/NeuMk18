@@ -8,8 +8,6 @@
 
 #include "Types.h"
 
-namespace AK {
-
 class Bitmap;
 class Error;
 class GenericLexer;
@@ -33,7 +31,7 @@ class SimpleIterator;
 using ReadonlyBytes = Span<const u8>;
 using Bytes = Span<u8>;
 
-template<typename T, AK::MemoryOrder DefaultMemoryOrder>
+template<typename T, MemoryOrder DefaultMemoryOrder>
 class Atomic;
 
 template<typename T>
@@ -82,30 +80,3 @@ requires(!IsRvalueReference<T>) class Vector;
 
 template<typename T, typename ErrorType = Error>
 class [[nodiscard]] ErrorOr;
-
-}
-
-using AK::Atomic;
-using AK::Bitmap;
-using AK::Bytes;
-using AK::Error;
-using AK::ErrorOr;
-using AK::Function;
-using AK::GenericLexer;
-using AK::HashMap;
-using AK::HashTable;
-using AK::LinearArray;
-using AK::NonnullRefPtr;
-using AK::Optional;
-using AK::ReadonlyBytes;
-using AK::RefPtr;
-using AK::Span;
-using AK::String;
-using AK::StringBuilder;
-using AK::StringImpl;
-using AK::StringView;
-using AK::Time;
-using AK::Traits;
-using AK::Utf8CodePointIterator;
-using AK::Utf8View;
-using AK::Vector;

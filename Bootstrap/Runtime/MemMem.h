@@ -12,8 +12,6 @@
 #include "Types.h"
 #include "Vector.h"
 
-namespace AK {
-
 namespace Detail {
 constexpr void const* bitap_bitwise(void const* haystack, size_t haystack_length, void const* needle, size_t needle_length)
 {
@@ -43,7 +41,7 @@ constexpr void const* bitap_bitwise(void const* haystack, size_t haystack_length
 }
 
 template<typename HaystackIterT>
-inline Optional<size_t> memmem(HaystackIterT const& haystack_begin, HaystackIterT const& haystack_end, Span<const u8> needle) requires(requires { (*haystack_begin).data(); (*haystack_begin).size(); })
+inline Optional<size_t> memmemInternal(HaystackIterT const& haystack_begin, HaystackIterT const& haystack_end, Span<const u8> needle) requires(requires { (*haystack_begin).data(); (*haystack_begin).size(); })
 {
     auto prepare_kmp_partial_table = [&] {
         Vector<int, 64> table;
@@ -123,16 +121,14 @@ inline Optional<size_t> memmem_optional(void const* haystack, size_t haystack_le
 
     // Fallback to KMP.
     LinearArray<Span<const u8>, 1> spans { Span<const u8> { (u8 const*)haystack, haystack_length } };
-    return memmem(spans.begin(), spans.end(), { (u8 const*)needle, needle_length });
+    return memmemInternal(spans.begin(), spans.end(), { (u8 const*)needle, needle_length });
 }
 
-inline void const* memmem(void const* haystack, size_t haystack_length, void const* needle, size_t needle_length)
+inline void const* memmemInternal(void const* haystack, size_t haystack_length, void const* needle, size_t needle_length)
 {
     auto offset = memmem_optional(haystack, haystack_length, needle, needle_length);
     if (offset.has_value())
         return ((u8 const*)haystack) + offset.value();
 
     return nullptr;
-}
-
 }

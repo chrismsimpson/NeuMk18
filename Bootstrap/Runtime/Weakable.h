@@ -15,8 +15,6 @@
 #    include "RefPtr.h"
 #    include "StdLibExtras.h"
 
-namespace AK {
-
 template<typename T>
 class Weakable;
 template<typename T>
@@ -36,12 +34,12 @@ public:
         RefPtr<T> ref;
 
         {
-            if (!(m_consumers.fetch_add(1u << 1, AK::MemoryOrder::memory_order_acquire) & 1u)) {
-                T* ptr = (T*)m_ptr.load(AK::MemoryOrder::memory_order_acquire);
+            if (!(m_consumers.fetch_add(1u << 1, MemoryOrder::memory_order_acquire) & 1u)) {
+                T* ptr = (T*)m_ptr.load(MemoryOrder::memory_order_acquire);
                 if (ptr && ptr->try_ref())
                     ref = adopt_ref(*ptr);
             }
-            m_consumers.fetch_sub(1u << 1, AK::MemoryOrder::memory_order_release);
+            m_consumers.fetch_sub(1u << 1, MemoryOrder::memory_order_release);
         }
 
         return ref;
@@ -50,13 +48,13 @@ public:
     template<typename T>
     T* unsafe_ptr() const
     {
-        if (m_consumers.load(AK::MemoryOrder::memory_order_relaxed) & 1u)
+        if (m_consumers.load(MemoryOrder::memory_order_relaxed) & 1u)
             return nullptr;
         // NOTE: This may return a non-null pointer even if revocation
         // has been triggered as there is a possible race! But it's "unsafe"
         // anyway because we return a raw pointer without ensuring a
         // reference...
-        return (T*)m_ptr.load(AK::MemoryOrder::memory_order_acquire);
+        return (T*)m_ptr.load(MemoryOrder::memory_order_acquire);
     }
 
     bool is_null() const
@@ -66,15 +64,15 @@ public:
 
     void revoke()
     {
-        auto current_consumers = m_consumers.fetch_or(1u, AK::MemoryOrder::memory_order_relaxed);
+        auto current_consumers = m_consumers.fetch_or(1u, MemoryOrder::memory_order_relaxed);
         VERIFY(!(current_consumers & 1u));
         // We flagged revocation, now wait until everyone trying to obtain
         // a strong reference is done
         while (current_consumers > 0) {
-            current_consumers = m_consumers.load(AK::MemoryOrder::memory_order_acquire) & ~1u;
+            current_consumers = m_consumers.load(MemoryOrder::memory_order_acquire) & ~1u;
         }
         // No one is trying to use it (anymore)
-        m_ptr.store(nullptr, AK::MemoryOrder::memory_order_release);
+        m_ptr.store(nullptr, MemoryOrder::memory_order_release);
     }
 
 private:
@@ -119,9 +117,5 @@ protected:
 private:
     mutable RefPtr<WeakLink> m_link;
 };
-
-}
-
-using AK::Weakable;
 
 #endif

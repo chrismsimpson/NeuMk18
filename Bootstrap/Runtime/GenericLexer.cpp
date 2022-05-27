@@ -13,7 +13,6 @@
 #    include "String.h"
 #endif
 
-namespace AK {
 // Consume a number of characters
 StringView GenericLexer::consume(size_t count)
 {
@@ -125,6 +124,4 @@ StringView GenericLexer::consume_quoted_string(char escape_char)
     ignore();
 
     return m_input.substring_view(start, length);
-}
-
 }

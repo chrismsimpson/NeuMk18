@@ -10,8 +10,6 @@
 #include "Find.h"
 #include "Iterator.h"
 
-namespace AK {
-
 template<typename TEndIterator, IteratorPairWith<TEndIterator> TIterator>
 constexpr bool all_of(
     TIterator const& begin,
@@ -31,7 +29,3 @@ constexpr bool all_of(Container&& container, auto const& predicate)
 {
     return all_of(container.begin(), container.end(), predicate);
 }
-
-}
-
-using AK::all_of;

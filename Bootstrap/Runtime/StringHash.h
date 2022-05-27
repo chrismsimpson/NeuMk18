@@ -8,8 +8,6 @@
 
 #include "Types.h"
 
-namespace AK {
-
 constexpr u32 string_hash(char const* characters, size_t length, u32 seed = 0)
 {
     u32 hash = seed;
@@ -44,7 +42,3 @@ constexpr u32 case_insensitive_string_hash(char const* characters, size_t length
     hash += hash << 15;
     return hash;
 }
-
-}
-
-using AK::string_hash;

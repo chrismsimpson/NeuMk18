@@ -34,8 +34,6 @@
 #include "StdLibExtras.h"
 #include "Types.h"
 
-namespace AK {
-
 template<typename>
 class Function;
 
@@ -250,7 +248,3 @@ private:
     static constexpr size_t inline_capacity = 4 * sizeof(void*);
     alignas(max(alignof(CallableWrapperBase), alignof(CallableWrapperBase*))) u8 m_storage[inline_capacity];
 };
-
-}
-
-using AK::Function;

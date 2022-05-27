@@ -8,8 +8,6 @@
 
 #include "Types.h"
 
-namespace AK {
-
 template<typename T>
 struct NumericLimits {
 };
@@ -126,7 +124,3 @@ struct NumericLimits<long double> {
     static constexpr bool is_signed() { return true; }
 };
 #endif
-
-}
-
-using AK::NumericLimits;

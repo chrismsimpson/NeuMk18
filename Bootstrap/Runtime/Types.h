@@ -94,8 +94,6 @@ enum class [[nodiscard]] TriState : u8 {
     Unknown
 };
 
-namespace AK {
-
 enum MemoryOrder {
     memory_order_relaxed = __ATOMIC_RELAXED,
     memory_order_consume = __ATOMIC_CONSUME,
@@ -105,4 +103,3 @@ enum MemoryOrder {
     memory_order_seq_cst = __ATOMIC_SEQ_CST
 };
 
-}

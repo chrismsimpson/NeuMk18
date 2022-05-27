@@ -11,8 +11,6 @@
 #include "Vector.h"
 #include <initializer_list>
 
-namespace AK {
-
 template<typename K, typename V, typename KeyTraits, bool IsOrdered>
 class HashMap {
 private:
@@ -236,8 +234,3 @@ public:
 private:
     HashTableType m_table;
 };
-
-}
-
-using AK::HashMap;
-using AK::OrderedHashMap;

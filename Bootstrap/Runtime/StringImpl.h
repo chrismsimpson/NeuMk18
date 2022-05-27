@@ -12,8 +12,6 @@
 #include "Types.h"
 #include "kmalloc.h"
 
-namespace AK {
-
 enum ShouldChomp {
     NoChomp,
     Chomp
@@ -110,9 +108,3 @@ struct Formatter<StringImpl> : Formatter<StringView> {
         return Formatter<StringView>::format(builder, { value.characters(), value.length() });
     }
 };
-
-}
-
-using AK::Chomp;
-using AK::NoChomp;
-using AK::StringImpl;

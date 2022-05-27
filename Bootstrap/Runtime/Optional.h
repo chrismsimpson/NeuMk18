@@ -12,8 +12,6 @@
 #include "Types.h"
 #include "kmalloc.h"
 
-namespace AK {
-
 // NOTE: If you're here because of an internal compiler error in GCC 10.3.0+,
 //       it's because of the following bug:
 //
@@ -375,7 +373,3 @@ public:
 private:
     RemoveReference<T>* m_pointer { nullptr };
 };
-
-}
-
-using AK::Optional;

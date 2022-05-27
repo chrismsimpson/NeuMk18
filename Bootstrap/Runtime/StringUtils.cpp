@@ -18,8 +18,6 @@
 #    include "String.h"
 #endif
 
-namespace AK {
-
 namespace StringUtils {
 
 bool matches(StringView str, StringView mask, CaseSensitivity case_sensitivity, Vector<MaskSpan>* match_spans)
@@ -370,7 +368,7 @@ Optional<size_t> find(StringView haystack, StringView needle, size_t start)
 {
     if (start > haystack.length())
         return {};
-    auto index = AK::memmem_optional(
+    auto index = memmem_optional(
         haystack.characters_without_null_termination() + start, haystack.length() - start,
         needle.characters_without_null_termination(), needle.length());
     return index.has_value() ? (*index + start) : index;
@@ -390,7 +388,7 @@ Vector<size_t> find_all(StringView haystack, StringView needle)
     Vector<size_t> positions;
     size_t current_position = 0;
     while (current_position <= haystack.length()) {
-        auto maybe_position = AK::memmem_optional(
+        auto maybe_position = memmem_optional(
             haystack.characters_without_null_termination() + current_position, haystack.length() - current_position,
             needle.characters_without_null_termination(), needle.length());
         if (!maybe_position.has_value())
@@ -503,8 +501,6 @@ size_t count(StringView str, StringView needle)
             count++;
     }
     return count;
-}
-
 }
 
 }

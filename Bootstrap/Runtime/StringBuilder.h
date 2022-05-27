@@ -13,8 +13,6 @@
 #include "../Builtins/Array.h"
 #include <stdarg.h>
 
-namespace AK {
-
 class StringBuilder {
 public:
     using OutputType = String;
@@ -81,12 +79,6 @@ private:
     Array<u8> m_buffer;
 };
 
-}
-
-using AK::StringBuilder;
-
-namespace AK {
-
 template<typename T>
 struct Formatter<JaktInternal::Array<T>> : Formatter<StringView> {
     ErrorOr<void> format(FormatBuilder& builder, JaktInternal::Array<T> const& value)
@@ -110,5 +102,3 @@ struct Formatter<JaktInternal::Array<T>> : Formatter<StringView> {
         return Formatter<StringView>::format(builder, string_builder.to_string());
     }
 };
-
-}

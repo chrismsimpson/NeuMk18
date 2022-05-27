@@ -10,8 +10,6 @@
 #include "Find.h"
 #include "Iterator.h"
 
-namespace AK {
-
 template<typename TEndIterator, IteratorPairWith<TEndIterator> TIterator>
 constexpr bool any_of(
     TIterator const& begin,
@@ -26,7 +24,3 @@ constexpr bool any_of(Container&& container, auto const& predicate)
 {
     return any_of(container.begin(), container.end(), predicate);
 }
-
-}
-
-using AK::any_of;

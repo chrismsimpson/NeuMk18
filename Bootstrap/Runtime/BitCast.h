@@ -6,8 +6,6 @@
 
 #pragma once
 
-namespace AK {
-
 template<typename T, typename U>
 inline T bit_cast(const U& a)
 {
@@ -21,7 +19,3 @@ inline T bit_cast(const U& a)
     return result;
 #endif
 }
-
-}
-
-using AK::bit_cast;

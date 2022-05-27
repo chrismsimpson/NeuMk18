@@ -9,7 +9,7 @@
 #include "StdLibExtras.h"
 #include "TypeList.h"
 
-namespace AK::Detail {
+namespace Detail {
 
 template<typename... Ts>
 struct Tuple {
@@ -108,8 +108,6 @@ private:
 };
 
 }
-
-namespace AK {
 
 template<typename... Ts>
 struct Tuple : Detail::Tuple<Ts...> {
@@ -217,7 +215,3 @@ private:
 
 template<class... Args>
 Tuple(Args... args) -> Tuple<Args...>;
-
-}
-
-using AK::Tuple;

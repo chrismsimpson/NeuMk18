@@ -8,8 +8,6 @@
 
 #include "Forward.h"
 
-namespace AK {
-
 template<typename Container, typename ValueType>
 class SimpleReverseIterator {
 public:
@@ -102,7 +100,5 @@ auto end(ReverseWrapper<Container> wrapper) { return wrapper.container.rend(); }
 
 template<typename Container>
 ReverseWrapper<Container> in_reverse(Container&& container) { return { container }; }
-
-}
 
 }

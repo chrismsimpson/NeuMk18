@@ -12,8 +12,6 @@
 #include "StringImpl.h"
 #include "kmalloc.h"
 
-namespace AK {
-
 static StringImpl* s_the_empty_stringimpl = nullptr;
 
 StringImpl& StringImpl::the_empty_stringimpl()
@@ -142,6 +140,4 @@ void StringImpl::compute_hash() const
     else
         m_hash = string_hash(characters(), m_length);
     m_has_hash = true;
-}
-
 }

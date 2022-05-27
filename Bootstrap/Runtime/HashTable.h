@@ -15,8 +15,6 @@
 #include "Types.h"
 #include "kmalloc.h"
 
-namespace AK {
-
 enum class HashSetResult {
     InsertedNewEntry,
     ReplacedExistingEntry,
@@ -719,7 +717,3 @@ private:
     size_t m_capacity { 0 };
     size_t m_deleted_count { 0 };
 };
-}
-
-using AK::HashTable;
-using AK::OrderedHashTable;

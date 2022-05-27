@@ -8,7 +8,7 @@
 
 #include "Forward.h"
 
-namespace AK::UnicodeUtils {
+namespace UnicodeUtils {
 
 template<typename Callback>
 [[nodiscard]] constexpr int code_point_to_utf8(u32 code_point, Callback callback)

@@ -12,8 +12,6 @@
 #include "StringView.h"
 #include "Vector.h"
 
-namespace AK {
-
 bool String::operator==(String const& other) const
 {
     return m_impl == other.impl() || view() == other.view();
@@ -423,6 +421,4 @@ String operator+(String const& a, String const& b)
     builder.append(a);
     builder.append(b);
     return builder.to_string();
-}
-
 }

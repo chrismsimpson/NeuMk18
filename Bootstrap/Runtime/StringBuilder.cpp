@@ -10,8 +10,6 @@
 #include "StringView.h"
 #include "UnicodeUtils.h"
 
-namespace AK {
-
 inline ErrorOr<void> StringBuilder::will_append(size_t size)
 {
     TRY(m_buffer.add_capacity(size));
@@ -82,7 +80,7 @@ void StringBuilder::clear()
 
 ErrorOr<void> StringBuilder::try_append_code_point(u32 code_point)
 {
-    auto nwritten = AK::UnicodeUtils::code_point_to_utf8(code_point, [this](char c) { append(c); });
+    auto nwritten = UnicodeUtils::code_point_to_utf8(code_point, [this](char c) { append(c); });
     if (nwritten < 0) {
         TRY(try_append(0xef));
         TRY(try_append(0xbf));
@@ -136,6 +134,4 @@ ErrorOr<void> StringBuilder::try_append_escaped_for_json(StringView string)
         }
     }
     return {};
-}
-
 }

@@ -8,8 +8,6 @@
 
 #include "Forward.h"
 
-namespace AK {
-
 template<typename Container, typename ValueType>
 class SimpleIterator {
 public:
@@ -86,5 +84,3 @@ private:
     Container& m_container;
     size_t m_index;
 };
-
-}

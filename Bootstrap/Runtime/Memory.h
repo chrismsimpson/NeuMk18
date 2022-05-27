@@ -42,8 +42,6 @@ ALWAYS_INLINE void fast_u32_fill(u32* dest, u32 value, size_t count)
 #endif
 }
 
-namespace AK {
-
 inline void secure_zero(void* ptr, size_t size)
 {
     __builtin_memset(ptr, 0, size);
@@ -73,8 +71,3 @@ inline bool timing_safe_compare(void const* b1, void const* b2, size_t len)
     // we would use a more advanced algorithm.
     return !res;
 }
-
-}
-
-using AK::secure_zero;
-using AK::timing_safe_compare;

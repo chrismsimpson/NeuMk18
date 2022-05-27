@@ -13,8 +13,6 @@
 // NOTE: For a quick reference for most of this, see https://www.cplusplus.com/reference/cctype/ and https://infra.spec.whatwg.org/#code-points.
 // NOTE: To avoid ambiguity when including this header, all methods contains names should contain "ascii" or "unicode".
 
-namespace AK {
-
 constexpr bool is_ascii(u32 code_point)
 {
     return code_point < 0x80;
@@ -169,33 +167,3 @@ constexpr u32 to_ascii_base36_digit(u32 digit)
     VERIFY(digit < base36_map.size());
     return base36_map[digit];
 }
-
-}
-
-using AK::is_ascii;
-using AK::is_ascii_alpha;
-using AK::is_ascii_alphanumeric;
-using AK::is_ascii_binary_digit;
-using AK::is_ascii_blank;
-using AK::is_ascii_c0_control;
-using AK::is_ascii_control;
-using AK::is_ascii_digit;
-using AK::is_ascii_graphical;
-using AK::is_ascii_hex_digit;
-using AK::is_ascii_lower_alpha;
-using AK::is_ascii_octal_digit;
-using AK::is_ascii_printable;
-using AK::is_ascii_punctuation;
-using AK::is_ascii_space;
-using AK::is_ascii_upper_alpha;
-using AK::is_unicode;
-using AK::is_unicode_control;
-using AK::is_unicode_noncharacter;
-using AK::is_unicode_scalar_value;
-using AK::is_unicode_surrogate;
-using AK::parse_ascii_base36_digit;
-using AK::parse_ascii_digit;
-using AK::parse_ascii_hex_digit;
-using AK::to_ascii_base36_digit;
-using AK::to_ascii_lowercase;
-using AK::to_ascii_uppercase;

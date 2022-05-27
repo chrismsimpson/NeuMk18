@@ -15,8 +15,6 @@
 #include "StringHash.h"
 #include "StringUtils.h"
 
-namespace AK {
-
 class StringView {
 public:
     ALWAYS_INLINE constexpr StringView() = default;
@@ -309,8 +307,6 @@ struct CaseInsensitiveStringViewTraits : public Traits<StringView> {
     }
 };
 
-}
-
 // FIXME: Remove this when clang fully supports consteval (specifically in the context of default parameter initialization).
 // See: https://stackoverflow.com/questions/68789984/immediate-function-as-default-function-argument-initializer-in-clang
 #if defined(__clang__)
@@ -319,10 +315,7 @@ struct CaseInsensitiveStringViewTraits : public Traits<StringView> {
 #    define AK_STRING_VIEW_LITERAL_CONSTEVAL consteval
 #endif
 
-[[nodiscard]] ALWAYS_INLINE AK_STRING_VIEW_LITERAL_CONSTEVAL AK::StringView operator"" sv(char const* cstring, size_t length)
+[[nodiscard]] ALWAYS_INLINE AK_STRING_VIEW_LITERAL_CONSTEVAL StringView operator"" sv(char const* cstring, size_t length)
 {
-    return AK::StringView(cstring, length);
+    return StringView(cstring, length);
 }
-
-using AK::CaseInsensitiveStringViewTraits;
-using AK::StringView;

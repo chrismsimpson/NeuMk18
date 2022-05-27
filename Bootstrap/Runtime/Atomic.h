@@ -10,8 +10,6 @@
 #include "Platform.h"
 #include "Types.h"
 
-namespace AK {
-
 static inline void atomic_signal_fence(MemoryOrder order) noexcept
 {
     return __atomic_signal_fence(order);
@@ -24,8 +22,8 @@ static inline void atomic_thread_fence(MemoryOrder order) noexcept
 
 static inline void full_memory_barrier() noexcept
 {
-    atomic_signal_fence(AK::MemoryOrder::memory_order_acq_rel);
-    atomic_thread_fence(AK::MemoryOrder::memory_order_acq_rel);
+    atomic_signal_fence(MemoryOrder::memory_order_acq_rel);
+    atomic_thread_fence(MemoryOrder::memory_order_acq_rel);
 }
 
 template<typename T>
@@ -136,7 +134,7 @@ static inline bool atomic_is_lock_free(volatile T* ptr = nullptr) noexcept
     return __atomic_is_lock_free(sizeof(T), ptr);
 }
 
-template<typename T, MemoryOrder DefaultMemoryOrder = AK::MemoryOrder::memory_order_seq_cst>
+template<typename T, MemoryOrder DefaultMemoryOrder = MemoryOrder::memory_order_seq_cst>
 class Atomic {
     // FIXME: This should work through concepts/requires clauses, but according to the compiler,
     //        "IsIntegral is not more specialized than IsFundamental".
@@ -440,7 +438,3 @@ public:
         return __atomic_is_lock_free(sizeof(m_value), &m_value);
     }
 };
-}
-
-using AK::Atomic;
-using AK::full_memory_barrier;

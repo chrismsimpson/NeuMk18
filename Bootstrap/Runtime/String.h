@@ -13,8 +13,6 @@
 #include "StringUtils.h"
 #include "Traits.h"
 
-namespace AK {
-
 // String is a convenience wrapper around StringImpl, suitable for passing
 // around as a value type. It's basically the same as passing around a
 // RefPtr<StringImpl>, with a bit of syntactic sugar.
@@ -324,13 +322,7 @@ template<typename T>
 struct Formatter<NonnullRefPtr<T>> : Formatter<StringView> {
     ErrorOr<void> format(FormatBuilder& builder, NonnullRefPtr<T> const& value)
     {
-        auto str = AK::String::formatted("{}", *value);
+        auto str = String::formatted("{}", *value);
         return Formatter<StringView>::format(builder, str);
     }
 };
-
-}
-
-using AK::CaseInsensitiveStringTraits;
-using AK::escape_html_entities;
-using AK::String;

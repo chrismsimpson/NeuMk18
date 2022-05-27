@@ -12,8 +12,6 @@
 #include "TypedTransfer.h"
 #include "Types.h"
 
-namespace AK {
-
 namespace Detail {
 
 template<typename T>
@@ -261,9 +259,3 @@ struct Traits<Span<T>> : public GenericTraits<Span<T>> {
 
 using ReadonlyBytes = Span<u8 const>;
 using Bytes = Span<u8>;
-
-}
-
-using AK::Bytes;
-using AK::ReadonlyBytes;
-using AK::Span;

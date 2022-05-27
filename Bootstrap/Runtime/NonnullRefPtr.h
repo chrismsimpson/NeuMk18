@@ -17,8 +17,6 @@
 #    include "Traits.h"
 #    include "Types.h"
 
-namespace AK {
-
 template<typename T>
 class RefPtr;
 
@@ -202,13 +200,13 @@ public:
 
     void swap(NonnullRefPtr& other)
     {
-        AK::swap(m_ptr, other.m_ptr);
+        ::swap(m_ptr, other.m_ptr);
     }
 
     template<typename U>
     void swap(NonnullRefPtr<U>& other) requires(IsConvertible<U*, T*>)
     {
-        AK::swap(m_ptr, other.m_ptr);
+        ::swap(m_ptr, other.m_ptr);
     }
 
     // clang-format off
@@ -249,7 +247,6 @@ inline NonnullRefPtr<T> make_ref_counted(Args&&... args)
 {
     return NonnullRefPtr<T>(NonnullRefPtr<T>::Adopt, *new T { forward<Args>(args)... });
 }
-}
 
 template<typename T>
 struct Traits<NonnullRefPtr<T>> : public GenericTraits<NonnullRefPtr<T>> {
@@ -258,9 +255,5 @@ struct Traits<NonnullRefPtr<T>> : public GenericTraits<NonnullRefPtr<T>> {
     static unsigned hash(NonnullRefPtr<T> const& p) { return ptr_hash(p.ptr()); }
     static bool equals(NonnullRefPtr<T> const& a, NonnullRefPtr<T> const& b) { return a.ptr() == b.ptr(); }
 };
-
-using AK::adopt_ref;
-using AK::make_ref_counted;
-using AK::NonnullRefPtr;
 
 #endif

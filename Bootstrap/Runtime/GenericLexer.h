@@ -8,8 +8,6 @@
 
 #include "StringView.h"
 
-namespace AK {
-
 class GenericLexer {
 public:
     constexpr explicit GenericLexer(StringView input)
@@ -217,10 +215,3 @@ constexpr auto is_not_any_of(StringView values)
 
 constexpr auto is_path_separator = is_any_of("/\\");
 constexpr auto is_quote = is_any_of("'\"");
-
-}
-
-using AK::GenericLexer;
-using AK::is_any_of;
-using AK::is_path_separator;
-using AK::is_quote;

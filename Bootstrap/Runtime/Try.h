@@ -7,7 +7,7 @@
 #pragma once
 
 // NOTE: These macros work with any result type that has the expected APIs.
-//       It's designed with AK::ErrorOr in mind.
+//       It's designed with ErrorOr in mind.
 
 #define TRY(...)                                      \
     ({                                                \

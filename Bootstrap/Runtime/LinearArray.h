@@ -9,8 +9,6 @@
 #include "Iterator.h"
 #include "Span.h"
 
-namespace AK {
-
 template<typename T, size_t Size>
 struct LinearArray {
     using ValueType = T;
@@ -74,7 +72,7 @@ struct LinearArray {
 
         T value = __data[0];
         for (size_t i = 1; i < Size; ++i)
-            value = AK::max(__data[i], value);
+            value = ::max(__data[i], value);
         return value;
     }
 
@@ -84,7 +82,7 @@ struct LinearArray {
 
         T value = __data[0];
         for (size_t i = 1; i < Size; ++i)
-            value = AK::min(__data[i], value);
+            value = ::min(__data[i], value);
         return value;
     }
 
@@ -108,8 +106,3 @@ constexpr static auto iota_LinearArray(T const offset = {})
     static_assert(N >= T {}, "Negative sizes not allowed in iota_LinearArray()");
     return Detail::integer_sequence_generate_LinearArray<T>(offset, MakeIntegerSequence<T, N>());
 }
-
-}
-
-using AK::LinearArray;
-using AK::iota_LinearArray;

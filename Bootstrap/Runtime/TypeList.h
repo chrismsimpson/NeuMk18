@@ -8,8 +8,6 @@
 
 #include "StdLibExtras.h"
 
-namespace AK {
-
 template<typename... Types>
 struct TypeList;
 
@@ -63,11 +61,3 @@ constexpr void for_each_type_zipped(F&& f)
     static_assert(ListA::size == ListB::size, "Can't zip TypeLists that aren't the same size!");
     for_each_type_zipped_impl<ListA, ListB>(forward<F>(f), MakeIndexSequence<ListA::size> {});
 }
-
-}
-
-using AK::for_each_type;
-using AK::for_each_type_zipped;
-using AK::TypeList;
-using AK::TypeListElement;
-using AK::TypeWrapper;

@@ -32,8 +32,6 @@
 #include "NumericLimits.h"
 #include "StdLibExtras.h"
 
-namespace AK {
-
 template<typename Destination, typename Source, bool destination_is_wider = (sizeof(Destination) >= sizeof(Source)), bool destination_is_signed = NumericLimits<Destination>::is_signed(), bool source_is_signed = NumericLimits<Source>::is_signed()>
 struct TypeBoundsChecker;
 
@@ -453,8 +451,3 @@ constexpr Checked<T> make_checked(T value)
 {
     return Checked<T>(value);
 }
-
-}
-
-using AK::Checked;
-using AK::make_checked;

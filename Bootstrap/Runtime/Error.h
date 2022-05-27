@@ -18,8 +18,6 @@
 #    include <string.h>
 #endif
 
-namespace AK {
-
 class Error {
 public:
     static Error from_errno(int code) { return Error(code); }
@@ -130,8 +128,3 @@ public:
 private:
     Optional<ErrorType> m_error;
 };
-
-}
-
-using AK::Error;
-using AK::ErrorOr;

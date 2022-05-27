@@ -51,8 +51,8 @@ public:
     bool remove(T const& value) { return m_storage->table.remove(value); }
     bool contains(T const& value) const { return m_storage->table.contains(value); }
 
-    ErrorOr<AK::HashSetResult> add(T const& value) { return m_storage->table.set(value); }
-    ErrorOr<AK::HashSetResult> add(T&& value) { return m_storage->table.set(move(value)); }
+    ErrorOr<HashSetResult> add(T const& value) { return m_storage->table.set(value); }
+    ErrorOr<HashSetResult> add(T&& value) { return m_storage->table.set(move(value)); }
     ErrorOr<void> ensure_capacity(size_t capacity) { return m_storage->table.try_ensure_capacity(capacity); }
 
     bool is_empty() const { return m_storage->table.is_empty(); }

@@ -13,8 +13,6 @@
 #include "StringHash.h"
 #include <string.h>
 
-namespace AK {
-
 template<typename T>
 struct GenericTraits {
     using PeekType = T&;
@@ -73,8 +71,3 @@ requires(Detail::IsPointerOfType<char, T>) struct Traits<T> : public GenericTrai
     static constexpr bool equals(T const a, T const b) { return strcmp(a, b); }
     static constexpr bool is_trivial() { return true; }
 };
-
-}
-
-using AK::GenericTraits;
-using AK::Traits;

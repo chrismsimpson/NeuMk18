@@ -8,8 +8,6 @@
 
 #include "StdLibExtras.h"
 
-namespace AK {
-
 template<typename Callback>
 class ScopeGuard {
 public:
@@ -47,8 +45,3 @@ private:
     Callback m_callback;
     bool m_armed { true };
 };
-
-}
-
-using AK::ArmedScopeGuard;
-using AK::ScopeGuard;

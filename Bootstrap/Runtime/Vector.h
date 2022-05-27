@@ -21,8 +21,6 @@
 #include "kmalloc.h"
 #include <initializer_list>
 
-namespace AK {
-
 namespace Detail {
 
 template<typename StorageType, bool>
@@ -739,28 +737,28 @@ public:
     template<typename TUnaryPredicate>
     ConstIterator find_if(TUnaryPredicate&& finder) const
     {
-        return AK::find_if(begin(), end(), forward<TUnaryPredicate>(finder));
+        return find_if(begin(), end(), forward<TUnaryPredicate>(finder));
     }
 
     template<typename TUnaryPredicate>
     Iterator find_if(TUnaryPredicate&& finder)
     {
-        return AK::find_if(begin(), end(), forward<TUnaryPredicate>(finder));
+        return find_if(begin(), end(), forward<TUnaryPredicate>(finder));
     }
 
     ConstIterator find(VisibleType const& value) const
     {
-        return AK::find(begin(), end(), value);
+        return find(begin(), end(), value);
     }
 
     Iterator find(VisibleType const& value)
     {
-        return AK::find(begin(), end(), value);
+        return find(begin(), end(), value);
     }
 
     Optional<size_t> find_first_index(VisibleType const& value) const
     {
-        if (auto const index = AK::find_index(begin(), end(), value);
+        if (auto const index = find_index(begin(), end(), value);
             index < size()) {
             return index;
         }
@@ -770,7 +768,7 @@ public:
     void reverse()
     {
         for (size_t i = 0; i < size() / 2; ++i)
-            AK::swap(at(i), at(size() - i - 1));
+            ::swap(at(i), at(size() - i - 1));
     }
 
 private:
@@ -827,7 +825,3 @@ private:
 
 template<class... Args>
 Vector(Args... args) -> Vector<CommonType<Args...>>;
-
-}
-
-using AK::Vector;

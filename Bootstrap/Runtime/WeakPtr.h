@@ -12,8 +12,6 @@
 
 #    include "Weakable.h"
 
-namespace AK {
-
 template<typename T>
 class [[nodiscard]] WeakPtr {
     template<typename U>
@@ -190,7 +188,4 @@ WeakPtr<T> make_weak_ptr_if_nonnull(T const* ptr)
     return MUST(try_make_weak_ptr_if_nonnull(ptr));
 }
 
-}
-
-using AK::WeakPtr;
 #endif

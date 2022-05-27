@@ -21,8 +21,6 @@
 #    include <string.h>
 #endif
 
-namespace AK {
-
 class TypeErasedFormatParams;
 class FormatParser;
 class FormatBuilder;
@@ -653,25 +651,6 @@ struct Formatter<ErrorOr<T, ErrorType>> : Formatter<FormatString> {
         return Formatter<FormatString>::format(builder, "{{{}}}", error_or.value());
     }
 };
-
-} // namespace AK
-
-#ifdef KERNEL
-using AK::critical_dmesgln;
-using AK::dmesgln;
-#else
-using AK::out;
-using AK::outln;
-
-using AK::warn;
-using AK::warnln;
-#endif
-
-using AK::dbgln;
-
-using AK::CheckedFormatString;
-using AK::FormatIfSupported;
-using AK::FormatString;
 
 #define dbgln_if(flag, fmt, ...)       \
     do {                               \

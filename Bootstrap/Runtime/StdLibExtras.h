@@ -32,13 +32,13 @@ namespace std { // NOLINT(cert-dcl58-cpp) Names in std to aid tools
 // NOTE: These are in the "std" namespace since some compilers and static analyzers rely on it.
 
 template<typename T>
-constexpr T&& forward(AK::Detail::RemoveReference<T>& param)
+constexpr T&& forward(Detail::RemoveReference<T>& param)
 {
     return static_cast<T&&>(param);
 }
 
 template<typename T>
-constexpr T&& forward(AK::Detail::RemoveReference<T>&& param) noexcept
+constexpr T&& forward(Detail::RemoveReference<T>&& param) noexcept
 {
     static_assert(!IsLvalueReference<T>, "Can't forward an rvalue as an lvalue.");
     return static_cast<T&&>(param);
@@ -59,14 +59,12 @@ constexpr T&& move(T& arg)
 using std::forward;
 using std::move;
 
-namespace AK::Detail {
+namespace Detail {
 template<typename T>
 struct _RawPtr {
     using Type = T*;
 };
 }
-
-namespace AK {
 
 template<typename T, typename SizeType = decltype(sizeof(T)), SizeType N>
 constexpr SizeType array_size(T (&)[N])
@@ -151,35 +149,21 @@ constexpr bool is_constant_evaluated()
 
 // These can't be exported into the global namespace as they would clash with the C standard library.
 
-#define __DEFINE_GENERIC_ABS(type, zero, intrinsic) \
-    constexpr type abs(type num)                    \
-    {                                               \
-        if (is_constant_evaluated())                \
-            return num < (zero) ? -num : num;       \
-        return __builtin_##intrinsic(num);          \
-    }
+// #define __DEFINE_GENERIC_ABS(type, zero, intrinsic) \
+//     constexpr type abs(type num)                    \
+//     {                                               \
+//         if (is_constant_evaluated())                \
+//             return num < (zero) ? -num : num;       \
+//         return __builtin_##intrinsic(num);          \
+//     }
 
-__DEFINE_GENERIC_ABS(int, 0, abs);
-__DEFINE_GENERIC_ABS(long, 0L, labs);
-__DEFINE_GENERIC_ABS(long long, 0LL, llabs);
-#ifndef KERNEL
-__DEFINE_GENERIC_ABS(float, 0.0F, fabsf);
-__DEFINE_GENERIC_ABS(double, 0.0, fabs);
-__DEFINE_GENERIC_ABS(long double, 0.0L, fabsl);
-#endif
+// __DEFINE_GENERIC_ABS(int, 0, abs);
+// __DEFINE_GENERIC_ABS(long, 0L, labs);
+// __DEFINE_GENERIC_ABS(long long, 0LL, llabs);
+// #ifndef KERNEL
+// __DEFINE_GENERIC_ABS(float, 0.0F, fabsf);
+// __DEFINE_GENERIC_ABS(double, 0.0, fabs);
+// __DEFINE_GENERIC_ABS(long double, 0.0L, fabsl);
+// #endif
 
-#undef __DEFINE_GENERIC_ABS
-
-}
-
-using AK::array_size;
-using AK::ceil_div;
-using AK::clamp;
-using AK::exchange;
-using AK::is_constant_evaluated;
-using AK::max;
-using AK::min;
-using AK::mix;
-using AK::RawPtr;
-using AK::swap;
-using AK::to_underlying;
+// #undef __DEFINE_GENERIC_ABS
