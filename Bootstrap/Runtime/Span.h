@@ -257,5 +257,5 @@ struct Traits<Span<T>> : public GenericTraits<Span<T>> {
     }
 };
 
-using ReadonlyBytes = Span<u8 const>;
+using ReadOnlyBytes = Span<u8 const>;
 using Bytes = Span<u8>;

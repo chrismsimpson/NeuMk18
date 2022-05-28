@@ -535,7 +535,7 @@ ErrorOr<void> FormatBuilder::putF80(
 
 #endif
 
-ErrorOr<void> FormatBuilder::put_hexdump(ReadonlyBytes bytes, size_t width, char fill)
+ErrorOr<void> FormatBuilder::put_hexdump(ReadOnlyBytes bytes, size_t width, char fill)
 {
     auto put_char_view = [&](auto i) -> ErrorOr<void> {
         TRY(putPadding(fill, 4));
@@ -799,7 +799,7 @@ ErrorOr<void> Formatter<wchar_t>::format(FormatBuilder& builder, wchar_t value) 
         return formatter.format(builder, static_cast<u32>(value));
     } 
     else {
-        
+
         StringBuilder codepoint;
         codepoint.appendCodePoint(value);
 

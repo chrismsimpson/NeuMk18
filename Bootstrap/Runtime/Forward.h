@@ -22,13 +22,16 @@ class Utf8View;
 template<typename T>
 class Span;
 
+template<typename T>
+using ReadOnlySpan = Span<const T>;
+
 template<typename T, size_t Size>
 struct LinearArray;
 
 template<typename Container, typename ValueType>
 class SimpleIterator;
 
-using ReadonlyBytes = Span<const u8>;
+using ReadOnlyBytes = ReadOnlySpan<u8>;
 using Bytes = Span<u8>;
 
 template<typename T, MemoryOrder DefaultMemoryOrder>

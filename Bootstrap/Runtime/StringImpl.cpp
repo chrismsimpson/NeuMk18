@@ -79,7 +79,7 @@ RefPtr<StringImpl> StringImpl::create(char const* cstring, ShouldChomp shouldCho
     return create(cstring, strlen(cstring), shouldChomp);
 }
 
-RefPtr<StringImpl> StringImpl::create(ReadonlyBytes bytes, ShouldChomp shouldChomp)
+RefPtr<StringImpl> StringImpl::create(ReadOnlyBytes bytes, ShouldChomp shouldChomp)
 {
     return StringImpl::create(reinterpret_cast<char const*>(bytes.data()), bytes.size(), shouldChomp);
 }
@@ -130,7 +130,7 @@ NonnullRefPtr<StringImpl> StringImpl::to_uppercase() const
 
 unsigned StringImpl::case_insensitive_hash() const
 {
-    return case_insensitive_string_hash(characters(), length());
+    return caseInsensitiveStringHash(characters(), length());
 }
 
 void StringImpl::compute_hash() const

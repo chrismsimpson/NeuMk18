@@ -234,7 +234,7 @@ String String::bijective_base_from(size_t value, unsigned base, StringView map)
     for (size_t j = 0; j < i / 2; ++j)
         swap(buffer[j], buffer[i - j - 1]);
 
-    return String { ReadonlyBytes(buffer.data(), i) };
+    return String { ReadOnlyBytes(buffer.data(), i) };
 }
 
 String String::roman_number_from(size_t value)

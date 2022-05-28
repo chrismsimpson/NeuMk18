@@ -22,7 +22,7 @@ constexpr u32 string_hash(char const* characters, size_t length, u32 seed = 0)
     return hash;
 }
 
-constexpr u32 case_insensitive_string_hash(char const* characters, size_t length, u32 seed = 0)
+constexpr u32 caseInsensitiveStringHash(char const* characters, size_t length, u32 seed = 0)
 {
     // AK/CharacterTypes.h cannot be included from here.
     auto to_lowercase = [](char ch) -> u32 {

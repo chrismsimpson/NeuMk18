@@ -24,7 +24,7 @@ public:
     static NonnullRefPtr<StringImpl> create_uninitialized(size_t length, char*& buffer);
     static RefPtr<StringImpl> create(char const* cstring, ShouldChomp = NoChomp);
     static RefPtr<StringImpl> create(char const* cstring, size_t length, ShouldChomp = NoChomp);
-    static RefPtr<StringImpl> create(ReadonlyBytes, ShouldChomp = NoChomp);
+    static RefPtr<StringImpl> create(ReadOnlyBytes, ShouldChomp = NoChomp);
     static RefPtr<StringImpl> create_lowercased(char const* cstring, size_t length);
     static RefPtr<StringImpl> create_uppercased(char const* cstring, size_t length);
 
@@ -44,7 +44,7 @@ public:
     // Includes NUL-terminator.
     char const* characters() const { return &m_inline_buffer[0]; }
 
-    ALWAYS_INLINE ReadonlyBytes bytes() const { return { characters(), length() }; }
+    ALWAYS_INLINE ReadOnlyBytes bytes() const { return { characters(), length() }; }
     ALWAYS_INLINE StringView view() const { return { characters(), length() }; }
 
     char const& operator[](size_t i) const

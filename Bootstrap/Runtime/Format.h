@@ -273,7 +273,7 @@ public:
 #endif
 
     ErrorOr<void> put_hexdump(
-        ReadonlyBytes,
+        ReadOnlyBytes,
         size_t width,
         char fill = ' ');
 
@@ -463,9 +463,9 @@ requires(HasFormatter<T>) struct Formatter<Vector<T, inline_capacity>> : Standar
 };
 
 template<>
-struct Formatter<ReadonlyBytes> : Formatter<StringView> {
+struct Formatter<ReadOnlyBytes> : Formatter<StringView> {
 
-    ErrorOr<void> format(FormatBuilder& builder, ReadonlyBytes value) {
+    ErrorOr<void> format(FormatBuilder& builder, ReadOnlyBytes value) {
 
         if (m_mode == Mode::Pointer) {
 
@@ -486,7 +486,7 @@ struct Formatter<ReadonlyBytes> : Formatter<StringView> {
 };
 
 template<>
-struct Formatter<Bytes> : Formatter<ReadonlyBytes> { };
+struct Formatter<Bytes> : Formatter<ReadOnlyBytes> { };
 
 template<>
 struct Formatter<char const*> : Formatter<StringView> {
@@ -784,7 +784,7 @@ struct Formatter<Error> : Formatter<FormatString> {
         }
 
         return Formatter<FormatString>::format(builder, "{}", error.stringLiteral());
-        
+
 #endif
     }
 };

@@ -16,50 +16,60 @@
 #include "StringUtils.h"
 
 class StringView {
+
 public:
+
     ALWAYS_INLINE constexpr StringView() = default;
+
     ALWAYS_INLINE constexpr StringView(char const* characters, size_t length)
-        : m_characters(characters)
-        , m_length(length)
-    {
-        if (!is_constant_evaluated())
+        : m_characters(characters), 
+          m_length(length) {
+
+        if (!is_constant_evaluated()) {
+
             VERIFY(!Checked<uintptr_t>::additionWouldOverflow((uintptr_t)characters, length));
+        }
     }
+
     ALWAYS_INLINE StringView(unsigned char const* characters, size_t length)
-        : m_characters((char const*)characters)
-        , m_length(length)
-    {
+        : m_characters((char const*)characters), 
+          m_length(length) {
+
         VERIFY(!Checked<uintptr_t>::additionWouldOverflow((uintptr_t)characters, length));
     }
+
     ALWAYS_INLINE constexpr StringView(char const* cstring)
-        : m_characters(cstring)
-        , m_length(cstring ? __builtin_strlen(cstring) : 0)
-    {
-    }
-    ALWAYS_INLINE StringView(ReadonlyBytes bytes)
-        : m_characters(reinterpret_cast<char const*>(bytes.data()))
-        , m_length(bytes.size())
-    {
-    }
+        : m_characters(cstring),
+          m_length(cstring ? __builtin_strlen(cstring) : 0) { }
+
+    ALWAYS_INLINE StringView(ReadOnlyBytes bytes)
+        : m_characters(reinterpret_cast<char const*>(bytes.data())), 
+          m_length(bytes.size()) { }
 
 #ifndef KERNEL
+
     StringView(String const&);
+
 #endif
 
 #ifndef KERNEL
+
     explicit StringView(String&&) = delete;
+
 #endif
 
-    [[nodiscard]] constexpr bool is_null() const
-    {
+    [[nodiscard]] constexpr bool is_null() const {
+
         return m_characters == nullptr;
     }
+
     [[nodiscard]] constexpr bool isEmpty() const { return m_length == 0; }
 
     [[nodiscard]] constexpr char const* charactersWithoutNullTermination() const { return m_characters; }
+
     [[nodiscard]] constexpr size_t length() const { return m_length; }
 
-    [[nodiscard]] ReadonlyBytes bytes() const { return { m_characters, m_length }; }
+    [[nodiscard]] ReadOnlyBytes bytes() const { return { m_characters, m_length }; }
 
     constexpr char const& operator[](size_t index) const { return m_characters[index]; }
 
@@ -68,10 +78,13 @@ public:
     [[nodiscard]] constexpr ConstIterator begin() const { return ConstIterator::begin(*this); }
     [[nodiscard]] constexpr ConstIterator end() const { return ConstIterator::end(*this); }
 
-    [[nodiscard]] constexpr unsigned hash() const
-    {
-        if (isEmpty())
+    [[nodiscard]] constexpr unsigned hash() const {
+
+        if (isEmpty()) {
+
             return 0;
+        }
+
         return string_hash(charactersWithoutNullTermination(), length());
     }
 
@@ -127,15 +140,15 @@ public:
     [[nodiscard]] Vector<StringView> split_view_if(Function<bool(char)> const& predicate, bool keep_empty = false) const;
 
     template<VoidFunction<StringView> Callback>
-    void for_each_split_view(char separator, bool keep_empty, Callback callback) const
-    {
+    void for_each_split_view(char separator, bool keep_empty, Callback callback) const {
+
         StringView seperator_view { &separator, 1 };
         for_each_split_view(seperator_view, keep_empty, callback);
     }
 
     template<VoidFunction<StringView> Callback>
-    void for_each_split_view(StringView separator, bool keep_empty, Callback callback) const
-    {
+    void for_each_split_view(StringView separator, bool keep_empty, Callback callback) const {
+
         VERIFY(!separator.isEmpty());
 
         if (isEmpty())
@@ -160,10 +173,12 @@ public:
     // 0.29, the spec defines a line ending as "a newline (U+000A), a carriage
     // return (U+000D) not followed by a newline, or a carriage return and a
     // following newline.".
+
     [[nodiscard]] Vector<StringView> lines(bool consider_cr = true) const;
 
     template<typename T = int>
     Optional<T> to_int() const;
+
     template<typename T = unsigned>
     Optional<T> to_uint() const;
 
@@ -183,64 +198,96 @@ public:
     //     StringView substr { "oo" };
     //
     // would not work.
+
     [[nodiscard]] StringView substring_view_starting_from_substring(StringView substring) const;
     [[nodiscard]] StringView substring_view_starting_after_substring(StringView substring) const;
 
     [[nodiscard]] bool copy_characters_to_buffer(char* buffer, size_t buffer_size) const;
 
-    constexpr bool operator==(char const* cstring) const
-    {
-        if (is_null())
+    constexpr bool operator==(char const* cstring) const {
+
+        if (is_null()) {
+
             return cstring == nullptr;
-        if (!cstring)
-            return false;
-        // NOTE: `m_characters` is not guaranteed to be null-terminated, but `cstring` is.
-        char const* cp = cstring;
-        for (size_t i = 0; i < m_length; ++i) {
-            if (*cp == '\0')
-                return false;
-            if (m_characters[i] != *(cp++))
-                return false;
         }
+
+        if (!cstring) {
+
+            return false;
+        }
+
+        // NOTE: `m_characters` is not guaranteed to be null-terminated, but `cstring` is.
+        
+        char const* cp = cstring;
+        
+        for (size_t i = 0; i < m_length; ++i) {
+
+            if (*cp == '\0') {
+
+                return false;
+            }
+
+            if (m_characters[i] != *(cp++)) {
+
+                return false;
+            }
+        }
+
         return *cp == '\0';
     }
 
-    constexpr bool operator!=(char const* cstring) const
-    {
+    constexpr bool operator!=(char const* cstring) const {
+
         return !(*this == cstring);
     }
 
 #ifndef KERNEL
+
     bool operator==(String const&) const;
+
 #endif
 
-    [[nodiscard]] constexpr int compare(StringView other) const
-    {
-        if (m_characters == nullptr)
+    [[nodiscard]] constexpr int compare(StringView other) const {
+
+        if (m_characters == nullptr) {
+
             return other.m_characters ? -1 : 0;
+        }
 
-        if (other.m_characters == nullptr)
-            return 1;
+        if (other.m_characters == nullptr) {
 
-        size_t rlen = min(m_length, other.m_length);
-        int c = __builtin_memcmp(m_characters, other.m_characters, rlen);
-        if (c == 0) {
-            if (length() < other.length())
-                return -1;
-            if (length() == other.length())
-                return 0;
             return 1;
         }
+
+        size_t rlen = min(m_length, other.m_length);
+        
+        int c = __builtin_memcmp(m_characters, other.m_characters, rlen);
+        
+        if (c == 0) {
+            
+            if (length() < other.length()) {
+
+                return -1;
+            }
+
+            if (length() == other.length()) {
+
+                return 0;
+            }
+
+            return 1;
+        }
+
         return c;
     }
 
-    constexpr bool operator==(StringView other) const
-    {
+    constexpr bool operator==(StringView other) const {
+
         return length() == other.length() && compare(other) == 0;
     }
 
-    constexpr bool operator!=(StringView other) const
-    {
+    constexpr bool operator!=(StringView other) const {
+
         return length() != other.length() || compare(other) != 0;
     }
 
@@ -275,26 +322,34 @@ public:
     }
 
     template<typename... Ts>
-    [[nodiscard]] ALWAYS_INLINE constexpr bool is_one_of(Ts&&... strings) const
-    {
+    [[nodiscard]] ALWAYS_INLINE constexpr bool is_one_of(Ts&&... strings) const {
+
         return (... || this->operator==(forward<Ts>(strings)));
     }
 
     template<typename... Ts>
-    [[nodiscard]] ALWAYS_INLINE constexpr bool is_one_of_ignoring_case(Ts&&... strings) const
-    {
+    [[nodiscard]] ALWAYS_INLINE constexpr bool is_one_of_ignoring_case(Ts&&... strings) const {
+
         return (... ||
                 [this, &strings]() -> bool {
-            if constexpr (requires(Ts a) { a.view()->StringView; })
+                    
+            if constexpr (requires(Ts a) { a.view()->StringView; }) {
+
                 return this->equals_ignoring_case(forward<Ts>(strings.view()));
-            else
+            }
+            else {
+
                 return this->equals_ignoring_case(forward<Ts>(strings));
+            }
         }());
     }
 
 private:
+
     friend class String;
+    
     char const* m_characters { nullptr };
+    
     size_t m_length { 0 };
 };
 
@@ -308,7 +363,7 @@ struct CaseInsensitiveStringViewTraits : public Traits<StringView> {
     {
         if (s.isEmpty())
             return 0;
-        return case_insensitive_string_hash(s.charactersWithoutNullTermination(), s.length());
+        return caseInsensitiveStringHash(s.charactersWithoutNullTermination(), s.length());
     }
 };
 

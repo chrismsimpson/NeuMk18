@@ -64,7 +64,7 @@ public:
     {
     }
 
-    explicit String(ReadonlyBytes bytes, ShouldChomp shouldChomp = NoChomp)
+    explicit String(ReadOnlyBytes bytes, ShouldChomp shouldChomp = NoChomp)
         : m_impl(StringImpl::create(bytes, shouldChomp))
     {
     }
@@ -157,7 +157,7 @@ public:
 
     [[nodiscard]] bool copy_characters_to_buffer(char* buffer, size_t buffer_size) const;
 
-    [[nodiscard]] ALWAYS_INLINE ReadonlyBytes bytes() const
+    [[nodiscard]] ALWAYS_INLINE ReadOnlyBytes bytes() const
     {
         if (m_impl) {
             return m_impl->bytes();
@@ -230,7 +230,7 @@ public:
         return *this;
     }
 
-    String& operator=(ReadonlyBytes bytes)
+    String& operator=(ReadOnlyBytes bytes)
     {
         m_impl = StringImpl::create(bytes);
         return *this;
