@@ -106,8 +106,8 @@ struct TypeErasedParameter {
     }
 
     template<typename T>
-    static consteval Type getType()
-    {
+    static consteval Type getType() {
+
         if constexpr (IsIntegral<T>) {
 
             return getTypeFromSize<sizeof(T), IsUnsigned<T>>();
@@ -204,7 +204,7 @@ public:
 
     ErrorOr<void> putLiteral(StringView value);
 
-    ErrorOr<void> put_string(
+    ErrorOr<void> putString(
         StringView value,
         Align align = Align::Left,
         size_t min_width = 0,

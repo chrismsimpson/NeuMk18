@@ -206,7 +206,7 @@ ErrorOr<void> FormatBuilder::putLiteral(StringView value)
     return {};
 }
 
-ErrorOr<void> FormatBuilder::put_string(
+ErrorOr<void> FormatBuilder::putString(
     StringView value,
     Align align,
     size_t min_width,
@@ -384,7 +384,7 @@ ErrorOr<void> FormatBuilder::put_f64(
             TRY(string_builder.try_append(upper_case ? "NAN"sv : "nan"sv));
         else
             TRY(string_builder.try_append(upper_case ? "INF"sv : "inf"sv));
-        TRY(put_string(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill));
+        TRY(putString(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill));
         return {};
     }
 
@@ -422,7 +422,7 @@ ErrorOr<void> FormatBuilder::put_f64(
             TRY(format_builder.put_u64(0, base, false, false, true, Align::Right, precision - visible_precision));
     }
 
-    TRY(put_string(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill));
+    TRY(putString(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill));
     return {};
 }
 
@@ -451,7 +451,7 @@ ErrorOr<void> FormatBuilder::put_f80(
             TRY(string_builder.try_append(upper_case ? "NAN"sv : "nan"sv));
         else
             TRY(string_builder.try_append(upper_case ? "INF"sv : "inf"sv));
-        TRY(put_string(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill));
+        TRY(putString(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill));
         return {};
     }
 
@@ -485,7 +485,7 @@ ErrorOr<void> FormatBuilder::put_f80(
         }
     }
 
-    TRY(put_string(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill));
+    TRY(putString(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill));
     return {};
 }
 
@@ -628,7 +628,7 @@ ErrorOr<void> Formatter<StringView>::format(FormatBuilder& builder, StringView v
 
     if (m_mode == Mode::HexDump)
         return builder.put_hexdump(value.bytes(), m_width.value(), m_fill);
-    return builder.put_string(value, m_align, m_width.value(), m_precision.value(), m_fill);
+    return builder.putString(value, m_align, m_width.value(), m_precision.value(), m_fill);
 }
 
 ErrorOr<void> Formatter<FormatString>::vformat(FormatBuilder& builder, StringView fmtstr, TypeErasedFormatParams& params)
