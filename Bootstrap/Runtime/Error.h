@@ -19,10 +19,12 @@
 #endif
 
 class Error {
+
 public:
+
     static Error fromErrorCode(int code) { return Error(code); }
-    static Error from_syscall(StringView syscall_name, int rc) { return Error(syscall_name, rc); }
-    static Error from_string_literal(StringView string_literal) { return Error(string_literal); }
+    static Error fromSyscall(StringView syscallName, int rc) { return Error(syscallName, rc); }
+    static Error fromStringLiteral(StringView string_literal) { return Error(string_literal); }
 
     bool is_errno() const { return m_code != 0; }
     bool is_syscall() const { return m_syscall; }
@@ -42,9 +44,9 @@ private:
     {
     }
 
-    Error(StringView syscall_name, int rc)
+    Error(StringView syscallName, int rc)
         : m_code(-rc)
-        , m_string_literal(syscall_name)
+        , m_string_literal(syscallName)
         , m_syscall(true)
     {
     }
