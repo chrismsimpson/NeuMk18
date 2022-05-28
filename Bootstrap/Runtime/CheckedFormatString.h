@@ -93,16 +93,16 @@ namespace Format::Detail {
             
             LinearArray<size_t, 128> usedArguments { 0 };
             
-            size_t total_used_argument_count { 0 };
+            size_t totalUsedArgumentCount { 0 };
             size_t nextImplicitArgumentIndex { 0 };
-            bool has_explicit_argument_references { false };
+            bool hasExplicitArgumentReferences { false };
 
-            size_t unclosed_braces { 0 };
-            size_t extra_closed_braces { 0 };
-            size_t nesting_level { 0 };
+            size_t unclosedBraces { 0 };
+            size_t extraClosedBraces { 0 };
+            size_t nestingLevel { 0 };
 
-            LinearArray<size_t, 4> last_format_specifier_start { 0 };
-            size_t total_used_last_format_specifier_start_count { 0 };
+            LinearArray<size_t, 4> lastFormatSpecifierStart { 0 };
+            size_t totalUsedLastFormatSpecifierStartCount { 0 };
 
         } result;
 
@@ -123,15 +123,15 @@ namespace Format::Detail {
 
                 // Note: There's no compile-time throw, so we have to abuse a compile-time string to store errors.
                 
-                if (result.total_used_last_format_specifier_start_count >= result.last_format_specifier_start.size() - 1) {
+                if (result.totalUsedLastFormatSpecifierStartCount >= result.lastFormatSpecifierStart.size() - 1) {
 
                     compileTimeFail("Format-String Checker internal error: Format specifier nested too deep");
                 }
 
-                result.last_format_specifier_start[result.total_used_last_format_specifier_start_count++] = i + 1;
+                result.lastFormatSpecifierStart[result.totalUsedLastFormatSpecifierStartCount++] = i + 1;
 
-                ++result.unclosed_braces;
-                ++result.nesting_level;
+                ++result.unclosedBraces;
+                ++result.nestingLevel;
 
                 break;
 
@@ -139,7 +139,7 @@ namespace Format::Detail {
 
             case '}':
 
-                if (result.nesting_level == 0) {
+                if (result.nestingLevel == 0) {
 
                     if (i + 1 < N && fmt[i + 1] == '}') {
 
@@ -149,19 +149,19 @@ namespace Format::Detail {
                     }
                 }
 
-                if (result.unclosed_braces) {
+                if (result.unclosedBraces) {
 
-                    --result.nesting_level;
-                    --result.unclosed_braces;
+                    --result.nestingLevel;
+                    --result.unclosedBraces;
 
-                    if (result.total_used_last_format_specifier_start_count == 0) {
+                    if (result.totalUsedLastFormatSpecifierStartCount == 0) {
 
                         compileTimeFail("Format-String Checker internal error: Expected location information");
                     }
 
-                    auto const specifierStartIndex = result.last_format_specifier_start[--result.total_used_last_format_specifier_start_count];
+                    auto const specifierStartIndex = result.lastFormatSpecifierStart[--result.totalUsedLastFormatSpecifierStartCount];
 
-                    if (result.total_used_argument_count >= result.usedArguments.size()) {
+                    if (result.totalUsedArgumentCount >= result.usedArguments.size()) {
 
                         compileTimeFail("Format-String Checker internal error: Too many format arguments in format string");
                     }
@@ -170,15 +170,15 @@ namespace Format::Detail {
                     
                     if (usedArgumentIndex + 1 != result.nextImplicitArgumentIndex) {
 
-                        result.has_explicit_argument_references = true;
+                        result.hasExplicitArgumentReferences = true;
                     }
 
-                    result.usedArguments[result.total_used_argument_count++] = usedArgumentIndex;
+                    result.usedArguments[result.totalUsedArgumentCount++] = usedArgumentIndex;
 
                 }
                 else {
 
-                    ++result.extra_closed_braces;
+                    ++result.extraClosedBraces;
                 }
 
                 break;
@@ -207,13 +207,13 @@ namespace Format::Detail {
             : m_string { fmt }
         {
     #ifdef ENABLE_COMPILETIME_FORMAT_CHECK
-            check_format_parameter_consistency<N, sizeof...(Args)>(fmt);
+            checkFormatParameterConsistency<N, sizeof...(Args)>(fmt);
     #endif
         }
 
         template<typename T>
-        CheckedFormatString(const T& unchecked_fmt) requires(requires(T t) { StringView { t }; })
-            : m_string(unchecked_fmt) { }
+        CheckedFormatString(const T& uncheckedFormat) requires(requires(T t) { StringView { t }; })
+            : m_string(uncheckedFormat) { }
 
         auto view() const { return m_string; }
 
@@ -222,16 +222,16 @@ namespace Format::Detail {
     #ifdef ENABLE_COMPILETIME_FORMAT_CHECK
 
         template<size_t N, size_t param_count>
-        consteval static bool check_format_parameter_consistency(char const (&fmt)[N]) {
+        consteval static bool checkFormatParameterConsistency(char const (&fmt)[N]) {
 
             auto check = countFormatParameters<N>(fmt);
 
-            if (check.unclosed_braces != 0) {
+            if (check.unclosedBraces != 0) {
 
                 compileTimeFail("Extra unclosed braces in format string");
             }
 
-            if (check.extra_closed_braces != 0) {
+            if (check.extraClosedBraces != 0) {
 
                 compileTimeFail("Extra closing braces in format string");
             }
@@ -239,17 +239,17 @@ namespace Format::Detail {
             {
                 auto begin = check.usedArguments.begin();
                 
-                auto end = check.usedArguments.begin() + check.total_used_argument_count;
+                auto end = check.usedArguments.begin() + check.totalUsedArgumentCount;
                 
-                auto has_all_referenced_arguments = !anyOf(begin, end, [](auto& entry) { return entry >= param_count; });
+                auto hasAllReferencedArguments = !anyOf(begin, end, [](auto& entry) { return entry >= param_count; });
 
-                if (!has_all_referenced_arguments) {
+                if (!hasAllReferencedArguments) {
 
                     compileTimeFail("Format string references nonexistent parameter");
                 }
             }
 
-            if (!check.has_explicit_argument_references && check.total_used_argument_count != param_count) {
+            if (!check.hasExplicitArgumentReferences && check.totalUsedArgumentCount != param_count) {
 
                 compileTimeFail("Format string does not reference all passed parameters");
             }
@@ -260,32 +260,33 @@ namespace Format::Detail {
             // otherwise, the check above covers this check too, as implicit refs
             // monotonically increase, and cannot have 'gaps'.
             
-            if (check.has_explicit_argument_references) {
+            if (check.hasExplicitArgumentReferences) {
 
-                auto all_parameters = iota_LinearArray<size_t, param_count>(0);
+                auto allParameters = iota_LinearArray<size_t, param_count>(0);
 
                 constexpr auto contains = [](auto begin, auto end, auto entry) {
 
                     for (; begin != end; begin++) {
+
                         if (*begin == entry) {
                             
-                        }
                             return true;
+                        }
                     }
 
                     return false;
                 };
 
-                auto references_all_arguments = allOf(
-                    all_parameters,
+                auto referencesAllArguments = allOf(
+                    allParameters,
                     [&](auto& entry) {
                         return contains(
                             check.usedArguments.begin(),
-                            check.usedArguments.begin() + check.total_used_argument_count,
+                            check.usedArguments.begin() + check.totalUsedArgumentCount,
                             entry);
                     });
 
-                if (!references_all_arguments) {
+                if (!referencesAllArguments) {
 
                     compileTimeFail("Format string does not reference all passed parameters");
                 }
