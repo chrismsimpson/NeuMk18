@@ -656,7 +656,7 @@ template<typename T, typename U>
 inline constexpr bool IsSameIgnoringCV = IsSame<RemoveConstVolatile<T>, RemoveConstVolatile<U>>;
 
 template<typename T, typename... Ts>
-inline constexpr bool IsOneOfIgnoringCV = (IsSameIgnoringCV<T, Ts> || ...);
+inline constexpr bool IsOneOfIgnoringConstVolatile = (IsSameIgnoringCV<T, Ts> || ...);
 
 }
 using Detail::AddConst;
@@ -695,7 +695,7 @@ using Detail::IsMoveAssignable;
 using Detail::IsMoveConstructible;
 using Detail::IsNullPointer;
 using Detail::IsOneOf;
-using Detail::IsOneOfIgnoringCV;
+using Detail::IsOneOfIgnoringConstVolatile;
 using Detail::IsPOD;
 using Detail::IsPointer;
 using Detail::IsRvalueReference;

@@ -40,7 +40,7 @@ template<typename U, typename... Ts>
 concept OneOf = IsOneOf<U, Ts...>;
 
 template<typename U, typename... Ts>
-concept OneOfIgnoringCV = IsOneOfIgnoringCV<U, Ts...>;
+concept OneOfIgnoringCV = IsOneOfIgnoringConstVolatile<U, Ts...>;
 
 template<typename T, template<typename...> typename S>
 concept SpecializationOf = IsSpecializationOf<T, S>;
