@@ -339,7 +339,7 @@ ErrorOr<void> FormatBuilder::putU64(
     return {};
 }
 
-ErrorOr<void> FormatBuilder::put_i64(
+ErrorOr<void> FormatBuilder::putI64(
     i64 value,
     u8 base,
     bool prefix,
@@ -699,7 +699,7 @@ ErrorOr<void> Formatter<T>::format(FormatBuilder& builder, T value)
     if constexpr (IsSame<MakeUnsigned<T>, T>)
         return builder.putU64(value, base, m_alternative_form, upper_case, m_zero_pad, m_align, m_width.value(), m_fill, m_sign_mode);
     else
-        return builder.put_i64(value, base, m_alternative_form, upper_case, m_zero_pad, m_align, m_width.value(), m_fill, m_sign_mode);
+        return builder.putI64(value, base, m_alternative_form, upper_case, m_zero_pad, m_align, m_width.value(), m_fill, m_sign_mode);
 }
 
 ErrorOr<void> Formatter<char>::format(FormatBuilder& builder, char value)

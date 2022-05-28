@@ -223,7 +223,7 @@ public:
         SignMode sign_mode = SignMode::OnlyIfNeeded,
         bool is_negative = false);
 
-    ErrorOr<void> put_i64(
+    ErrorOr<void> putI64(
         i64 value,
         u8 base = 10,
         bool prefix = false,
