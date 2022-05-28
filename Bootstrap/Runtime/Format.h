@@ -178,14 +178,19 @@ struct TypeErasedParameter {
 };
 
 class FormatBuilder {
+
 public:
+
     enum class Align {
+        
         Default,
         Left,
         Center,
         Right,
     };
+
     enum class SignMode {
+
         OnlyIfNeeded,
         Always,
         Reserved,
@@ -193,11 +198,9 @@ public:
     };
 
     explicit FormatBuilder(StringBuilder& builder)
-        : m_builder(builder)
-    {
-    }
+        : m_builder(builder) { }
 
-    ErrorOr<void> put_padding(char fill, size_t amount);
+    ErrorOr<void> putPadding(char fill, size_t amount);
 
     ErrorOr<void> put_literal(StringView value);
 

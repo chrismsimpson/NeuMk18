@@ -96,9 +96,7 @@ ErrorOr<void> vformat_impl(TypeErasedFormatParams& params, FormatBuilder& builde
 } // {anonymous}
 
 FormatParser::FormatParser(StringView input)
-    : GenericLexer(input)
-{
-}
+    : GenericLexer(input) { }
 
 StringView FormatParser::consumeLiteral() {
 
@@ -192,7 +190,7 @@ bool FormatParser::consume_replacement_field(size_t& index)
     return true;
 }
 
-ErrorOr<void> FormatBuilder::put_padding(char fill, size_t amount)
+ErrorOr<void> FormatBuilder::putPadding(char fill, size_t amount)
 {
     for (size_t i = 0; i < amount; ++i)
         TRY(m_builder.try_append(fill));
@@ -223,16 +221,16 @@ ErrorOr<void> FormatBuilder::put_string(
 
     if (align == Align::Left || align == Align::Default) {
         TRY(m_builder.try_append(value));
-        TRY(put_padding(fill, used_by_padding));
+        TRY(putPadding(fill, used_by_padding));
     } else if (align == Align::Center) {
         auto const used_by_left_padding = used_by_padding / 2;
         auto const used_by_right_padding = ceil_div<size_t, size_t>(used_by_padding, 2);
 
-        TRY(put_padding(fill, used_by_left_padding));
+        TRY(putPadding(fill, used_by_left_padding));
         TRY(m_builder.try_append(value));
-        TRY(put_padding(fill, used_by_right_padding));
+        TRY(putPadding(fill, used_by_right_padding));
     } else if (align == Align::Right) {
-        TRY(put_padding(fill, used_by_padding));
+        TRY(putPadding(fill, used_by_padding));
         TRY(m_builder.try_append(value));
     }
     return {};
@@ -316,24 +314,24 @@ ErrorOr<void> FormatBuilder::put_u64(
 
         TRY(put_prefix());
         TRY(put_digits());
-        TRY(put_padding(fill, used_by_right_padding));
+        TRY(putPadding(fill, used_by_right_padding));
     } else if (align == Align::Center) {
         auto const used_by_left_padding = used_by_padding / 2;
         auto const used_by_right_padding = ceil_div<size_t, size_t>(used_by_padding, 2);
 
-        TRY(put_padding(fill, used_by_left_padding));
+        TRY(putPadding(fill, used_by_left_padding));
         TRY(put_prefix());
         TRY(put_digits());
-        TRY(put_padding(fill, used_by_right_padding));
+        TRY(putPadding(fill, used_by_right_padding));
     } else if (align == Align::Right) {
         auto const used_by_left_padding = used_by_padding;
 
         if (zero_pad) {
             TRY(put_prefix());
-            TRY(put_padding('0', used_by_left_padding));
+            TRY(putPadding('0', used_by_left_padding));
             TRY(put_digits());
         } else {
-            TRY(put_padding(fill, used_by_left_padding));
+            TRY(putPadding(fill, used_by_left_padding));
             TRY(put_prefix());
             TRY(put_digits());
         }
@@ -496,7 +494,7 @@ ErrorOr<void> FormatBuilder::put_f80(
 ErrorOr<void> FormatBuilder::put_hexdump(ReadonlyBytes bytes, size_t width, char fill)
 {
     auto put_char_view = [&](auto i) -> ErrorOr<void> {
-        TRY(put_padding(fill, 4));
+        TRY(putPadding(fill, 4));
         for (size_t j = i - width; j < i; ++j) {
             auto ch = bytes[j];
             TRY(m_builder.try_append(ch >= 32 && ch <= 127 ? ch : '.')); // silly hack
