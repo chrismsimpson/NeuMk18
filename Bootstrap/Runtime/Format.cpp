@@ -74,7 +74,7 @@ static constexpr size_t convert_unsigned_to_string(u64 value, LinearArray<u8, 12
 ErrorOr<void> vformat_impl(TypeErasedFormatParams& params, FormatBuilder& builder, FormatParser& parser)
 {
     auto const literal = parser.consumeLiteral();
-    TRY(builder.put_literal(literal));
+    TRY(builder.putLiteral(literal));
 
     FormatParser::FormatSpecifier specifier;
     if (!parser.consume_specifier(specifier)) {
@@ -196,7 +196,7 @@ ErrorOr<void> FormatBuilder::putPadding(char fill, size_t amount)
         TRY(m_builder.try_append(fill));
     return {};
 }
-ErrorOr<void> FormatBuilder::put_literal(StringView value)
+ErrorOr<void> FormatBuilder::putLiteral(StringView value)
 {
     for (size_t i = 0; i < value.length(); ++i) {
         TRY(m_builder.try_append(value[i]));
@@ -506,7 +506,7 @@ ErrorOr<void> FormatBuilder::put_hexdump(ReadonlyBytes bytes, size_t width, char
         if (width > 0) {
             if (i % width == 0 && i) {
                 TRY(put_char_view(i));
-                TRY(put_literal("\n"sv));
+                TRY(putLiteral("\n"sv));
             }
         }
         TRY(put_u64(bytes[i], 16, false, false, true, Align::Right, 2));

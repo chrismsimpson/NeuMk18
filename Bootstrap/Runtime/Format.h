@@ -202,7 +202,7 @@ public:
 
     ErrorOr<void> putPadding(char fill, size_t amount);
 
-    ErrorOr<void> put_literal(StringView value);
+    ErrorOr<void> putLiteral(StringView value);
 
     ErrorOr<void> put_string(
         StringView value,
@@ -411,17 +411,17 @@ requires(HasFormatter<T>) struct Formatter<Vector<T, inline_capacity>> : Standar
         m_precision = m_precision.value_or(NumericLimits<size_t>::max());
 
         Formatter<T> content_fmt;
-        TRY(builder.put_literal("[ "sv));
+        TRY(builder.putLiteral("[ "sv));
         bool first = true;
         for (auto& content : value) {
             if (!first) {
-                TRY(builder.put_literal(", "sv));
+                TRY(builder.putLiteral(", "sv));
                 content_fmt = Formatter<T> {};
             }
             first = false;
             TRY(content_fmt.format(builder, content));
         }
-        TRY(builder.put_literal(" ]"sv));
+        TRY(builder.putLiteral(" ]"sv));
         return {};
     }
 };
