@@ -26,7 +26,7 @@ public:
     static Error fromSyscall(StringView syscallName, int rc) { return Error(syscallName, rc); }
     static Error fromStringLiteral(StringView stringLiteral) { return Error(stringLiteral); }
 
-    bool is_errno() const { return m_code != 0; }
+    bool isErrorCode() const { return m_code != 0; }
     bool is_syscall() const { return m_syscall; }
 
     int code() const { return m_code; }
@@ -45,18 +45,20 @@ private:
     Error(StringView syscallName, int rc)
         : m_code(-rc)
         , m_stringLiteral(syscallName)
-        , m_syscall(true)
-    {
-    }
+        , m_syscall(true) { }
 
     int m_code { 0 };
+    
     StringView m_stringLiteral;
+
     bool m_syscall { false };
 };
 
 template<typename T, typename ErrorType>
 class [[nodiscard]] ErrorOr final : public Variant<T, ErrorType> {
+
 public:
+
     using Variant<T, ErrorType>::Variant;
 
     template<typename U>
