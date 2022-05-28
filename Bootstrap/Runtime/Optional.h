@@ -27,6 +27,7 @@ struct NullOptional {};
 
 template<typename T>
 requires(!IsLvalueReference<T>) class [[nodiscard]] Optional<T> {
+
     template<typename U>
     friend class Optional;
 
@@ -61,7 +62,7 @@ public:
 #endif
         : m_hasValue(other.m_hasValue) {
 
-        if (other.has_value()) {
+        if (other.hasValue()) {
 
             new (&m_storage) T(other.value());
         }
@@ -69,8 +70,8 @@ public:
 
     ALWAYS_INLINE Optional(Optional&& other)
         : m_hasValue(other.m_hasValue) {
-            
-        if (other.has_value()) {
+
+        if (other.hasValue()) {
 
             new (&m_storage) T(other.releaseValue());
         }
@@ -80,7 +81,7 @@ public:
     requires(IsConstructible<T, U const&> && !IsSpecializationOf<T, Optional> && !IsSpecializationOf<U, Optional>) ALWAYS_INLINE explicit Optional(Optional<U> const& other)
         : m_hasValue(other.m_hasValue)
     {
-        if (other.has_value())
+        if (other.hasValue())
             new (&m_storage) T(other.value());
     }
 
@@ -88,7 +89,7 @@ public:
     requires(IsConstructible<T, U&&> && !IsSpecializationOf<T, Optional> && !IsSpecializationOf<U, Optional>) ALWAYS_INLINE explicit Optional(Optional<U>&& other)
         : m_hasValue(other.m_hasValue)
     {
-        if (other.has_value())
+        if (other.hasValue())
             new (&m_storage) T(other.releaseValue());
     }
 
@@ -107,7 +108,7 @@ public:
         if (this != &other) {
             clear();
             m_hasValue = other.m_hasValue;
-            if (other.has_value()) {
+            if (other.hasValue()) {
                 new (&m_storage) T(other.value());
             }
         }
@@ -119,7 +120,7 @@ public:
         if (this != &other) {
             clear();
             m_hasValue = other.m_hasValue;
-            if (other.has_value()) {
+            if (other.hasValue()) {
                 new (&m_storage) T(other.releaseValue());
             }
         }
@@ -129,13 +130,13 @@ public:
     template<typename O>
     ALWAYS_INLINE bool operator==(Optional<O> const& other) const
     {
-        return has_value() == other.has_value() && (!has_value() || value() == other.value());
+        return hasValue() == other.hasValue() && (!hasValue() || value() == other.value());
     }
 
     template<typename O>
     ALWAYS_INLINE bool operator==(O const& other) const
     {
-        return has_value() && value() == other;
+        return hasValue() && value() == other;
     }
 
     ALWAYS_INLINE ~Optional()
@@ -162,7 +163,7 @@ public:
         new (&m_storage) T(forward<Parameters>(parameters)...);
     }
 
-    [[nodiscard]] ALWAYS_INLINE bool has_value() const { return m_hasValue; }
+    [[nodiscard]] ALWAYS_INLINE bool hasValue() const { return m_hasValue; }
 
     [[nodiscard]] ALWAYS_INLINE T& value() &
     {
@@ -312,7 +313,7 @@ public:
         m_pointer = nullptr;
     }
 
-    [[nodiscard]] ALWAYS_INLINE bool has_value() const { return m_pointer != nullptr; }
+    [[nodiscard]] ALWAYS_INLINE bool hasValue() const { return m_pointer != nullptr; }
 
     [[nodiscard]] ALWAYS_INLINE T value()
     {
@@ -350,13 +351,13 @@ public:
     template<typename U>
     ALWAYS_INLINE bool operator==(Optional<U> const& other) const
     {
-        return has_value() == other.has_value() && (!has_value() || value() == other.value());
+        return hasValue() == other.hasValue() && (!hasValue() || value() == other.value());
     }
 
     template<typename U>
     ALWAYS_INLINE bool operator==(U const& other) const
     {
-        return has_value() && value() == other;
+        return hasValue() && value() == other;
     }
 
     ALWAYS_INLINE AddConstToReferencedType<T> operator*() const { return value(); }
@@ -368,7 +369,7 @@ public:
     // Conversion operators from Optional<T&> -> Optional<T>
     ALWAYS_INLINE operator Optional<RemoveConstVolatileReference<T>>() const
     {
-        if (has_value())
+        if (hasValue())
             return Optional<RemoveConstVolatileReference<T>>(value());
         return {};
     }

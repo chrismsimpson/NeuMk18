@@ -371,7 +371,7 @@ Optional<size_t> find(StringView haystack, StringView needle, size_t start)
     auto index = memmem_optional(
         haystack.characters_without_null_termination() + start, haystack.length() - start,
         needle.characters_without_null_termination(), needle.length());
-    return index.has_value() ? (*index + start) : index;
+    return index.hasValue() ? (*index + start) : index;
 }
 
 Optional<size_t> find_last(StringView haystack, char needle)
@@ -391,7 +391,7 @@ Vector<size_t> find_all(StringView haystack, StringView needle)
         auto maybe_position = memmem_optional(
             haystack.characters_without_null_termination() + current_position, haystack.length() - current_position,
             needle.characters_without_null_termination(), needle.length());
-        if (!maybe_position.has_value())
+        if (!maybe_position.hasValue())
             break;
         positions.append(current_position + *maybe_position);
         current_position += *maybe_position + 1;
@@ -472,7 +472,7 @@ String replace(StringView str, StringView needle, StringView replacement, bool a
             return str;
     } else {
         auto pos = str.find(needle);
-        if (!pos.has_value())
+        if (!pos.hasValue())
             return str;
         positions.append(pos.value());
     }

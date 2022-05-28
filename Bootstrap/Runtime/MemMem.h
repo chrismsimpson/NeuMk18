@@ -127,7 +127,7 @@ inline Optional<size_t> memmem_optional(void const* haystack, size_t haystack_le
 inline void const* memmemInternal(void const* haystack, size_t haystack_length, void const* needle, size_t needle_length)
 {
     auto offset = memmem_optional(haystack, haystack_length, needle, needle_length);
-    if (offset.has_value())
+    if (offset.hasValue())
         return ((u8 const*)haystack) + offset.value();
 
     return nullptr;

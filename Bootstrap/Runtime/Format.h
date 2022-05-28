@@ -351,7 +351,7 @@ requires(HasFormatter<T>) struct Formatter<Vector<T, inline_capacity>> : Standar
             VERIFY_NOT_REACHED();
         if (m_mode != Mode::Default)
             VERIFY_NOT_REACHED();
-        if (m_width.has_value() && m_precision.has_value())
+        if (m_width.hasValue() && m_precision.hasValue())
             VERIFY_NOT_REACHED();
 
         m_width = m_width.value_or(0);

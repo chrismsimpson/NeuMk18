@@ -648,7 +648,7 @@ ErrorOr<void> Formatter<T>::format(FormatBuilder& builder, T value)
         return formatter.format(builder, StringView { reinterpret_cast<char const*>(&value), 1 });
     }
 
-    if (m_precision.has_value())
+    if (m_precision.hasValue())
         VERIFY_NOT_REACHED();
 
     if (m_mode == Mode::Pointer) {
@@ -658,7 +658,7 @@ ErrorOr<void> Formatter<T>::format(FormatBuilder& builder, T value)
             VERIFY_NOT_REACHED();
         if (m_alternative_form)
             VERIFY_NOT_REACHED();
-        if (m_width.has_value())
+        if (m_width.hasValue())
             VERIFY_NOT_REACHED();
 
         m_mode = Mode::Hexadecimal;

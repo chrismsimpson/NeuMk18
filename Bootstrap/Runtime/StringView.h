@@ -144,7 +144,7 @@ public:
         StringView view { *this };
 
         auto maybe_separator_index = find(separator);
-        while (maybe_separator_index.has_value()) {
+        while (maybe_separator_index.hasValue()) {
             auto separator_index = maybe_separator_index.value();
             auto part_with_separator = view.substring_view(0, separator_index + separator.length());
             if (keep_empty || separator_index > 0)

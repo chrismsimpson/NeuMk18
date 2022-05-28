@@ -86,31 +86,35 @@ public:
     T releaseValue() { return move(value()); }
     ErrorType releaseError() { return move(error()); }
 
-    T release_value_but_fixme_should_propagate_errors()
-    {
+    T releaseValueButFixmeShouldPropagateErrors() {
+
         VERIFY(!isError());
+        
         return releaseValue();
     }
 
 private:
+
     // 'downcast' is fishy in this context. Let's hide it by making it private.
+    
     using Variant<T, ErrorType>::downcast;
 };
 
 // Partial specialization for void value type
+
 template<typename ErrorType>
+
 class [[nodiscard]] ErrorOr<void, ErrorType> {
 public:
+
     ErrorOr(ErrorType error)
-        : m_error(move(error))
-    {
-    }
+        : m_error(move(error)) { }
 
 #ifdef __serenity__
+
     ErrorOr(ErrnoCode code)
-        : m_error(Error::fromErrorCode(code))
-    {
-    }
+        : m_error(Error::fromErrorCode(code)) { }
+
 #endif
 
     ErrorOr() = default;
@@ -122,10 +126,11 @@ public:
     ErrorOr& operator=(ErrorOr const& other) = default;
 
     ErrorType& error() { return m_error.value(); }
-    bool isError() const { return m_error.has_value(); }
+    bool isError() const { return m_error.hasValue(); }
     ErrorType releaseError() { return m_error.releaseValue(); }
     void releaseValue() { }
 
 private:
+
     Optional<ErrorType> m_error;
 };
