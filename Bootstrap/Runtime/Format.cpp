@@ -32,7 +32,7 @@ public:
     explicit FormatParser(StringView input);
 
     StringView consumeLiteral();
-    bool consume_number(size_t& value);
+    bool consumeNumber(size_t& value);
     bool consume_specifier(FormatSpecifier& specifier);
     bool consume_replacement_field(size_t& index);
 };
@@ -43,21 +43,23 @@ static constexpr size_t use_next_index = NumericLimits<size_t>::max();
 
 // The worst case is that we have the largest 64-bit value formatted as binary number, this would take
 // 65 bytes. Choosing a larger power of two won't hurt and is a bit of mitigation against out-of-bounds accesses.
-static constexpr size_t convert_unsigned_to_string(u64 value, LinearArray<u8, 128>& buffer, u8 base, bool upper_case)
-{
+static constexpr size_t convert_unsigned_to_string(u64 value, LinearArray<u8, 128>& buffer, u8 base, bool upperCase) {
+
     VERIFY(base >= 2 && base <= 16);
 
     constexpr char const* lowercase_lookup = "0123456789abcdef";
     constexpr char const* uppercase_lookup = "0123456789ABCDEF";
 
     if (value == 0) {
+
         buffer[0] = '0';
+        
         return 1;
     }
 
     size_t used = 0;
     while (value > 0) {
-        if (upper_case)
+        if (upperCase)
             buffer[used++] = uppercase_lookup[value % base];
         else
             buffer[used++] = lowercase_lookup[value % base];
@@ -103,14 +105,21 @@ StringView FormatParser::consumeLiteral() {
     auto const begin = tell();
 
     while (!is_eof()) {
-        if (consume_specific("{{"))
-            continue;
 
-        if (consume_specific("}}"))
-            continue;
+        if (consumeSpecific("{{")) {
 
-        if (next_is(is_any_of("{}")))
+            continue;
+        }
+
+        if (consumeSpecific("}}")) {
+
+            continue;
+        }
+
+        if (next_is(is_any_of("{}"))) {
+
             return m_input.substring_view(begin, tell() - begin);
+        }
 
         consume();
     }
@@ -118,7 +127,7 @@ StringView FormatParser::consumeLiteral() {
     return m_input.substring_view(begin);
 }
 
-bool FormatParser::consume_number(size_t& value) {
+bool FormatParser::consumeNumber(size_t& value) {
 
     value = 0;
 
@@ -140,25 +149,25 @@ bool FormatParser::consume_specifier(FormatSpecifier& specifier)
 {
     VERIFY(!next_is('}'));
 
-    if (!consume_specific('{'))
+    if (!consumeSpecific('{'))
         return false;
 
-    if (!consume_number(specifier.index))
+    if (!consumeNumber(specifier.index))
         specifier.index = use_next_index;
 
-    if (consume_specific(':')) {
+    if (consumeSpecific(':')) {
         auto const begin = tell();
 
         size_t level = 1;
         while (level > 0) {
             VERIFY(!is_eof());
 
-            if (consume_specific('{')) {
+            if (consumeSpecific('{')) {
                 ++level;
                 continue;
             }
 
-            if (consume_specific('}')) {
+            if (consumeSpecific('}')) {
                 --level;
                 continue;
             }
@@ -168,7 +177,7 @@ bool FormatParser::consume_specifier(FormatSpecifier& specifier)
 
         specifier.flags = m_input.substring_view(begin, tell() - begin - 1);
     } else {
-        if (!consume_specific('}'))
+        if (!consumeSpecific('}'))
             VERIFY_NOT_REACHED();
 
         specifier.flags = "";
@@ -178,13 +187,13 @@ bool FormatParser::consume_specifier(FormatSpecifier& specifier)
 }
 bool FormatParser::consume_replacement_field(size_t& index)
 {
-    if (!consume_specific('{'))
+    if (!consumeSpecific('{'))
         return false;
 
-    if (!consume_number(index))
+    if (!consumeNumber(index))
         index = use_next_index;
 
-    if (!consume_specific('}'))
+    if (!consumeSpecific('}'))
         VERIFY_NOT_REACHED();
 
     return true;
@@ -240,7 +249,7 @@ ErrorOr<void> FormatBuilder::putU64(
     u64 value,
     u8 base,
     bool prefix,
-    bool upper_case,
+    bool upperCase,
     bool zero_pad,
     Align align,
     size_t min_width,
@@ -253,7 +262,7 @@ ErrorOr<void> FormatBuilder::putU64(
 
     LinearArray<u8, 128> buffer;
 
-    auto const used_by_digits = convert_unsigned_to_string(value, buffer, base, upper_case);
+    auto const used_by_digits = convert_unsigned_to_string(value, buffer, base, upperCase);
 
     size_t used_by_prefix = 0;
     if (align == Align::Right && zero_pad) {
@@ -287,14 +296,14 @@ ErrorOr<void> FormatBuilder::putU64(
 
         if (prefix) {
             if (base == 2) {
-                if (upper_case)
+                if (upperCase)
                     TRY(m_builder.try_append("0B"));
                 else
                     TRY(m_builder.try_append("0b"));
             } else if (base == 8) {
                 TRY(m_builder.try_append("0"));
             } else if (base == 16) {
-                if (upper_case)
+                if (upperCase)
                     TRY(m_builder.try_append("0X"));
                 else
                     TRY(m_builder.try_append("0x"));
@@ -343,7 +352,7 @@ ErrorOr<void> FormatBuilder::putI64(
     i64 value,
     u8 base,
     bool prefix,
-    bool upper_case,
+    bool upperCase,
     bool zero_pad,
     Align align,
     size_t min_width,
@@ -353,7 +362,7 @@ ErrorOr<void> FormatBuilder::putI64(
     auto const is_negative = value < 0;
     value = is_negative ? -value : value;
 
-    TRY(putU64(static_cast<u64>(value), base, prefix, upper_case, zero_pad, align, min_width, fill, sign_mode, is_negative));
+    TRY(putU64(static_cast<u64>(value), base, prefix, upperCase, zero_pad, align, min_width, fill, sign_mode, is_negative));
     return {};
 }
 
@@ -361,7 +370,7 @@ ErrorOr<void> FormatBuilder::putI64(
 ErrorOr<void> FormatBuilder::put_f64(
     double value,
     u8 base,
-    bool upper_case,
+    bool upperCase,
     bool zero_pad,
     Align align,
     size_t min_width,
@@ -381,9 +390,9 @@ ErrorOr<void> FormatBuilder::put_f64(
             TRY(string_builder.try_append(' '));
 
         if (__builtin_isnan(value))
-            TRY(string_builder.try_append(upper_case ? "NAN"sv : "nan"sv));
+            TRY(string_builder.try_append(upperCase ? "NAN"sv : "nan"sv));
         else
-            TRY(string_builder.try_append(upper_case ? "INF"sv : "inf"sv));
+            TRY(string_builder.try_append(upperCase ? "INF"sv : "inf"sv));
         TRY(putString(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill));
         return {};
     }
@@ -392,7 +401,7 @@ ErrorOr<void> FormatBuilder::put_f64(
     if (is_negative)
         value = -value;
 
-    TRY(format_builder.putU64(static_cast<u64>(value), base, false, upper_case, false, Align::Right, 0, ' ', sign_mode, is_negative));
+    TRY(format_builder.putU64(static_cast<u64>(value), base, false, upperCase, false, Align::Right, 0, ' ', sign_mode, is_negative));
 
     if (precision > 0) {
         // FIXME: This is a terrible approximation but doing it properly would be a lot of work. If someone is up for that, a good
@@ -416,7 +425,7 @@ ErrorOr<void> FormatBuilder::put_f64(
             TRY(string_builder.try_append('.'));
 
         if (visible_precision > 0)
-            TRY(format_builder.putU64(static_cast<u64>(value), base, false, upper_case, true, Align::Right, visible_precision));
+            TRY(format_builder.putU64(static_cast<u64>(value), base, false, upperCase, true, Align::Right, visible_precision));
 
         if (zero_pad && (precision - visible_precision) > 0)
             TRY(format_builder.putU64(0, base, false, false, true, Align::Right, precision - visible_precision));
@@ -429,7 +438,7 @@ ErrorOr<void> FormatBuilder::put_f64(
 ErrorOr<void> FormatBuilder::put_f80(
     long double value,
     u8 base,
-    bool upper_case,
+    bool upperCase,
     Align align,
     size_t min_width,
     size_t precision,
@@ -448,9 +457,9 @@ ErrorOr<void> FormatBuilder::put_f80(
             TRY(string_builder.try_append(' '));
 
         if (__builtin_isnan(value))
-            TRY(string_builder.try_append(upper_case ? "NAN"sv : "nan"sv));
+            TRY(string_builder.try_append(upperCase ? "NAN"sv : "nan"sv));
         else
-            TRY(string_builder.try_append(upper_case ? "INF"sv : "inf"sv));
+            TRY(string_builder.try_append(upperCase ? "INF"sv : "inf"sv));
         TRY(putString(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill));
         return {};
     }
@@ -459,7 +468,7 @@ ErrorOr<void> FormatBuilder::put_f80(
     if (is_negative)
         value = -value;
 
-    TRY(format_builder.putU64(static_cast<u64>(value), base, false, upper_case, false, Align::Right, 0, ' ', sign_mode, is_negative));
+    TRY(format_builder.putU64(static_cast<u64>(value), base, false, upperCase, false, Align::Right, 0, ' ', sign_mode, is_negative));
 
     if (precision > 0) {
         // FIXME: This is a terrible approximation but doing it properly would be a lot of work. If someone is up for that, a good
@@ -481,7 +490,7 @@ ErrorOr<void> FormatBuilder::put_f80(
 
         if (visible_precision > 0) {
             string_builder.append('.');
-            TRY(format_builder.putU64(static_cast<u64>(value), base, false, upper_case, true, Align::Right, visible_precision));
+            TRY(format_builder.putU64(static_cast<u64>(value), base, false, upperCase, true, Align::Right, visible_precision));
         }
     }
 
@@ -534,36 +543,41 @@ void StandardFormatter::parse(TypeErasedFormatParams& params, FormatParser& pars
         m_fill = parser.consume();
     }
 
-    if (parser.consume_specific('<'))
+    if (parser.consumeSpecific('<'))
         m_align = FormatBuilder::Align::Left;
-    else if (parser.consume_specific('^'))
+    else if (parser.consumeSpecific('^'))
         m_align = FormatBuilder::Align::Center;
-    else if (parser.consume_specific('>'))
+    else if (parser.consumeSpecific('>'))
         m_align = FormatBuilder::Align::Right;
 
-    if (parser.consume_specific('-'))
+    if (parser.consumeSpecific('-'))
         m_sign_mode = FormatBuilder::SignMode::OnlyIfNeeded;
-    else if (parser.consume_specific('+'))
+    else if (parser.consumeSpecific('+'))
         m_sign_mode = FormatBuilder::SignMode::Always;
-    else if (parser.consume_specific(' '))
+    else if (parser.consumeSpecific(' '))
         m_sign_mode = FormatBuilder::SignMode::Reserved;
 
-    if (parser.consume_specific('#'))
+    if (parser.consumeSpecific('#'))
         m_alternative_form = true;
 
-    if (parser.consume_specific('0'))
+    if (parser.consumeSpecific('0'))
         m_zero_pad = true;
 
     if (size_t index = 0; parser.consume_replacement_field(index)) {
-        if (index == use_next_index)
+
+        if (index == use_next_index) {
+
             index = params.take_next_index();
+        }
 
         m_width = params.parameters().at(index).toSize();
-    } else if (size_t width = 0; parser.consume_number(width)) {
+    } 
+    else if (size_t width = 0; parser.consumeNumber(width)) {
+
         m_width = width;
     }
 
-    if (parser.consume_specific('.')) {
+    if (parser.consumeSpecific('.')) {
         
         if (size_t index = 0; parser.consume_replacement_field(index)) {
 
@@ -574,37 +588,64 @@ void StandardFormatter::parse(TypeErasedFormatParams& params, FormatParser& pars
 
             m_precision = params.parameters().at(index).toSize();
         } 
-        else if (size_t precision = 0; parser.consume_number(precision)) {
+        else if (size_t precision = 0; parser.consumeNumber(precision)) {
+
             m_precision = precision;
         }
     }
 
-    if (parser.consume_specific('b'))
+    if (parser.consumeSpecific('b')) {
+
         m_mode = Mode::Binary;
-    else if (parser.consume_specific('B'))
+    }
+    else if (parser.consumeSpecific('B')) {
+
         m_mode = Mode::BinaryUppercase;
-    else if (parser.consume_specific('d'))
+    }
+    else if (parser.consumeSpecific('d')) {
+
         m_mode = Mode::Decimal;
-    else if (parser.consume_specific('o'))
+    }
+    else if (parser.consumeSpecific('o')) {
+
         m_mode = Mode::Octal;
-    else if (parser.consume_specific('x'))
+    }
+    else if (parser.consumeSpecific('x')) {
+
         m_mode = Mode::Hexadecimal;
-    else if (parser.consume_specific('X'))
+    }
+    else if (parser.consumeSpecific('X')) {
+
         m_mode = Mode::HexadecimalUppercase;
-    else if (parser.consume_specific('c'))
+    }
+    else if (parser.consumeSpecific('c')) {
+
         m_mode = Mode::Character;
-    else if (parser.consume_specific('s'))
+    }
+    else if (parser.consumeSpecific('s')) {
+
         m_mode = Mode::String;
-    else if (parser.consume_specific('p'))
+    }
+    else if (parser.consumeSpecific('p')) {
+
         m_mode = Mode::Pointer;
-    else if (parser.consume_specific('f'))
+    }
+    else if (parser.consumeSpecific('f')) {
+
         m_mode = Mode::Float;
-    else if (parser.consume_specific('a'))
+    }
+    else if (parser.consumeSpecific('a')) {
+
         m_mode = Mode::Hexfloat;
-    else if (parser.consume_specific('A'))
+    }
+    else if (parser.consumeSpecific('A')) {
+
         m_mode = Mode::HexfloatUppercase;
-    else if (parser.consume_specific("hex-dump"))
+    }
+    else if (parser.consumeSpecific("hex-dump")) {
+
         m_mode = Mode::HexDump;
+    }
 
     if (!parser.is_eof())
         dbgln("{} did not consume '{}'", __PRETTY_FUNCTION__, parser.remaining());
@@ -672,12 +713,12 @@ ErrorOr<void> Formatter<T>::format(FormatBuilder& builder, T value)
     }
 
     u8 base = 0;
-    bool upper_case = false;
+    bool upperCase = false;
     if (m_mode == Mode::Binary) {
         base = 2;
     } else if (m_mode == Mode::BinaryUppercase) {
         base = 2;
-        upper_case = true;
+        upperCase = true;
     } else if (m_mode == Mode::Octal) {
         base = 8;
     } else if (m_mode == Mode::Decimal || m_mode == Mode::Default) {
@@ -686,7 +727,7 @@ ErrorOr<void> Formatter<T>::format(FormatBuilder& builder, T value)
         base = 16;
     } else if (m_mode == Mode::HexadecimalUppercase) {
         base = 16;
-        upper_case = true;
+        upperCase = true;
     } else if (m_mode == Mode::HexDump) {
         m_width = m_width.value_or(32);
         return builder.put_hexdump({ &value, sizeof(value) }, m_width.value(), m_fill);
@@ -697,9 +738,9 @@ ErrorOr<void> Formatter<T>::format(FormatBuilder& builder, T value)
     m_width = m_width.value_or(0);
 
     if constexpr (IsSame<MakeUnsigned<T>, T>)
-        return builder.putU64(value, base, m_alternative_form, upper_case, m_zero_pad, m_align, m_width.value(), m_fill, m_sign_mode);
+        return builder.putU64(value, base, m_alternative_form, upperCase, m_zero_pad, m_align, m_width.value(), m_fill, m_sign_mode);
     else
-        return builder.putI64(value, base, m_alternative_form, upper_case, m_zero_pad, m_align, m_width.value(), m_fill, m_sign_mode);
+        return builder.putI64(value, base, m_alternative_form, upperCase, m_zero_pad, m_align, m_width.value(), m_fill, m_sign_mode);
 }
 
 ErrorOr<void> Formatter<char>::format(FormatBuilder& builder, char value)
@@ -738,63 +779,83 @@ ErrorOr<void> Formatter<bool>::format(FormatBuilder& builder, bool value)
         return formatter.format(builder, value ? "true" : "false");
     }
 }
+
 #ifndef KERNEL
-ErrorOr<void> Formatter<long double>::format(FormatBuilder& builder, long double value)
-{
+
+ErrorOr<void> Formatter<long double>::format(FormatBuilder& builder, long double value) {
+
     u8 base;
-    bool upper_case;
+    bool upperCase;
+
     if (m_mode == Mode::Default || m_mode == Mode::Float) {
+        
         base = 10;
-        upper_case = false;
-    } else if (m_mode == Mode::Hexfloat) {
+        upperCase = false;
+    } 
+    else if (m_mode == Mode::Hexfloat) {
+        
         base = 16;
-        upper_case = false;
-    } else if (m_mode == Mode::HexfloatUppercase) {
+        upperCase = false;
+    } 
+    else if (m_mode == Mode::HexfloatUppercase) {
+        
         base = 16;
-        upper_case = true;
-    } else {
+        upperCase = true;
+    } 
+    else {
+
         VERIFY_NOT_REACHED();
     }
 
     m_width = m_width.value_or(0);
     m_precision = m_precision.value_or(6);
 
-    return builder.put_f80(value, base, upper_case, m_align, m_width.value(), m_precision.value(), m_fill, m_sign_mode);
+    return builder.put_f80(value, base, upperCase, m_align, m_width.value(), m_precision.value(), m_fill, m_sign_mode);
 }
 
-ErrorOr<void> Formatter<double>::format(FormatBuilder& builder, double value)
-{
+ErrorOr<void> Formatter<double>::format(FormatBuilder& builder, double value) {
+
     u8 base;
-    bool upper_case;
+    bool upperCase;
+
     if (m_mode == Mode::Default || m_mode == Mode::Float) {
+        
         base = 10;
-        upper_case = false;
-    } else if (m_mode == Mode::Hexfloat) {
+        upperCase = false;
+    } 
+    else if (m_mode == Mode::Hexfloat) {
+        
         base = 16;
-        upper_case = false;
-    } else if (m_mode == Mode::HexfloatUppercase) {
+        upperCase = false;
+    } 
+    else if (m_mode == Mode::HexfloatUppercase) {
+        
         base = 16;
-        upper_case = true;
-    } else {
+        upperCase = true;
+    } 
+    else {
+
         VERIFY_NOT_REACHED();
     }
 
     m_width = m_width.value_or(0);
     m_precision = m_precision.value_or(6);
 
-    return builder.put_f64(value, base, upper_case, m_zero_pad, m_align, m_width.value(), m_precision.value(), m_fill, m_sign_mode);
+    return builder.put_f64(value, base, upperCase, m_zero_pad, m_align, m_width.value(), m_precision.value(), m_fill, m_sign_mode);
 }
 
-ErrorOr<void> Formatter<float>::format(FormatBuilder& builder, float value)
-{
+ErrorOr<void> Formatter<float>::format(FormatBuilder& builder, float value) {
+
     Formatter<double> formatter { *this };
+
     return formatter.format(builder, value);
 }
+
 #endif
 
 #ifndef KERNEL
-void vout(FILE* file, StringView fmtstr, TypeErasedFormatParams& params, bool newline)
-{
+void vout(FILE* file, StringView fmtstr, TypeErasedFormatParams& params, bool newline) {
+
     StringBuilder builder;
     MUST(vformat(builder, fmtstr, params));
 
@@ -803,8 +864,11 @@ void vout(FILE* file, StringView fmtstr, TypeErasedFormatParams& params, bool ne
 
     auto const string = builder.string_view();
     auto const retval = ::fwrite(string.characters_without_null_termination(), 1, string.length(), file);
+    
     if (static_cast<size_t>(retval) != string.length()) {
+
         auto error = ferror(file);
+
         dbgln("vout() failed ({} written out of {}), error was {} ({})", retval, string.length(), error, strerror(error));
     }
 }
@@ -812,15 +876,17 @@ void vout(FILE* file, StringView fmtstr, TypeErasedFormatParams& params, bool ne
 
 static bool is_debug_enabled = true;
 
-void set_debug_enabled(bool value)
-{
+void setDebugEnabled(bool value) {
+
     is_debug_enabled = value;
 }
 
-void vdbgln(StringView fmtstr, TypeErasedFormatParams& params)
-{
-    if (!is_debug_enabled)
+void vdbgln(StringView fmtstr, TypeErasedFormatParams& params) {
+
+    if (!is_debug_enabled) {
+
         return;
+    }
 
     StringBuilder builder;
 

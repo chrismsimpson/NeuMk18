@@ -68,7 +68,7 @@ public:
     constexpr void retreat(size_t count) {
 
         VERIFY(m_index >= count);
-        
+
         m_index -= count;
     }
 
@@ -79,7 +79,7 @@ public:
     }
 
     template<typename T>
-    constexpr bool consume_specific(const T& next)
+    constexpr bool consumeSpecific(const T& next)
     {
         if (!next_is(next))
             return false;
@@ -93,20 +93,20 @@ public:
     }
 
 #ifndef KERNEL
-    bool consume_specific(String const& next)
+    bool consumeSpecific(String const& next)
     {
-        return consume_specific(StringView { next });
+        return consumeSpecific(StringView { next });
     }
 #endif
 
-    constexpr bool consume_specific(char const* next)
+    constexpr bool consumeSpecific(char const* next)
     {
-        return consume_specific(StringView { next });
+        return consumeSpecific(StringView { next });
     }
 
     constexpr char consume_escaped_character(char escape_char = '\\', StringView escape_map = "n\nr\rt\tb\bf\f")
     {
-        if (!consume_specific(escape_char))
+        if (!consumeSpecific(escape_char))
             return consume();
 
         auto c = consume();

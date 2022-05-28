@@ -45,8 +45,8 @@ StringView GenericLexer::consume_line()
         m_index++;
     size_t length = m_index - start;
 
-    consume_specific('\r');
-    consume_specific('\n');
+    consumeSpecific('\r');
+    consumeSpecific('\n');
 
     if (length == 0)
         return {};

@@ -215,7 +215,7 @@ public:
         u64 value,
         u8 base = 10,
         bool prefix = false,
-        bool upper_case = false,
+        bool upperCase = false,
         bool zero_pad = false,
         Align align = Align::Right,
         size_t min_width = 0,
@@ -227,7 +227,7 @@ public:
         i64 value,
         u8 base = 10,
         bool prefix = false,
-        bool upper_case = false,
+        bool upperCase = false,
         bool zero_pad = false,
         Align align = Align::Right,
         size_t min_width = 0,
@@ -239,7 +239,7 @@ public:
         u64 fraction_value,
         u64 fraction_one,
         u8 base = 10,
-        bool upper_case = false,
+        bool upperCase = false,
         bool zero_pad = false,
         Align align = Align::Right,
         size_t min_width = 0,
@@ -248,10 +248,11 @@ public:
         SignMode sign_mode = SignMode::OnlyIfNeeded);
 
 #ifndef KERNEL
+
     ErrorOr<void> put_f80(
         long double value,
         u8 base = 10,
-        bool upper_case = false,
+        bool upperCase = false,
         Align align = Align::Right,
         size_t min_width = 0,
         size_t precision = 6,
@@ -261,13 +262,14 @@ public:
     ErrorOr<void> put_f64(
         double value,
         u8 base = 10,
-        bool upper_case = false,
+        bool upperCase = false,
         bool zero_pad = false,
         Align align = Align::Right,
         size_t min_width = 0,
         size_t precision = 6,
         char fill = ' ',
         SignMode sign_mode = SignMode::OnlyIfNeeded);
+        
 #endif
 
     ErrorOr<void> put_hexdump(
@@ -275,25 +277,31 @@ public:
         size_t width,
         char fill = ' ');
 
-    StringBuilder const& builder() const
-    {
+    StringBuilder const& builder() const {
         return m_builder;
     }
+
     StringBuilder& builder() { return m_builder; }
 
 private:
+
     StringBuilder& m_builder;
 };
 
 class TypeErasedFormatParams {
+
 public:
+    
     Span<const TypeErasedParameter> parameters() const { return m_parameters; }
 
     void set_parameters(Span<const TypeErasedParameter> parameters) { m_parameters = parameters; }
+    
     size_t take_next_index() { return m_next_index++; }
 
 private:
+
     Span<const TypeErasedParameter> m_parameters;
+
     size_t m_next_index { 0 };
 };
 
@@ -328,8 +336,11 @@ private:
 // std::format. One difference is that we are not counting the width or sign towards the
 // total width when calculating zero padding for numbers.
 // https://en.cppreference.com/w/cpp/utility/format/formatter#Standard_format_specification
+
 struct StandardFormatter {
+
     enum class Mode {
+
         Default,
         Binary,
         BinaryUppercase,
@@ -360,22 +371,21 @@ struct StandardFormatter {
 
 template<Integral T>
 struct Formatter<T> : StandardFormatter {
+
     Formatter() = default;
     explicit Formatter(StandardFormatter formatter)
-        : StandardFormatter(move(formatter))
-    {
-    }
+        : StandardFormatter(move(formatter)) { }
 
     ErrorOr<void> format(FormatBuilder&, T);
 };
 
 template<>
 struct Formatter<StringView> : StandardFormatter {
+
     Formatter() = default;
+
     explicit Formatter(StandardFormatter formatter)
-        : StandardFormatter(move(formatter))
-    {
-    }
+        : StandardFormatter(move(formatter)) { }
 
     ErrorOr<void> format(FormatBuilder&, StringView);
 };
@@ -385,105 +395,149 @@ requires(HasFormatter<T>) struct Formatter<Vector<T, inline_capacity>> : Standar
 
     Formatter() = default;
     explicit Formatter(StandardFormatter formatter)
-        : StandardFormatter(move(formatter))
-    {
-    }
-    ErrorOr<void> format(FormatBuilder& builder, Vector<T> value)
-    {
+        : StandardFormatter(move(formatter)) { }
+
+    ErrorOr<void> format(FormatBuilder& builder, Vector<T> value) {
+
         if (m_mode == Mode::Pointer) {
+
             Formatter<FlatPtr> formatter { *this };
+            
             TRY(formatter.format(builder, reinterpret_cast<FlatPtr>(value.data())));
-            return {};
+            
+            return { };
         }
 
-        if (m_sign_mode != FormatBuilder::SignMode::Default)
+        if (m_sign_mode != FormatBuilder::SignMode::Default) {
+
             VERIFY_NOT_REACHED();
-        if (m_alternative_form)
+        }
+
+        if (m_alternative_form) {
+
             VERIFY_NOT_REACHED();
-        if (m_zero_pad)
+        }
+
+        if (m_zero_pad) {
+
             VERIFY_NOT_REACHED();
-        if (m_mode != Mode::Default)
+        }
+
+        if (m_mode != Mode::Default) {
+
             VERIFY_NOT_REACHED();
-        if (m_width.hasValue() && m_precision.hasValue())
+        }
+
+        if (m_width.hasValue() && m_precision.hasValue()) {
+
             VERIFY_NOT_REACHED();
+        }
 
         m_width = m_width.value_or(0);
         m_precision = m_precision.value_or(NumericLimits<size_t>::max());
 
         Formatter<T> content_fmt;
+        
         TRY(builder.putLiteral("[ "sv));
+        
         bool first = true;
+
         for (auto& content : value) {
+
             if (!first) {
+
                 TRY(builder.putLiteral(", "sv));
+                
                 content_fmt = Formatter<T> {};
             }
+            
             first = false;
+            
             TRY(content_fmt.format(builder, content));
         }
+        
         TRY(builder.putLiteral(" ]"sv));
-        return {};
+        
+        return { };
     }
 };
 
 template<>
 struct Formatter<ReadonlyBytes> : Formatter<StringView> {
-    ErrorOr<void> format(FormatBuilder& builder, ReadonlyBytes value)
-    {
+
+    ErrorOr<void> format(FormatBuilder& builder, ReadonlyBytes value) {
+
         if (m_mode == Mode::Pointer) {
+
             Formatter<FlatPtr> formatter { *this };
+
             return formatter.format(builder, reinterpret_cast<FlatPtr>(value.data()));
         }
+        
         if (m_mode == Mode::Default || m_mode == Mode::HexDump) {
+
             m_mode = Mode::HexDump;
+
             return Formatter<StringView>::format(builder, value);
         }
+        
         return Formatter<StringView>::format(builder, value);
     }
 };
 
 template<>
-struct Formatter<Bytes> : Formatter<ReadonlyBytes> {
-};
+struct Formatter<Bytes> : Formatter<ReadonlyBytes> { };
 
 template<>
 struct Formatter<char const*> : Formatter<StringView> {
-    ErrorOr<void> format(FormatBuilder& builder, char const* value)
-    {
+
+    ErrorOr<void> format(FormatBuilder& builder, char const* value) {
+
         if (m_mode == Mode::Pointer) {
+
             Formatter<FlatPtr> formatter { *this };
+            
             return formatter.format(builder, reinterpret_cast<FlatPtr>(value));
         }
+
         return Formatter<StringView>::format(builder, value);
     }
 };
+
 template<>
-struct Formatter<char*> : Formatter<char const*> {
-};
+struct Formatter<char*> : Formatter<char const*> { };
+
 template<size_t Size>
-struct Formatter<char[Size]> : Formatter<char const*> {
-};
+struct Formatter<char[Size]> : Formatter<char const*> { };
+
 template<size_t Size>
 struct Formatter<unsigned char[Size]> : Formatter<StringView> {
-    ErrorOr<void> format(FormatBuilder& builder, unsigned char const* value)
-    {
+
+    ErrorOr<void> format(FormatBuilder& builder, unsigned char const* value) {
+
         if (m_mode == Mode::Pointer) {
+
             Formatter<FlatPtr> formatter { *this };
+            
             return formatter.format(builder, reinterpret_cast<FlatPtr>(value));
         }
+
         return Formatter<StringView>::format(builder, { value, Size });
     }
 };
+
 template<>
-struct Formatter<String> : Formatter<StringView> {
-};
+struct Formatter<String> : Formatter<StringView> { };
 
 template<typename T>
 struct Formatter<T*> : StandardFormatter {
-    ErrorOr<void> format(FormatBuilder& builder, T* value)
-    {
-        if (m_mode == Mode::Default)
+
+    ErrorOr<void> format(FormatBuilder& builder, T* value) {
+
+        if (m_mode == Mode::Default) {
+
             m_mode = Mode::Pointer;
+        }
 
         Formatter<FlatPtr> formatter { *this };
         return formatter.format(builder, reinterpret_cast<FlatPtr>(value));
@@ -492,51 +546,63 @@ struct Formatter<T*> : StandardFormatter {
 
 template<>
 struct Formatter<char> : StandardFormatter {
+
     ErrorOr<void> format(FormatBuilder&, char);
 };
+
 template<>
 struct Formatter<wchar_t> : StandardFormatter {
+
     ErrorOr<void> format(FormatBuilder& builder, wchar_t);
 };
+
 template<>
 struct Formatter<bool> : StandardFormatter {
+
     ErrorOr<void> format(FormatBuilder&, bool);
 };
 
 #ifndef KERNEL
+
 template<>
 struct Formatter<float> : StandardFormatter {
+
     ErrorOr<void> format(FormatBuilder&, float value);
 };
+
 template<>
 struct Formatter<double> : StandardFormatter {
+
     Formatter() = default;
+
     explicit Formatter(StandardFormatter formatter)
-        : StandardFormatter(formatter)
-    {
-    }
+        : StandardFormatter(formatter) { }
 
     ErrorOr<void> format(FormatBuilder&, double);
 };
 
 template<>
 struct Formatter<long double> : StandardFormatter {
+    
     Formatter() = default;
+    
     explicit Formatter(StandardFormatter formatter)
-        : StandardFormatter(formatter)
-    {
-    }
+        : StandardFormatter(formatter) { }
 
     ErrorOr<void> format(FormatBuilder&, long double value);
 };
+
 #endif
 
 template<>
 struct Formatter<std::nullptr_t> : Formatter<FlatPtr> {
-    ErrorOr<void> format(FormatBuilder& builder, std::nullptr_t)
-    {
-        if (m_mode == Mode::Default)
+
+    ErrorOr<void> format(FormatBuilder& builder, std::nullptr_t) {
+
+        if (m_mode == Mode::Default) {
+
             m_mode = Mode::Pointer;
+        }
 
         return Formatter<FlatPtr>::format(builder, 0);
     }
@@ -548,16 +614,18 @@ ErrorOr<void> vformat(StringBuilder&, StringView fmtstr, TypeErasedFormatParams&
 void vout(FILE*, StringView fmtstr, TypeErasedFormatParams&, bool newline = false);
 
 template<typename... Parameters>
-void out(FILE* file, CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters)
-{
+void out(FILE* file, CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters) {
+
     VariadicFormatParams variadic_format_params { parameters... };
+
     vout(file, fmtstr.view(), variadic_format_params);
 }
 
 template<typename... Parameters>
-void outln(FILE* file, CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters)
-{
+void outln(FILE* file, CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters) {
+
     VariadicFormatParams variadic_format_params { parameters... };
+
     vout(file, fmtstr.view(), variadic_format_params, true);
 }
 
@@ -578,8 +646,8 @@ inline void outln() { outln(stdout); }
         } while (0)
 
 template<typename... Parameters>
-void warn(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters)
-{
+void warn(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters) {
+
     out(stderr, move(fmtstr), parameters...);
 }
 
@@ -599,17 +667,19 @@ inline void warnln() { outln(stderr); }
 void vdbgln(StringView fmtstr, TypeErasedFormatParams&);
 
 template<typename... Parameters>
-void dbgln(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters)
-{
+void dbgln(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters) {
+
     VariadicFormatParams variadic_format_params { parameters... };
+
     vdbgln(fmtstr.view(), variadic_format_params);
 }
 
 inline void dbgln() { dbgln(""); }
 
-void set_debug_enabled(bool);
+void setDebugEnabled(bool);
 
 #ifdef KERNEL
+
 void vdmesgln(StringView fmtstr, TypeErasedFormatParams&);
 
 template<typename... Parameters>
@@ -703,10 +773,14 @@ struct Formatter<Error> : Formatter<FormatString> {
 
 template<typename T, typename ErrorType>
 struct Formatter<ErrorOr<T, ErrorType>> : Formatter<FormatString> {
-    ErrorOr<void> format(FormatBuilder& builder, ErrorOr<T, ErrorType> const& error_or)
-    {
-        if (error_or.isError())
+
+    ErrorOr<void> format(FormatBuilder& builder, ErrorOr<T, ErrorType> const& error_or) {
+
+        if (error_or.isError()) {
+
             return Formatter<FormatString>::format(builder, "{}", error_or.error());
+        }
+
         return Formatter<FormatString>::format(builder, "{{{}}}", error_or.value());
     }
 };
