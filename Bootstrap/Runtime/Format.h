@@ -259,7 +259,7 @@ public:
         char fill = ' ',
         SignMode sign_mode = SignMode::OnlyIfNeeded);
 
-    ErrorOr<void> put_f64(
+    ErrorOr<void> putF64(
         double value,
         u8 base = 10,
         bool upperCase = false,

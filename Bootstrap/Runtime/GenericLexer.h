@@ -20,7 +20,7 @@ public:
 
     StringView remaining() const { return m_input.substring_view(m_index); }
 
-    constexpr bool is_eof() const { return m_index >= m_input.length(); }
+    constexpr bool isEof() const { return m_index >= m_input.length(); }
 
     constexpr char peek(size_t offset = 0) const {
 
@@ -74,7 +74,7 @@ public:
 
     constexpr char consume()
     {
-        VERIFY(!is_eof());
+        VERIFY(!isEof());
         return m_input[m_index++];
     }
 
@@ -140,7 +140,7 @@ public:
 
     constexpr void ignore_until(char stop) {
 
-        while (!is_eof() && peek() != stop) {
+        while (!isEof() && peek() != stop) {
 
             ++m_index;
         }
@@ -150,7 +150,7 @@ public:
 
     constexpr void ignore_until(char const* stop) {
 
-        while (!is_eof() && !next_is(stop)) {
+        while (!isEof() && !next_is(stop)) {
 
             ++m_index;
         }
@@ -170,53 +170,71 @@ public:
     // Test the next character against a Condition
     template<typename TPredicate>
     constexpr bool next_is(TPredicate pred) const {
-        
+
         return pred(peek());
     }
 
     // Consume and return characters while `pred` returns true
     template<typename TPredicate>
-    StringView consume_while(TPredicate pred)
-    {
+    StringView consume_while(TPredicate pred) {
+
         size_t start = m_index;
-        while (!is_eof() && pred(peek()))
+
+        while (!isEof() && pred(peek())) {
+
             ++m_index;
+        }
+
         size_t length = m_index - start;
 
-        if (length == 0)
-            return {};
+        if (length == 0) {
+
+            return { };
+        }
+
         return m_input.substring_view(start, length);
     }
 
     // Consume and return characters until `pred` return true
     template<typename TPredicate>
-    StringView consume_until(TPredicate pred)
-    {
+    StringView consume_until(TPredicate pred) {
+
         size_t start = m_index;
-        while (!is_eof() && !pred(peek()))
+
+        while (!isEof() && !pred(peek())) {
+
             ++m_index;
+        }
+
         size_t length = m_index - start;
 
-        if (length == 0)
-            return {};
+        if (length == 0) {
+
+            return { };
+        }
+
         return m_input.substring_view(start, length);
     }
 
     // Ignore characters while `pred` returns true
     template<typename TPredicate>
-    constexpr void ignore_while(TPredicate pred)
-    {
-        while (!is_eof() && pred(peek()))
+    constexpr void ignore_while(TPredicate pred) {
+
+        while (!isEof() && pred(peek())) {
+
             ++m_index;
+        }
     }
 
     // Ignore characters until `pred` return true
     // We don't skip the stop character as it may not be a unique value
     template<typename TPredicate>
-    constexpr void ignore_until(TPredicate pred)
-    {
-        while (!is_eof() && !pred(peek()))
+    constexpr void ignore_until(TPredicate pred) {
+
+        while (!isEof() && !pred(peek())) {
+
             ++m_index;
+        }
     }
 
 protected:

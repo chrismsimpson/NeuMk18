@@ -93,7 +93,7 @@ namespace {
         
         if (!parser.consumeSpecifier(specifier)) {
 
-            VERIFY(parser.is_eof());
+            VERIFY(parser.isEof());
             
             return { };
         }
@@ -122,7 +122,7 @@ StringView FormatParser::consumeLiteral() {
 
     auto const begin = tell();
 
-    while (!is_eof()) {
+    while (!isEof()) {
 
         if (consumeSpecific("{{")) {
 
@@ -178,7 +178,7 @@ bool FormatParser::consumeSpecifier(FormatSpecifier& specifier)
 
         size_t level = 1;
         while (level > 0) {
-            VERIFY(!is_eof());
+            VERIFY(!isEof());
 
             if (consumeSpecific('{')) {
                 ++level;
@@ -402,7 +402,7 @@ ErrorOr<void> FormatBuilder::putI64(
 }
 
 #ifndef KERNEL
-ErrorOr<void> FormatBuilder::put_f64(
+ErrorOr<void> FormatBuilder::putF64(
     double value,
     u8 base,
     bool upperCase,
@@ -682,10 +682,10 @@ void StandardFormatter::parse(TypeErasedFormatParams& params, FormatParser& pars
         m_mode = Mode::HexDump;
     }
 
-    if (!parser.is_eof())
+    if (!parser.isEof())
         dbgln("{} did not consume '{}'", __PRETTY_FUNCTION__, parser.remaining());
 
-    VERIFY(parser.is_eof());
+    VERIFY(parser.isEof());
 }
 
 ErrorOr<void> Formatter<StringView>::format(FormatBuilder& builder, StringView value)
@@ -878,7 +878,7 @@ ErrorOr<void> Formatter<double>::format(FormatBuilder& builder, double value) {
     m_width = m_width.value_or(0);
     m_precision = m_precision.value_or(6);
 
-    return builder.put_f64(value, base, upperCase, m_zero_pad, m_align, m_width.value(), m_precision.value(), m_fill, m_sign_mode);
+    return builder.putF64(value, base, upperCase, m_zero_pad, m_align, m_width.value(), m_precision.value(), m_fill, m_sign_mode);
 }
 
 ErrorOr<void> Formatter<float>::format(FormatBuilder& builder, float value) {
