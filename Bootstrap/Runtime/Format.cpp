@@ -236,7 +236,7 @@ ErrorOr<void> FormatBuilder::putString(
     return {};
 }
 
-ErrorOr<void> FormatBuilder::put_u64(
+ErrorOr<void> FormatBuilder::putU64(
     u64 value,
     u8 base,
     bool prefix,
@@ -353,7 +353,7 @@ ErrorOr<void> FormatBuilder::put_i64(
     auto const is_negative = value < 0;
     value = is_negative ? -value : value;
 
-    TRY(put_u64(static_cast<u64>(value), base, prefix, upper_case, zero_pad, align, min_width, fill, sign_mode, is_negative));
+    TRY(putU64(static_cast<u64>(value), base, prefix, upper_case, zero_pad, align, min_width, fill, sign_mode, is_negative));
     return {};
 }
 
@@ -392,7 +392,7 @@ ErrorOr<void> FormatBuilder::put_f64(
     if (is_negative)
         value = -value;
 
-    TRY(format_builder.put_u64(static_cast<u64>(value), base, false, upper_case, false, Align::Right, 0, ' ', sign_mode, is_negative));
+    TRY(format_builder.putU64(static_cast<u64>(value), base, false, upper_case, false, Align::Right, 0, ' ', sign_mode, is_negative));
 
     if (precision > 0) {
         // FIXME: This is a terrible approximation but doing it properly would be a lot of work. If someone is up for that, a good
@@ -416,10 +416,10 @@ ErrorOr<void> FormatBuilder::put_f64(
             TRY(string_builder.try_append('.'));
 
         if (visible_precision > 0)
-            TRY(format_builder.put_u64(static_cast<u64>(value), base, false, upper_case, true, Align::Right, visible_precision));
+            TRY(format_builder.putU64(static_cast<u64>(value), base, false, upper_case, true, Align::Right, visible_precision));
 
         if (zero_pad && (precision - visible_precision) > 0)
-            TRY(format_builder.put_u64(0, base, false, false, true, Align::Right, precision - visible_precision));
+            TRY(format_builder.putU64(0, base, false, false, true, Align::Right, precision - visible_precision));
     }
 
     TRY(putString(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill));
@@ -459,7 +459,7 @@ ErrorOr<void> FormatBuilder::put_f80(
     if (is_negative)
         value = -value;
 
-    TRY(format_builder.put_u64(static_cast<u64>(value), base, false, upper_case, false, Align::Right, 0, ' ', sign_mode, is_negative));
+    TRY(format_builder.putU64(static_cast<u64>(value), base, false, upper_case, false, Align::Right, 0, ' ', sign_mode, is_negative));
 
     if (precision > 0) {
         // FIXME: This is a terrible approximation but doing it properly would be a lot of work. If someone is up for that, a good
@@ -481,7 +481,7 @@ ErrorOr<void> FormatBuilder::put_f80(
 
         if (visible_precision > 0) {
             string_builder.append('.');
-            TRY(format_builder.put_u64(static_cast<u64>(value), base, false, upper_case, true, Align::Right, visible_precision));
+            TRY(format_builder.putU64(static_cast<u64>(value), base, false, upper_case, true, Align::Right, visible_precision));
         }
     }
 
@@ -509,7 +509,7 @@ ErrorOr<void> FormatBuilder::put_hexdump(ReadonlyBytes bytes, size_t width, char
                 TRY(putLiteral("\n"sv));
             }
         }
-        TRY(put_u64(bytes[i], 16, false, false, true, Align::Right, 2));
+        TRY(putU64(bytes[i], 16, false, false, true, Align::Right, 2));
     }
 
     if (width > 0 && bytes.size() && bytes.size() % width == 0)
@@ -697,7 +697,7 @@ ErrorOr<void> Formatter<T>::format(FormatBuilder& builder, T value)
     m_width = m_width.value_or(0);
 
     if constexpr (IsSame<MakeUnsigned<T>, T>)
-        return builder.put_u64(value, base, m_alternative_form, upper_case, m_zero_pad, m_align, m_width.value(), m_fill, m_sign_mode);
+        return builder.putU64(value, base, m_alternative_form, upper_case, m_zero_pad, m_align, m_width.value(), m_fill, m_sign_mode);
     else
         return builder.put_i64(value, base, m_alternative_form, upper_case, m_zero_pad, m_align, m_width.value(), m_fill, m_sign_mode);
 }

@@ -211,7 +211,7 @@ public:
         size_t max_width = NumericLimits<size_t>::max(),
         char fill = ' ');
 
-    ErrorOr<void> put_u64(
+    ErrorOr<void> putU64(
         u64 value,
         u8 base = 10,
         bool prefix = false,
