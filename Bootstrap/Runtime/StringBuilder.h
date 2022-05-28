@@ -14,7 +14,9 @@
 #include <stdarg.h>
 
 class StringBuilder {
+
 public:
+
     using OutputType = String;
 
     explicit StringBuilder();
@@ -24,25 +26,27 @@ public:
     ErrorOr<void> tryAppendCodePoint(u32);
     ErrorOr<void> tryAppend(char);
     template<typename... Parameters>
-    ErrorOr<void> try_appendff(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters)
-    {
+    
+    ErrorOr<void> tryAppendFormat(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters) {
+
         VariadicFormatParams variadic_format_params { parameters... };
         return vformat(*this, fmtstr.view(), variadic_format_params);
     }
+
     ErrorOr<void> tryAppend(char const*, size_t);
-    ErrorOr<void> try_append_escaped_for_json(StringView);
+    ErrorOr<void> tryAppendEscapedForJson(StringView);
 
     void append(StringView);
     void append(char);
     void append_code_point(u32);
     void append(char const*, size_t);
 
-    void append_as_lowercase(char);
+    void appendAsLowercase(char);
     void append_escaped_for_json(StringView);
 
     template<typename... Parameters>
-    void appendff(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters)
-    {
+    void appendff(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters) {
+
         VariadicFormatParams variadic_format_params { parameters... };
         MUST(vformat(*this, fmtstr.view(), variadic_format_params));
     }

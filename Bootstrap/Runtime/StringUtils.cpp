@@ -418,42 +418,71 @@ Optional<size_t> find_any_of(StringView haystack, StringView needles, SearchDire
 }
 
 #ifndef KERNEL
-String to_snakecase(StringView str)
-{
+String to_snakecase(StringView str) {
+
     auto should_insert_underscore = [&](auto i, auto current_char) {
-        if (i == 0)
+
+        if (i == 0) {
+
             return false;
+        }
+
         auto previous_ch = str[i - 1];
-        if (isAsciiLowerAlpha(previous_ch) && isAsciiUpperAlpha(current_char))
+
+        if (isAsciiLowerAlpha(previous_ch) && isAsciiUpperAlpha(current_char)) {
+
             return true;
-        if (i >= str.length() - 1)
+        }
+
+        if (i >= str.length() - 1) {
+
             return false;
+        }
+
         auto next_ch = str[i + 1];
-        if (isAsciiUpperAlpha(current_char) && isAsciiLowerAlpha(next_ch))
+        
+        if (isAsciiUpperAlpha(current_char) && isAsciiLowerAlpha(next_ch)) {
+
             return true;
+        }
+
         return false;
     };
 
     StringBuilder builder;
+    
     for (size_t i = 0; i < str.length(); ++i) {
+        
         auto ch = str[i];
-        if (should_insert_underscore(i, ch))
+        
+        if (should_insert_underscore(i, ch)) {
+
             builder.append('_');
-        builder.append_as_lowercase(ch);
+        }
+        
+        builder.appendAsLowercase(ch);
     }
+
     return builder.to_string();
 }
 
-String to_titlecase(StringView str)
-{
+String to_titlecase(StringView str) {
+
     StringBuilder builder;
+    
     bool next_is_upper = true;
 
     for (auto ch : str) {
-        if (next_is_upper)
+
+        if (next_is_upper) {
+
             builder.append_code_point(toAsciiUppercase(ch));
-        else
+        }
+        else {
+
             builder.append_code_point(toAsciiLowercase(ch));
+        }
+        
         next_is_upper = ch == ' ';
     }
 

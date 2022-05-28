@@ -94,7 +94,7 @@ void StringBuilder::append_code_point(u32 code_point)
     MUST(tryAppendCodePoint(code_point));
 }
 
-void StringBuilder::append_as_lowercase(char ch)
+void StringBuilder::appendAsLowercase(char ch)
 {
     if (ch >= 'A' && ch <= 'Z')
         append(ch + 0x20);
@@ -104,10 +104,10 @@ void StringBuilder::append_as_lowercase(char ch)
 
 void StringBuilder::append_escaped_for_json(StringView string)
 {
-    MUST(try_append_escaped_for_json(string));
+    MUST(tryAppendEscapedForJson(string));
 }
 
-ErrorOr<void> StringBuilder::try_append_escaped_for_json(StringView string)
+ErrorOr<void> StringBuilder::tryAppendEscapedForJson(StringView string)
 {
     for (auto ch : string) {
         switch (ch) {
@@ -128,7 +128,7 @@ ErrorOr<void> StringBuilder::try_append_escaped_for_json(StringView string)
             break;
         default:
             if (ch >= 0 && ch <= 0x1f)
-                TRY(try_appendff("\\u{:04x}", ch));
+                TRY(tryAppendFormat("\\u{:04x}", ch));
             else
                 TRY(tryAppend(ch));
         }
