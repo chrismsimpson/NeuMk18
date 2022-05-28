@@ -234,7 +234,7 @@ public:
         char fill = ' ',
         SignMode sign_mode = SignMode::OnlyIfNeeded);
 
-    ErrorOr<void> put_fixed_point(
+    ErrorOr<void> putFixedPoint(
         i64 integer_value,
         u64 fraction_value,
         u64 fraction_one,
@@ -249,7 +249,7 @@ public:
 
 #ifndef KERNEL
 
-    ErrorOr<void> put_f80(
+    ErrorOr<void> putF80(
         long double value,
         u8 base = 10,
         bool upperCase = false,

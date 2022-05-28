@@ -41,71 +41,79 @@ public:
 
 namespace {
 
-static constexpr size_t use_next_index = NumericLimits<size_t>::max();
+    static constexpr size_t use_next_index = NumericLimits<size_t>::max();
 
-// The worst case is that we have the largest 64-bit value formatted as binary number, this would take
-// 65 bytes. Choosing a larger power of two won't hurt and is a bit of mitigation against out-of-bounds accesses.
-static constexpr size_t convert_unsigned_to_string(u64 value, LinearArray<u8, 128>& buffer, u8 base, bool upperCase) {
+    // The worst case is that we have the largest 64-bit value formatted as binary number, this would take
+    // 65 bytes. Choosing a larger power of two won't hurt and is a bit of mitigation against out-of-bounds accesses.
+    static constexpr size_t convertUnsignedToString(u64 value, LinearArray<u8, 128>& buffer, u8 base, bool upperCase) {
 
-    VERIFY(base >= 2 && base <= 16);
+        VERIFY(base >= 2 && base <= 16);
 
-    constexpr char const* lowercase_lookup = "0123456789abcdef";
-    constexpr char const* uppercase_lookup = "0123456789ABCDEF";
+        constexpr char const* lowercase_lookup = "0123456789abcdef";
+        constexpr char const* uppercase_lookup = "0123456789ABCDEF";
 
-    if (value == 0) {
+        if (value == 0) {
 
-        buffer[0] = '0';
+            buffer[0] = '0';
+            
+            return 1;
+        }
+
+        size_t used = 0;
         
-        return 1;
-    }
+        while (value > 0) {
 
-    size_t used = 0;
-    
-    while (value > 0) {
+            if (upperCase) {
 
-        if (upperCase) {
+                buffer[used++] = uppercase_lookup[value % base];
+            }
+            else {
 
-            buffer[used++] = uppercase_lookup[value % base];
-        }
-        else {
+                buffer[used++] = lowercase_lookup[value % base];
+            }
 
-            buffer[used++] = lowercase_lookup[value % base];
+            value /= base;
         }
 
-        value /= base;
+        for (size_t i = 0; i < used / 2; ++i) {
+
+            swap(buffer[i], buffer[used - i - 1]);
+        }
+
+        return used;
     }
 
-    for (size_t i = 0; i < used / 2; ++i) {
+    ErrorOr<void> vformat_impl(TypeErasedFormatParams& params, FormatBuilder& builder, FormatParser& parser) {
 
-        swap(buffer[i], buffer[used - i - 1]);
+        auto const literal = parser.consumeLiteral();
+        
+        TRY(builder.putLiteral(literal));
+
+        FormatParser::FormatSpecifier specifier;
+        
+        if (!parser.consumeSpecifier(specifier)) {
+
+            VERIFY(parser.is_eof());
+            
+            return { };
+        }
+
+        if (specifier.index == use_next_index) {
+
+            specifier.index = params.take_next_index();
+        }
+
+        auto& parameter = params.parameters().at(specifier.index);
+
+        FormatParser argparser { specifier.flags };
+        
+        TRY(parameter.formatter(params, builder, argparser, parameter.value));
+        
+        TRY(vformat_impl(params, builder, parser));
+        
+        return { };
     }
-
-    return used;
 }
-
-ErrorOr<void> vformat_impl(TypeErasedFormatParams& params, FormatBuilder& builder, FormatParser& parser)
-{
-    auto const literal = parser.consumeLiteral();
-    TRY(builder.putLiteral(literal));
-
-    FormatParser::FormatSpecifier specifier;
-    if (!parser.consumeSpecifier(specifier)) {
-        VERIFY(parser.is_eof());
-        return {};
-    }
-
-    if (specifier.index == use_next_index)
-        specifier.index = params.take_next_index();
-
-    auto& parameter = params.parameters().at(specifier.index);
-
-    FormatParser argparser { specifier.flags };
-    TRY(parameter.formatter(params, builder, argparser, parameter.value));
-    TRY(vformat_impl(params, builder, parser));
-    return {};
-}
-
-} // {anonymous}
 
 FormatParser::FormatParser(StringView input)
     : GenericLexer(input) { }
@@ -215,14 +223,20 @@ ErrorOr<void> FormatBuilder::putPadding(char fill, size_t amount)
         TRY(m_builder.try_append(fill));
     return {};
 }
-ErrorOr<void> FormatBuilder::putLiteral(StringView value)
-{
+
+ErrorOr<void> FormatBuilder::putLiteral(StringView value) {
+
     for (size_t i = 0; i < value.length(); ++i) {
+
         TRY(m_builder.try_append(value[i]));
-        if (value[i] == '{' || value[i] == '}')
+        
+        if (value[i] == '{' || value[i] == '}') {
+
             ++i;
+        }
     }
-    return {};
+
+    return { };
 }
 
 ErrorOr<void> FormatBuilder::putString(
@@ -230,29 +244,38 @@ ErrorOr<void> FormatBuilder::putString(
     Align align,
     size_t min_width,
     size_t max_width,
-    char fill)
-{
+    char fill) {
+
     auto const used_by_string = min(max_width, value.length());
     auto const used_by_padding = max(min_width, used_by_string) - used_by_string;
 
-    if (used_by_string < value.length())
+    if (used_by_string < value.length()) {
+
         value = value.substring_view(0, used_by_string);
+    }
 
     if (align == Align::Left || align == Align::Default) {
+
         TRY(m_builder.try_append(value));
+        
         TRY(putPadding(fill, used_by_padding));
-    } else if (align == Align::Center) {
+    } 
+    else if (align == Align::Center) {
+        
         auto const used_by_left_padding = used_by_padding / 2;
         auto const used_by_right_padding = ceil_div<size_t, size_t>(used_by_padding, 2);
 
         TRY(putPadding(fill, used_by_left_padding));
         TRY(m_builder.try_append(value));
         TRY(putPadding(fill, used_by_right_padding));
-    } else if (align == Align::Right) {
+    } 
+    else if (align == Align::Right) {
+        
         TRY(putPadding(fill, used_by_padding));
         TRY(m_builder.try_append(value));
     }
-    return {};
+
+    return { };
 }
 
 ErrorOr<void> FormatBuilder::putU64(
@@ -265,14 +288,16 @@ ErrorOr<void> FormatBuilder::putU64(
     size_t min_width,
     char fill,
     SignMode sign_mode,
-    bool is_negative)
-{
-    if (align == Align::Default)
+    bool is_negative) {
+
+    if (align == Align::Default) {
+
         align = Align::Right;
+    }
 
     LinearArray<u8, 128> buffer;
 
-    auto const used_by_digits = convert_unsigned_to_string(value, buffer, base, upperCase);
+    auto const used_by_digits = convertUnsignedToString(value, buffer, base, upperCase);
 
     size_t used_by_prefix = 0;
     if (align == Align::Right && zero_pad) {
@@ -445,7 +470,7 @@ ErrorOr<void> FormatBuilder::put_f64(
     return {};
 }
 
-ErrorOr<void> FormatBuilder::put_f80(
+ErrorOr<void> FormatBuilder::putF80(
     long double value,
     u8 base,
     bool upperCase,
@@ -764,6 +789,7 @@ ErrorOr<void> Formatter<char>::format(FormatBuilder& builder, char value)
         return formatter.format(builder, { &value, 1 });
     }
 }
+
 ErrorOr<void> Formatter<wchar_t>::format(FormatBuilder& builder, wchar_t value)
 {
     if (m_mode == Mode::Binary || m_mode == Mode::BinaryUppercase || m_mode == Mode::Decimal || m_mode == Mode::Octal || m_mode == Mode::Hexadecimal || m_mode == Mode::HexadecimalUppercase) {
@@ -777,6 +803,7 @@ ErrorOr<void> Formatter<wchar_t>::format(FormatBuilder& builder, wchar_t value)
         return formatter.format(builder, codepoint.string_view());
     }
 }
+
 ErrorOr<void> Formatter<bool>::format(FormatBuilder& builder, bool value)
 {
     if (m_mode == Mode::Binary || m_mode == Mode::BinaryUppercase || m_mode == Mode::Decimal || m_mode == Mode::Octal || m_mode == Mode::Hexadecimal || m_mode == Mode::HexadecimalUppercase) {
@@ -820,7 +847,7 @@ ErrorOr<void> Formatter<long double>::format(FormatBuilder& builder, long double
     m_width = m_width.value_or(0);
     m_precision = m_precision.value_or(6);
 
-    return builder.put_f80(value, base, upperCase, m_align, m_width.value(), m_precision.value(), m_fill, m_sign_mode);
+    return builder.putF80(value, base, upperCase, m_align, m_width.value(), m_precision.value(), m_fill, m_sign_mode);
 }
 
 ErrorOr<void> Formatter<double>::format(FormatBuilder& builder, double value) {
