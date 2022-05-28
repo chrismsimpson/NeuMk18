@@ -277,14 +277,16 @@ public:
     ALWAYS_INLINE bool isNull() const { return !m_ptr; }
 
 private:
-    ALWAYS_INLINE T* as_ptr() const
-    {
+
+    ALWAYS_INLINE T* as_ptr() const {
+        
         return m_ptr;
     }
 
-    ALWAYS_INLINE T* as_nonnull_ptr() const
-    {
+    ALWAYS_INLINE T* as_nonnull_ptr() const {
+
         VERIFY(m_ptr);
+        
         return m_ptr;
     }
 
@@ -293,17 +295,22 @@ private:
 
 template<typename T>
 struct Formatter<RefPtr<T>> : Formatter<const T*> {
-    ErrorOr<void> format(FormatBuilder& builder, RefPtr<T> const& value)
-    {
+
+    ErrorOr<void> format(FormatBuilder& builder, RefPtr<T> const& value) {
+
         return Formatter<const T*>::format(builder, value.ptr());
     }
 };
 
 template<typename T>
 struct Traits<RefPtr<T>> : public GenericTraits<RefPtr<T>> {
+    
     using PeekType = T*;
+    
     using ConstPeekType = const T*;
+    
     static unsigned hash(RefPtr<T> const& p) { return ptr_hash(p.ptr()); }
+    
     static bool equals(RefPtr<T> const& a, RefPtr<T> const& b) { return a.ptr() == b.ptr(); }
 };
 
@@ -314,46 +321,52 @@ inline NonnullRefPtr<T> static_ptr_cast(NonnullRefPtr<U> const& ptr)
 }
 
 template<typename T, typename U>
-inline RefPtr<T> static_ptr_cast(RefPtr<U> const& ptr)
-{
+inline RefPtr<T> static_ptr_cast(RefPtr<U> const& ptr) {
+
     return RefPtr<T>(static_cast<const T*>(ptr.ptr()));
 }
 
 template<typename T, typename U>
-inline void swap(RefPtr<T>& a, RefPtr<U>& b) requires(IsConvertible<U*, T*>)
-{
+inline void swap(RefPtr<T>& a, RefPtr<U>& b) requires(IsConvertible<U*, T*>) {
+
     a.swap(b);
 }
 
 template<typename T>
-inline RefPtr<T> adopt_ref_if_nonnull(T* object)
-{
-    if (object)
+inline RefPtr<T> adopt_ref_if_nonnull(T* object) {
+
+    if (object) {
+
         return RefPtr<T>(RefPtr<T>::Adopt, *object);
-    return {};
+    }
+
+    return { };
 }
 
 template<typename T, class... Args>
-requires(IsConstructible<T, Args...>) inline ErrorOr<NonnullRefPtr<T>> try_make_ref_counted(Args&&... args)
-{
+requires(IsConstructible<T, Args...>) inline ErrorOr<NonnullRefPtr<T>> try_make_ref_counted(Args&&... args) {
+
     return adopt_nonnull_ref_or_enomem(new (nothrow) T(forward<Args>(args)...));
 }
 
 // FIXME: Remove once P0960R3 is available in Clang.
 template<typename T, class... Args>
-inline ErrorOr<NonnullRefPtr<T>> try_make_ref_counted(Args&&... args)
-{
+inline ErrorOr<NonnullRefPtr<T>> try_make_ref_counted(Args&&... args) {
+
     return adopt_nonnull_ref_or_enomem(new (nothrow) T { forward<Args>(args)... });
 }
 
 template<typename T>
-inline ErrorOr<NonnullRefPtr<T>> adopt_nonnull_ref_or_enomem(T* object)
-{
+inline ErrorOr<NonnullRefPtr<T>> adopt_nonnull_ref_or_enomem(T* object) {
+
     auto result = adopt_ref_if_nonnull(object);
-    if (!result)
+
+    if (!result) {
+
         return Error::fromErrorCode(ENOMEM);
+    }
+
     return result.release_nonnull();
 }
-
 
 #endif

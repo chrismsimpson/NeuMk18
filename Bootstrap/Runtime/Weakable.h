@@ -92,8 +92,8 @@ private:
 
 public:
     template<typename U = T>
-    WeakPtr<U> make_weak_ptr() const
-    {
+    WeakPtr<U> makeWeakPointer() const {
+        
         return MUST(tryMakeWeakPointer<U>());
     }
 
