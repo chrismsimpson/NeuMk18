@@ -57,7 +57,7 @@ public:
         return (T*)m_ptr.load(MemoryOrder::memory_order_acquire);
     }
 
-    bool is_null() const
+    bool isNull() const
     {
         return unsafe_ptr<void>() == nullptr;
     }
@@ -94,11 +94,11 @@ public:
     template<typename U = T>
     WeakPtr<U> make_weak_ptr() const
     {
-        return MUST(try_make_weak_ptr<U>());
+        return MUST(tryMakeWeakPointer<U>());
     }
 
     template<typename U = T>
-    ErrorOr<WeakPtr<U>> try_make_weak_ptr() const;
+    ErrorOr<WeakPtr<U>> tryMakeWeakPointer() const;
 
 protected:
     Weakable() = default;

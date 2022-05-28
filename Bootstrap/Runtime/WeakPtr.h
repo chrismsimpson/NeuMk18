@@ -61,15 +61,15 @@ public:
 
     template<typename U>
     WeakPtr(const U& object) requires(IsBaseOf<T, U>)
-        : m_link(object.template make_weak_ptr<U>().take_link())
-    {
-    }
+        : m_link(object.template make_weak_ptr<U>().take_link()) { }
 
     template<typename U>
-    WeakPtr(const U* object) requires(IsBaseOf<T, U>)
-    {
-        if (object)
+    WeakPtr(const U* object) requires(IsBaseOf<T, U>) {
+
+        if (object) {
+
             m_link = object->template make_weak_ptr<U>().take_link();
+        }
     }
 
     template<typename U>
@@ -137,11 +137,11 @@ public:
         return nullptr;
     }
 
-    operator bool() const { return m_link ? !m_link->is_null() : false; }
+    operator bool() const { return m_link ? !m_link->isNull() : false; }
 
-    [[nodiscard]] bool is_null() const { return !m_link || m_link->is_null(); }
+    [[nodiscard]] bool isNull() const { return !m_link || m_link->isNull(); }
 
-    [[nodiscard]] bool hasValue() const { return !is_null(); }
+    [[nodiscard]] bool hasValue() const { return !isNull(); }
     T* value() { return ptr(); }
     T const* value() const { return ptr(); }
 
@@ -150,17 +150,16 @@ public:
     [[nodiscard]] RefPtr<WeakLink> take_link() { return move(m_link); }
 
 private:
+
     WeakPtr(RefPtr<WeakLink> const& link)
-        : m_link(link)
-    {
-    }
+        : m_link(link) { }
 
     RefPtr<WeakLink> m_link;
 };
 
 template<typename T>
 template<typename U>
-inline ErrorOr<WeakPtr<U>> Weakable<T>::try_make_weak_ptr() const
+inline ErrorOr<WeakPtr<U>> Weakable<T>::tryMakeWeakPointer() const
 {
     if (!m_link)
         m_link = TRY(adopt_nonnull_ref_or_enomem(new (nothrow) WeakLink(const_cast<T&>(static_cast<T const&>(*this)))));
@@ -170,25 +169,28 @@ inline ErrorOr<WeakPtr<U>> Weakable<T>::try_make_weak_ptr() const
 
 template<typename T>
 struct Formatter<WeakPtr<T>> : Formatter<const T*> {
-    ErrorOr<void> format(FormatBuilder& builder, WeakPtr<T> const& value)
-    {
+
+    ErrorOr<void> format(FormatBuilder& builder, WeakPtr<T> const& value) {
+
         return Formatter<const T*>::format(builder, value.ptr());
     }
 };
 
 template<typename T>
-ErrorOr<WeakPtr<T>> try_make_weak_ptr_if_nonnull(T const* ptr)
-{
+ErrorOr<WeakPtr<T>> tryMakeWeakPointerIfNonNull(T const* ptr) {
+
     if (ptr) {
-        return ptr->template try_make_weak_ptr<T>();
+
+        return ptr->template tryMakeWeakPointer<T>();
     }
+    
     return WeakPtr<T> {};
 }
 
 template<typename T>
-WeakPtr<T> make_weak_ptr_if_nonnull(T const* ptr)
-{
-    return MUST(try_make_weak_ptr_if_nonnull(ptr));
+WeakPtr<T> make_weak_ptr_if_nonnull(T const* ptr) {
+
+    return MUST(tryMakeWeakPointerIfNonNull(ptr));
 }
 
 #endif

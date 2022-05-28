@@ -149,7 +149,7 @@ public:
     [[nodiscard]] StringView substring_view(size_t start, size_t length) const;
     [[nodiscard]] StringView substring_view(size_t start) const;
 
-    [[nodiscard]] bool is_null() const { return !m_impl; }
+    [[nodiscard]] bool isNull() const { return !m_impl; }
     [[nodiscard]] ALWAYS_INLINE bool isEmpty() const { return length() == 0; }
     [[nodiscard]] ALWAYS_INLINE size_t length() const { return m_impl ? m_impl->length() : 0; }
     // Includes NUL-terminator, if non-nullptr.
@@ -165,9 +165,10 @@ public:
         return {};
     }
 
-    [[nodiscard]] ALWAYS_INLINE char const& operator[](size_t i) const
-    {
-        VERIFY(!is_null());
+    [[nodiscard]] ALWAYS_INLINE char const& operator[](size_t i) const {
+
+        VERIFY(!isNull());
+        
         return (*m_impl)[i];
     }
 

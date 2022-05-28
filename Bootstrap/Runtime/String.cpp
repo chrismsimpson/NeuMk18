@@ -210,10 +210,12 @@ String String::repeated(StringView string, size_t count)
     return *impl;
 }
 
-String String::bijective_base_from(size_t value, unsigned base, StringView map)
-{
-    if (map.is_null())
+String String::bijective_base_from(size_t value, unsigned base, StringView map) {
+    
+    if (map.isNull()) {
+
         map = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"sv;
+    }
 
     VERIFY(base >= 2 && base <= map.length());
 

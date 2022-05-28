@@ -58,7 +58,7 @@ public:
 
 #endif
 
-    [[nodiscard]] constexpr bool is_null() const {
+    [[nodiscard]] constexpr bool isNull() const {
 
         return m_characters == nullptr;
     }
@@ -206,7 +206,7 @@ public:
 
     constexpr bool operator==(char const* cstring) const {
 
-        if (is_null()) {
+        if (isNull()) {
 
             return cstring == nullptr;
         }
@@ -332,7 +332,7 @@ public:
 
         return (... ||
                 [this, &strings]() -> bool {
-                    
+
             if constexpr (requires(Ts a) { a.view()->StringView; }) {
 
                 return this->equals_ignoring_case(forward<Ts>(strings.view()));

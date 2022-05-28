@@ -15,23 +15,32 @@
 #include "Vector.h"
 
 #ifndef KERNEL
+
 #    include "String.h"
+
 #endif
 
 namespace StringUtils {
 
-bool matches(StringView str, StringView mask, CaseSensitivity case_sensitivity, Vector<MaskSpan>* match_spans)
-{
+bool matches(StringView str, StringView mask, CaseSensitivity case_sensitivity, Vector<MaskSpan>* match_spans) {
+
     auto record_span = [&match_spans](size_t start, size_t length) {
-        if (match_spans)
+        
+        if (match_spans) {
+
             match_spans->append({ start, length });
+        }
     };
 
-    if (str.is_null() || mask.is_null())
-        return str.is_null() && mask.is_null();
+    if (str.isNull() || mask.isNull()) {
+
+        return str.isNull() && mask.isNull();
+    }
 
     if (mask == "*"sv) {
+
         record_span(0, str.length());
+        
         return true;
     }
 
@@ -288,29 +297,52 @@ bool starts_with(StringView str, StringView start, CaseSensitivity case_sensitiv
 
 bool contains(StringView str, StringView needle, CaseSensitivity case_sensitivity)
 {
-    if (str.is_null() || needle.is_null() || str.isEmpty() || needle.length() > str.length())
+    if (str.isNull() || needle.isNull() || str.isEmpty() || needle.length() > str.length()) {
+
         return false;
-    if (needle.isEmpty())
+    }
+
+    if (needle.isEmpty()) {
+
         return true;
+    }
+
     auto str_chars = str.charactersWithoutNullTermination();
     auto needle_chars = needle.charactersWithoutNullTermination();
-    if (case_sensitivity == CaseSensitivity::CaseSensitive)
+
+    if (case_sensitivity == CaseSensitivity::CaseSensitive) {
+
         return memmem(str_chars, str.length(), needle_chars, needle.length()) != nullptr;
+    }
 
     auto needle_first = toAsciiLowercase(needle_chars[0]);
+
     for (size_t si = 0; si < str.length(); si++) {
-        if (toAsciiLowercase(str_chars[si]) != needle_first)
+
+        if (toAsciiLowercase(str_chars[si]) != needle_first) {
+
             continue;
+        }
+
         for (size_t ni = 0; si + ni < str.length(); ni++) {
+
             if (toAsciiLowercase(str_chars[si + ni]) != toAsciiLowercase(needle_chars[ni])) {
-                if (ni > 0)
+
+                if (ni > 0) {
+
                     si += ni - 1;
+                }
+
                 break;
             }
-            if (ni + 1 == needle.length())
+
+            if (ni + 1 == needle.length()) {
+
                 return true;
+            }
         }
     }
+    
     return false;
 }
 

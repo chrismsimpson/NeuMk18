@@ -186,20 +186,28 @@ public:
         return *this;
     }
 
-    ALWAYS_INLINE bool assign_if_null(RefPtr&& other)
-    {
-        if (this == &other)
-            return is_null();
+    ALWAYS_INLINE bool assign_if_null(RefPtr&& other) {
+
+        if (this == &other) {
+
+            return isNull();
+        }
+
         *this = move(other);
+        
         return true;
     }
 
     template<typename U>
-    ALWAYS_INLINE bool assign_if_null(RefPtr<U>&& other)
-    {
-        if (this == &other)
-            return is_null();
+    ALWAYS_INLINE bool assign_if_null(RefPtr<U>&& other) {
+
+        if (this == &other) {
+
+            return isNull();
+        }
+        
         *this = move(other);
+        
         return true;
     }
 
@@ -249,10 +257,10 @@ public:
     ALWAYS_INLINE operator const T*() const { return as_ptr(); }
     ALWAYS_INLINE operator T*() { return as_ptr(); }
 
-    ALWAYS_INLINE operator bool() { return !is_null(); }
+    ALWAYS_INLINE operator bool() { return !isNull(); }
 
-    bool operator==(std::nullptr_t) const { return is_null(); }
-    bool operator!=(std::nullptr_t) const { return !is_null(); }
+    bool operator==(std::nullptr_t) const { return isNull(); }
+    bool operator!=(std::nullptr_t) const { return !isNull(); }
 
     bool operator==(RefPtr const& other) const { return as_ptr() == other.as_ptr(); }
     bool operator!=(RefPtr const& other) const { return as_ptr() != other.as_ptr(); }
@@ -266,7 +274,7 @@ public:
     bool operator==(T* other) { return as_ptr() == other; }
     bool operator!=(T* other) { return as_ptr() != other; }
 
-    ALWAYS_INLINE bool is_null() const { return !m_ptr; }
+    ALWAYS_INLINE bool isNull() const { return !m_ptr; }
 
 private:
     ALWAYS_INLINE T* as_ptr() const
