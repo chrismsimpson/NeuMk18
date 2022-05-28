@@ -54,6 +54,7 @@ public:
 
     ~Optional() requires(!IsDestructible<T>) = delete;
     ~Optional() = default;
+
 #endif
 
     ALWAYS_INLINE Optional(Optional const& other)
@@ -79,24 +80,28 @@ public:
 
     template<typename U>
     requires(IsConstructible<T, U const&> && !IsSpecializationOf<T, Optional> && !IsSpecializationOf<U, Optional>) ALWAYS_INLINE explicit Optional(Optional<U> const& other)
-        : m_hasValue(other.m_hasValue)
-    {
-        if (other.hasValue())
+        : m_hasValue(other.m_hasValue) {
+        
+        if (other.hasValue()) {
+
             new (&m_storage) T(other.value());
+        }
     }
 
     template<typename U>
     requires(IsConstructible<T, U&&> && !IsSpecializationOf<T, Optional> && !IsSpecializationOf<U, Optional>) ALWAYS_INLINE explicit Optional(Optional<U>&& other)
-        : m_hasValue(other.m_hasValue)
-    {
-        if (other.hasValue())
+        : m_hasValue(other.m_hasValue) {
+
+        if (other.hasValue()) {
+
             new (&m_storage) T(other.releaseValue());
+        }
     }
 
     template<typename U = T>
     ALWAYS_INLINE explicit(!IsConvertible<U&&, T>) Optional(U&& value) requires(!IsSame<RemoveConstVolatileReference<U>, Optional<T>> && IsConstructible<T, U&&>)
-        : m_hasValue(true)
-    {
+        : m_hasValue(true) {
+
         new (&m_storage) T(forward<U>(value));
     }
 
@@ -106,36 +111,46 @@ public:
 #endif
     {
         if (this != &other) {
+
             clear();
+            
             m_hasValue = other.m_hasValue;
+            
             if (other.hasValue()) {
+
                 new (&m_storage) T(other.value());
             }
         }
+
         return *this;
     }
 
-    ALWAYS_INLINE Optional& operator=(Optional&& other)
-    {
+    ALWAYS_INLINE Optional& operator=(Optional&& other) {
+
         if (this != &other) {
+
             clear();
+
             m_hasValue = other.m_hasValue;
+            
             if (other.hasValue()) {
+
                 new (&m_storage) T(other.releaseValue());
             }
         }
+
         return *this;
     }
 
     template<typename O>
-    ALWAYS_INLINE bool operator==(Optional<O> const& other) const
-    {
+    ALWAYS_INLINE bool operator==(Optional<O> const& other) const {
+
         return hasValue() == other.hasValue() && (!hasValue() || value() == other.value());
     }
 
     template<typename O>
-    ALWAYS_INLINE bool operator==(O const& other) const
-    {
+    ALWAYS_INLINE bool operator==(O const& other) const {
+
         return hasValue() && value() == other;
     }
 
@@ -147,69 +162,88 @@ public:
         clear();
     }
 
-    ALWAYS_INLINE void clear()
-    {
+    ALWAYS_INLINE void clear() {
+
         if (m_hasValue) {
+
             value().~T();
+            
             m_hasValue = false;
         }
     }
 
     template<typename... Parameters>
-    ALWAYS_INLINE void emplace(Parameters&&... parameters)
-    {
+    ALWAYS_INLINE void emplace(Parameters&&... parameters) {
+
         clear();
+        
         m_hasValue = true;
+        
         new (&m_storage) T(forward<Parameters>(parameters)...);
     }
 
     [[nodiscard]] ALWAYS_INLINE bool hasValue() const { return m_hasValue; }
 
-    [[nodiscard]] ALWAYS_INLINE T& value() &
-    {
+    [[nodiscard]] ALWAYS_INLINE T& value() & {
+        
         VERIFY(m_hasValue);
+
         return *__builtin_launder(reinterpret_cast<T*>(&m_storage));
     }
 
-    [[nodiscard]] ALWAYS_INLINE T const& value() const&
-    {
+    [[nodiscard]] ALWAYS_INLINE T const& value() const& {
+
         VERIFY(m_hasValue);
+        
         return *__builtin_launder(reinterpret_cast<T const*>(&m_storage));
     }
 
-    [[nodiscard]] ALWAYS_INLINE T value() &&
-    {
+    [[nodiscard]] ALWAYS_INLINE T value() && {
+
         return releaseValue();
     }
 
-    [[nodiscard]] ALWAYS_INLINE T releaseValue()
-    {
+    [[nodiscard]] ALWAYS_INLINE T releaseValue() {
+
         VERIFY(m_hasValue);
+        
         T released_value = move(value());
+        
         value().~T();
+        
         m_hasValue = false;
+        
         return released_value;
     }
 
-    [[nodiscard]] ALWAYS_INLINE T value_or(T const& fallback) const&
-    {
-        if (m_hasValue)
+    [[nodiscard]] ALWAYS_INLINE T valueOr(T const& fallback) const& {
+
+        if (m_hasValue) {
+
             return value();
+        }
+
         return fallback;
     }
 
-    [[nodiscard]] ALWAYS_INLINE T value_or(T&& fallback) &&
-    {
-        if (m_hasValue)
+    [[nodiscard]] ALWAYS_INLINE T valueOr(T&& fallback) && {
+
+        if (m_hasValue) {
+
             return move(value());
+        }
+
         return move(fallback);
     }
 
     template<typename Callback>
-    [[nodiscard]] ALWAYS_INLINE T value_or_lazy_evaluated(Callback callback) const
-    {
-        if (m_hasValue)
+    [[nodiscard]] ALWAYS_INLINE T valueOrLazyEvaluated(Callback callback) const {
+
+        if (m_hasValue) {
+
             return value();
+        }
+
         return callback();
     }
 
@@ -220,12 +254,15 @@ public:
     ALWAYS_INLINE T* operator->() { return &value(); }
 
 private:
+
     alignas(T) u8 m_storage[sizeof(T)];
+
     bool m_hasValue { false };
 };
 
 template<typename T>
 requires(IsLValueReference<T>) class [[nodiscard]] Optional<T> {
+    
     template<typename>
     friend class Optional;
 
@@ -233,130 +270,138 @@ requires(IsLValueReference<T>) class [[nodiscard]] Optional<T> {
     constexpr static bool CanBePlacedInOptional = IsSame<RemoveReference<T>, RemoveReference<AddConstToReferencedType<U>>> && (IsBaseOf<RemoveConstVolatileReference<T>, RemoveConstVolatileReference<U>> || IsSame<RemoveConstVolatileReference<T>, RemoveConstVolatileReference<U>>);
 
 public:
+
     using ValueType = T;
 
     ALWAYS_INLINE Optional() = default;
 
     template<typename U = T>
     ALWAYS_INLINE Optional(U& value) requires(CanBePlacedInOptional<U&>)
-        : m_pointer(&value)
-    {
-    }
+        : m_pointer(&value) { }
 
     ALWAYS_INLINE Optional(RemoveReference<T>& value)
-        : m_pointer(&value)
-    {
-    }
+        : m_pointer(&value) { }
 
     ALWAYS_INLINE Optional(Optional const& other)
-        : m_pointer(other.m_pointer)
-    {
-    }
+        : m_pointer(other.m_pointer) { }
 
     ALWAYS_INLINE Optional(Optional&& other)
-        : m_pointer(other.m_pointer)
-    {
+        : m_pointer(other.m_pointer) {
+
         other.m_pointer = nullptr;
     }
 
     template<typename U>
     ALWAYS_INLINE Optional(Optional<U> const& other) requires(CanBePlacedInOptional<U>)
-        : m_pointer(other.m_pointer)
-    {
-    }
+        : m_pointer(other.m_pointer) { }
 
     template<typename U>
     ALWAYS_INLINE Optional(Optional<U>&& other) requires(CanBePlacedInOptional<U>)
-        : m_pointer(other.m_pointer)
-    {
+        : m_pointer(other.m_pointer) {
+
         other.m_pointer = nullptr;
     }
 
-    ALWAYS_INLINE Optional& operator=(Optional const& other)
-    {
+    ALWAYS_INLINE Optional& operator=(Optional const& other) {
+
         m_pointer = other.m_pointer;
+
         return *this;
     }
 
-    ALWAYS_INLINE Optional& operator=(Optional&& other)
-    {
+    ALWAYS_INLINE Optional& operator=(Optional&& other) {
+
         m_pointer = other.m_pointer;
+        
         other.m_pointer = nullptr;
-        return *this;
-    }
-
-    template<typename U>
-    ALWAYS_INLINE Optional& operator=(Optional<U> const& other) requires(CanBePlacedInOptional<U>)
-    {
-        m_pointer = other.m_pointer;
+        
         return *this;
     }
 
     template<typename U>
-    ALWAYS_INLINE Optional& operator=(Optional<U>&& other) requires(CanBePlacedInOptional<U>)
-    {
+    ALWAYS_INLINE Optional& operator=(Optional<U> const& other) requires(CanBePlacedInOptional<U>) {
+
         m_pointer = other.m_pointer;
+
+        return *this;
+    }
+
+    template<typename U>
+    ALWAYS_INLINE Optional& operator=(Optional<U>&& other) requires(CanBePlacedInOptional<U>) {
+
+        m_pointer = other.m_pointer;
+        
         other.m_pointer = nullptr;
+        
         return *this;
     }
 
     // Note: Disallows assignment from a temporary as this does not do any lifetime extension.
     template<typename U>
-    ALWAYS_INLINE Optional& operator=(U&& value) requires(CanBePlacedInOptional<U>&& IsLValueReference<U>)
-    {
+    ALWAYS_INLINE Optional& operator=(U&& value) requires(CanBePlacedInOptional<U>&& IsLValueReference<U>) {
+
         m_pointer = &value;
+
         return *this;
     }
 
-    ALWAYS_INLINE void clear()
-    {
+    ALWAYS_INLINE void clear() {
+
         m_pointer = nullptr;
     }
 
     [[nodiscard]] ALWAYS_INLINE bool hasValue() const { return m_pointer != nullptr; }
 
-    [[nodiscard]] ALWAYS_INLINE T value()
-    {
+    [[nodiscard]] ALWAYS_INLINE T value() {
+
         VERIFY(m_pointer);
+        
         return *m_pointer;
     }
 
-    [[nodiscard]] ALWAYS_INLINE AddConstToReferencedType<T> value() const
-    {
+    [[nodiscard]] ALWAYS_INLINE AddConstToReferencedType<T> value() const {
+
         VERIFY(m_pointer);
+        
         return *m_pointer;
     }
 
     template<typename U>
-    requires(IsBaseOf<RemoveConstVolatileReference<T>, U>) [[nodiscard]] ALWAYS_INLINE AddConstToReferencedType<T> value_or(U& fallback) const
-    {
-        if (m_pointer)
+    requires(IsBaseOf<RemoveConstVolatileReference<T>, U>) [[nodiscard]] ALWAYS_INLINE AddConstToReferencedType<T> valueOr(U& fallback) const {
+
+        if (m_pointer) {
+
             return value();
+        }
+
         return fallback;
     }
 
     // Note that this ends up copying the value.
-    [[nodiscard]] ALWAYS_INLINE RemoveConstVolatileReference<T> value_or(RemoveConstVolatileReference<T> fallback) const
-    {
-        if (m_pointer)
+    [[nodiscard]] ALWAYS_INLINE RemoveConstVolatileReference<T> valueOr(RemoveConstVolatileReference<T> fallback) const {
+
+        if (m_pointer) {
+
             return value();
+        }
+
         return fallback;
     }
 
-    [[nodiscard]] ALWAYS_INLINE T releaseValue()
-    {
+    [[nodiscard]] ALWAYS_INLINE T releaseValue() {
+
         return *exchange(m_pointer, nullptr);
     }
 
     template<typename U>
-    ALWAYS_INLINE bool operator==(Optional<U> const& other) const
-    {
+    ALWAYS_INLINE bool operator==(Optional<U> const& other) const {
+
         return hasValue() == other.hasValue() && (!hasValue() || value() == other.value());
     }
 
     template<typename U>
-    ALWAYS_INLINE bool operator==(U const& other) const
-    {
+    ALWAYS_INLINE bool operator==(U const& other) const {
+
         return hasValue() && value() == other;
     }
 
@@ -367,13 +412,17 @@ public:
     ALWAYS_INLINE RawPtr<RemoveReference<T>> operator->() { return &value(); }
 
     // Conversion operators from Optional<T&> -> Optional<T>
-    ALWAYS_INLINE operator Optional<RemoveConstVolatileReference<T>>() const
-    {
-        if (hasValue())
+    ALWAYS_INLINE operator Optional<RemoveConstVolatileReference<T>>() const {
+
+        if (hasValue()) {
+
             return Optional<RemoveConstVolatileReference<T>>(value());
-        return {};
+        }
+
+        return { };
     }
 
 private:
+
     RemoveReference<T>* m_pointer { nullptr };
 };

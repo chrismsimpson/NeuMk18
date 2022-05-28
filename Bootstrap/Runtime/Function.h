@@ -46,33 +46,34 @@ inline constexpr bool IsFunctionObject = (!IsFunctionPointer<F> && IsRValueRefer
 
 template<typename Out, typename... In>
 class Function<Out(In...)> {
+
     MAKE_NONCOPYABLE(Function);
 
 public:
-    Function() = default;
-    Function(std::nullptr_t)
-    {
-    }
 
-    ~Function()
-    {
+    Function() = default;
+
+    Function(std::nullptr_t) { }
+
+    ~Function() {
+
         clear(false);
     }
 
     template<typename CallableType>
-    Function(CallableType&& callable) requires((IsFunctionObject<CallableType> && IsCallableWithArguments<CallableType, In...> && !IsSame<RemoveConstVolatileReference<CallableType>, Function>))
-    {
-        init_with_callable(forward<CallableType>(callable));
+    Function(CallableType&& callable) requires((IsFunctionObject<CallableType> && IsCallableWithArguments<CallableType, In...> && !IsSame<RemoveConstVolatileReference<CallableType>, Function>)) {
+
+        initWithCallable(forward<CallableType>(callable));
     }
 
     template<typename FunctionType>
-    Function(FunctionType f) requires((IsFunctionPointer<FunctionType> && IsCallableWithArguments<RemovePointer<FunctionType>, In...> && !IsSame<RemoveConstVolatileReference<FunctionType>, Function>))
-    {
-        init_with_callable(move(f));
+    Function(FunctionType f) requires((IsFunctionPointer<FunctionType> && IsCallableWithArguments<RemovePointer<FunctionType>, In...> && !IsSame<RemoveConstVolatileReference<FunctionType>, Function>)) {
+
+        initWithCallable(move(f));
     }
 
-    Function(Function&& other)
-    {
+    Function(Function&& other) {
+        
         move_from(move(other));
     }
 
@@ -92,40 +93,52 @@ public:
     explicit operator bool() const { return !!callable_wrapper(); }
 
     template<typename CallableType>
-    Function& operator=(CallableType&& callable) requires((IsFunctionObject<CallableType> && IsCallableWithArguments<CallableType, In...>))
-    {
+    Function& operator=(CallableType&& callable) requires((IsFunctionObject<CallableType> && IsCallableWithArguments<CallableType, In...>)) {
+
         clear();
-        init_with_callable(forward<CallableType>(callable));
+
+        initWithCallable(forward<CallableType>(callable));
+
         return *this;
     }
 
     template<typename FunctionType>
-    Function& operator=(FunctionType f) requires((IsFunctionPointer<FunctionType> && IsCallableWithArguments<RemovePointer<FunctionType>, In...>))
-    {
+    Function& operator=(FunctionType f) requires((IsFunctionPointer<FunctionType> && IsCallableWithArguments<RemovePointer<FunctionType>, In...>)) {
+
         clear();
-        if (f)
-            init_with_callable(move(f));
+
+        if (f) {
+
+            initWithCallable(move(f));
+        }
+
         return *this;
     }
 
-    Function& operator=(std::nullptr_t)
-    {
+    Function& operator=(std::nullptr_t) {
+
         clear();
+
         return *this;
     }
 
-    Function& operator=(Function&& other)
-    {
+    Function& operator=(Function&& other) {
+
         if (this != &other) {
+
             clear();
+
             move_from(move(other));
         }
+
         return *this;
     }
 
 private:
+
     class CallableWrapperBase {
     public:
+
         virtual ~CallableWrapperBase() = default;
         // Note: This is not const to allow storing mutable lambdas.
         virtual Out call(In...) = 0;
@@ -207,37 +220,51 @@ private:
     }
 
     template<typename Callable>
-    void init_with_callable(Callable&& callable)
-    {
+    void initWithCallable(Callable&& callable) {
+        
         VERIFY(m_call_nesting_level == 0);
+        
         using WrapperType = CallableWrapper<Callable>;
+        
         if constexpr (sizeof(WrapperType) > inline_capacity) {
+
             *bitCast<CallableWrapperBase**>(&m_storage) = new WrapperType(forward<Callable>(callable));
+
             m_kind = FunctionKind::Outline;
-        } else {
+        } 
+        else {
+            
             new (m_storage) WrapperType(forward<Callable>(callable));
+
             m_kind = FunctionKind::Inline;
         }
     }
 
-    void move_from(Function&& other)
-    {
+    void move_from(Function&& other) {
+
         VERIFY(m_call_nesting_level == 0 && other.m_call_nesting_level == 0);
+
         auto* other_wrapper = other.callable_wrapper();
+
         switch (other.m_kind) {
+
         case FunctionKind::NullPointer:
             break;
+
         case FunctionKind::Inline:
             other_wrapper->init_and_swap(m_storage, inline_capacity);
             m_kind = FunctionKind::Inline;
             break;
+
         case FunctionKind::Outline:
             *bitCast<CallableWrapperBase**>(&m_storage) = other_wrapper;
             m_kind = FunctionKind::Outline;
             break;
+
         default:
             VERIFY_NOT_REACHED();
         }
+
         other.m_kind = FunctionKind::NullPointer;
     }
 

@@ -699,8 +699,8 @@ ErrorOr<void> Formatter<StringView>::format(FormatBuilder& builder, StringView v
     if (m_mode != Mode::Default && m_mode != Mode::String && m_mode != Mode::Character && m_mode != Mode::HexDump)
         VERIFY_NOT_REACHED();
 
-    m_width = m_width.value_or(0);
-    m_precision = m_precision.value_or(NumericLimits<size_t>::max());
+    m_width = m_width.valueOr(0);
+    m_precision = m_precision.valueOr(NumericLimits<size_t>::max());
 
     if (m_mode == Mode::HexDump)
         return builder.put_hexdump(value.bytes(), m_width.value(), m_fill);
@@ -764,13 +764,13 @@ ErrorOr<void> Formatter<T>::format(FormatBuilder& builder, T value)
         base = 16;
         upperCase = true;
     } else if (m_mode == Mode::HexDump) {
-        m_width = m_width.value_or(32);
+        m_width = m_width.valueOr(32);
         return builder.put_hexdump({ &value, sizeof(value) }, m_width.value(), m_fill);
     } else {
         VERIFY_NOT_REACHED();
     }
 
-    m_width = m_width.value_or(0);
+    m_width = m_width.valueOr(0);
 
     if constexpr (IsSame<MakeUnsigned<T>, T>)
         return builder.putU64(value, base, m_alternative_form, upperCase, m_zero_pad, m_align, m_width.value(), m_fill, m_sign_mode);
@@ -810,7 +810,7 @@ ErrorOr<void> Formatter<bool>::format(FormatBuilder& builder, bool value)
         Formatter<u8> formatter { *this };
         return formatter.format(builder, static_cast<u8>(value));
     } else if (m_mode == Mode::HexDump) {
-        return builder.put_hexdump({ &value, sizeof(value) }, m_width.value_or(32), m_fill);
+        return builder.put_hexdump({ &value, sizeof(value) }, m_width.valueOr(32), m_fill);
     } else {
         Formatter<StringView> formatter { *this };
         return formatter.format(builder, value ? "true" : "false");
@@ -844,8 +844,8 @@ ErrorOr<void> Formatter<long double>::format(FormatBuilder& builder, long double
         VERIFY_NOT_REACHED();
     }
 
-    m_width = m_width.value_or(0);
-    m_precision = m_precision.value_or(6);
+    m_width = m_width.valueOr(0);
+    m_precision = m_precision.valueOr(6);
 
     return builder.putF80(value, base, upperCase, m_align, m_width.value(), m_precision.value(), m_fill, m_sign_mode);
 }
@@ -875,8 +875,8 @@ ErrorOr<void> Formatter<double>::format(FormatBuilder& builder, double value) {
         VERIFY_NOT_REACHED();
     }
 
-    m_width = m_width.value_or(0);
-    m_precision = m_precision.value_or(6);
+    m_width = m_width.valueOr(0);
+    m_precision = m_precision.valueOr(6);
 
     return builder.putF64(value, base, upperCase, m_zero_pad, m_align, m_width.value(), m_precision.value(), m_fill, m_sign_mode);
 }

@@ -433,8 +433,8 @@ requires(HasFormatter<T>) struct Formatter<Vector<T, inline_capacity>> : Standar
             VERIFY_NOT_REACHED();
         }
 
-        m_width = m_width.value_or(0);
-        m_precision = m_precision.value_or(NumericLimits<size_t>::max());
+        m_width = m_width.valueOr(0);
+        m_precision = m_precision.valueOr(NumericLimits<size_t>::max());
 
         Formatter<T> content_fmt;
         
