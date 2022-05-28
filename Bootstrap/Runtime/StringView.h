@@ -56,7 +56,7 @@ public:
     }
     [[nodiscard]] constexpr bool is_empty() const { return m_length == 0; }
 
-    [[nodiscard]] constexpr char const* characters_without_null_termination() const { return m_characters; }
+    [[nodiscard]] constexpr char const* charactersWithoutNullTermination() const { return m_characters; }
     [[nodiscard]] constexpr size_t length() const { return m_length; }
 
     [[nodiscard]] ReadonlyBytes bytes() const { return { m_characters, m_length }; }
@@ -72,7 +72,7 @@ public:
     {
         if (is_empty())
             return 0;
-        return string_hash(characters_without_null_termination(), length());
+        return string_hash(charactersWithoutNullTermination(), length());
     }
 
     [[nodiscard]] bool starts_with(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
@@ -303,7 +303,7 @@ struct CaseInsensitiveStringViewTraits : public Traits<StringView> {
     {
         if (s.is_empty())
             return 0;
-        return case_insensitive_string_hash(s.characters_without_null_termination(), s.length());
+        return case_insensitive_string_hash(s.charactersWithoutNullTermination(), s.length());
     }
 };
 

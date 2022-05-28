@@ -51,7 +51,7 @@ Vector<StringView> StringView::lines(bool consider_cr) const
     bool last_ch_was_cr = false;
     bool split_view = false;
     for (size_t i = 0; i < length(); ++i) {
-        char ch = characters_without_null_termination()[i];
+        char ch = charactersWithoutNullTermination()[i];
         if (ch == '\n') {
             split_view = true;
             if (last_ch_was_cr) {
@@ -82,7 +82,7 @@ bool StringView::starts_with(char ch) const
 {
     if (is_empty())
         return false;
-    return ch == characters_without_null_termination()[0];
+    return ch == charactersWithoutNullTermination()[0];
 }
 
 bool StringView::starts_with(StringView str, CaseSensitivity case_sensitivity) const
@@ -94,7 +94,7 @@ bool StringView::ends_with(char ch) const
 {
     if (is_empty())
         return false;
-    return ch == characters_without_null_termination()[length() - 1];
+    return ch == charactersWithoutNullTermination()[length() - 1];
 }
 
 bool StringView::ends_with(StringView str, CaseSensitivity case_sensitivity) const
@@ -134,12 +134,12 @@ bool StringView::equals_ignoring_case(StringView other) const
 #ifndef KERNEL
 String StringView::to_lowercase_string() const
 {
-    return StringImpl::create_lowercased(characters_without_null_termination(), length());
+    return StringImpl::create_lowercased(charactersWithoutNullTermination(), length());
 }
 
 String StringView::to_uppercase_string() const
 {
-    return StringImpl::create_uppercased(characters_without_null_termination(), length());
+    return StringImpl::create_uppercased(charactersWithoutNullTermination(), length());
 }
 
 String StringView::to_titlecase_string() const
@@ -150,7 +150,7 @@ String StringView::to_titlecase_string() const
 
 StringView StringView::substring_view_starting_from_substring(StringView substring) const
 {
-    char const* remaining_characters = substring.characters_without_null_termination();
+    char const* remaining_characters = substring.charactersWithoutNullTermination();
     VERIFY(remaining_characters >= m_characters);
     VERIFY(remaining_characters <= m_characters + m_length);
     size_t remaining_length = m_length - (remaining_characters - m_characters);
@@ -159,7 +159,7 @@ StringView StringView::substring_view_starting_from_substring(StringView substri
 
 StringView StringView::substring_view_starting_after_substring(StringView substring) const
 {
-    char const* remaining_characters = substring.characters_without_null_termination() + substring.length();
+    char const* remaining_characters = substring.charactersWithoutNullTermination() + substring.length();
     VERIFY(remaining_characters >= m_characters);
     VERIFY(remaining_characters <= m_characters + m_length);
     size_t remaining_length = m_length - (remaining_characters - m_characters);
@@ -231,7 +231,7 @@ Vector<StringView> StringView::split_view_if(Function<bool(char)> const& predica
     Vector<StringView> v;
     size_t substart = 0;
     for (size_t i = 0; i < length(); ++i) {
-        char ch = characters_without_null_termination()[i];
+        char ch = charactersWithoutNullTermination()[i];
         if (predicate(ch)) {
             size_t sublen = i - substart;
             if (sublen != 0 || keep_empty)

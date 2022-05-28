@@ -206,7 +206,7 @@ String String::repeated(StringView string, size_t count)
     char* buffer;
     auto impl = StringImpl::create_uninitialized(count * string.length(), buffer);
     for (size_t i = 0; i < count; i++)
-        __builtin_memcpy(buffer + i * string.length(), string.characters_without_null_termination(), string.length());
+        __builtin_memcpy(buffer + i * string.length(), string.charactersWithoutNullTermination(), string.length());
     return *impl;
 }
 

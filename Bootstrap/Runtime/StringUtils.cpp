@@ -35,10 +35,10 @@ bool matches(StringView str, StringView mask, CaseSensitivity case_sensitivity, 
         return true;
     }
 
-    char const* string_ptr = str.characters_without_null_termination();
-    char const* string_start = str.characters_without_null_termination();
+    char const* string_ptr = str.charactersWithoutNullTermination();
+    char const* string_start = str.charactersWithoutNullTermination();
     char const* string_end = string_ptr + str.length();
-    char const* mask_ptr = mask.characters_without_null_termination();
+    char const* mask_ptr = mask.charactersWithoutNullTermination();
     char const* mask_end = mask_ptr + mask.length();
 
     while (string_ptr < string_end && mask_ptr < mask_end) {
@@ -90,7 +90,7 @@ Optional<T> convert_to_int(StringView str, TrimWhitespace trim_whitespace)
 
     T sign = 1;
     size_t i = 0;
-    auto const characters = string.characters_without_null_termination();
+    auto const characters = string.charactersWithoutNullTermination();
 
     if (characters[0] == '-' || characters[0] == '+') {
         if (string.length() == 1)
@@ -130,7 +130,7 @@ Optional<T> convert_to_uint(StringView str, TrimWhitespace trim_whitespace)
         return {};
 
     T value = 0;
-    auto const characters = string.characters_without_null_termination();
+    auto const characters = string.charactersWithoutNullTermination();
 
     for (size_t i = 0; i < string.length(); i++) {
         if (characters[i] < '0' || characters[i] > '9')
@@ -232,7 +232,7 @@ bool equals_ignoring_case(StringView a, StringView b)
     if (a.length() != b.length())
         return false;
     for (size_t i = 0; i < a.length(); ++i) {
-        if (toAsciiLowercase(a.characters_without_null_termination()[i]) != toAsciiLowercase(b.characters_without_null_termination()[i]))
+        if (toAsciiLowercase(a.charactersWithoutNullTermination()[i]) != toAsciiLowercase(b.charactersWithoutNullTermination()[i]))
             return false;
     }
     return true;
@@ -248,10 +248,10 @@ bool ends_with(StringView str, StringView end, CaseSensitivity case_sensitivity)
         return false;
 
     if (case_sensitivity == CaseSensitivity::CaseSensitive)
-        return !memcmp(str.characters_without_null_termination() + (str.length() - end.length()), end.characters_without_null_termination(), end.length());
+        return !memcmp(str.charactersWithoutNullTermination() + (str.length() - end.length()), end.charactersWithoutNullTermination(), end.length());
 
-    auto str_chars = str.characters_without_null_termination();
-    auto end_chars = end.characters_without_null_termination();
+    auto str_chars = str.charactersWithoutNullTermination();
+    auto end_chars = end.charactersWithoutNullTermination();
 
     size_t si = str.length() - end.length();
     for (size_t ei = 0; ei < end.length(); ++si, ++ei) {
@@ -269,14 +269,14 @@ bool starts_with(StringView str, StringView start, CaseSensitivity case_sensitiv
         return false;
     if (start.length() > str.length())
         return false;
-    if (str.characters_without_null_termination() == start.characters_without_null_termination())
+    if (str.charactersWithoutNullTermination() == start.charactersWithoutNullTermination())
         return true;
 
     if (case_sensitivity == CaseSensitivity::CaseSensitive)
-        return !memcmp(str.characters_without_null_termination(), start.characters_without_null_termination(), start.length());
+        return !memcmp(str.charactersWithoutNullTermination(), start.charactersWithoutNullTermination(), start.length());
 
-    auto str_chars = str.characters_without_null_termination();
-    auto start_chars = start.characters_without_null_termination();
+    auto str_chars = str.charactersWithoutNullTermination();
+    auto start_chars = start.charactersWithoutNullTermination();
 
     size_t si = 0;
     for (size_t starti = 0; starti < start.length(); ++si, ++starti) {
@@ -292,8 +292,8 @@ bool contains(StringView str, StringView needle, CaseSensitivity case_sensitivit
         return false;
     if (needle.is_empty())
         return true;
-    auto str_chars = str.characters_without_null_termination();
-    auto needle_chars = needle.characters_without_null_termination();
+    auto str_chars = str.charactersWithoutNullTermination();
+    auto needle_chars = needle.charactersWithoutNullTermination();
     if (case_sensitivity == CaseSensitivity::CaseSensitive)
         return memmem(str_chars, str.length(), needle_chars, needle.length()) != nullptr;
 
@@ -369,8 +369,8 @@ Optional<size_t> find(StringView haystack, StringView needle, size_t start)
     if (start > haystack.length())
         return {};
     auto index = memmem_optional(
-        haystack.characters_without_null_termination() + start, haystack.length() - start,
-        needle.characters_without_null_termination(), needle.length());
+        haystack.charactersWithoutNullTermination() + start, haystack.length() - start,
+        needle.charactersWithoutNullTermination(), needle.length());
     return index.hasValue() ? (*index + start) : index;
 }
 
@@ -389,8 +389,8 @@ Vector<size_t> find_all(StringView haystack, StringView needle)
     size_t current_position = 0;
     while (current_position <= haystack.length()) {
         auto maybe_position = memmem_optional(
-            haystack.characters_without_null_termination() + current_position, haystack.length() - current_position,
-            needle.characters_without_null_termination(), needle.length());
+            haystack.charactersWithoutNullTermination() + current_position, haystack.length() - current_position,
+            needle.charactersWithoutNullTermination(), needle.length());
         if (!maybe_position.hasValue())
             break;
         positions.append(current_position + *maybe_position);

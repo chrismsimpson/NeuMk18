@@ -25,7 +25,7 @@ ErrorOr<void> StringBuilder::try_append(StringView string)
     if (string.is_empty())
         return {};
     TRY(will_append(string.length()));
-    TRY(m_buffer.push_values((u8 const*)string.characters_without_null_termination(), string.length()));
+    TRY(m_buffer.push_values((u8 const*)string.charactersWithoutNullTermination(), string.length()));
     return {};
 }
 

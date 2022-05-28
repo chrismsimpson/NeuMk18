@@ -40,7 +40,7 @@ public:
     String() = default;
 
     String(StringView view)
-        : m_impl(StringImpl::create(view.characters_without_null_termination(), view.length()))
+        : m_impl(StringImpl::create(view.charactersWithoutNullTermination(), view.length()))
     {
     }
 

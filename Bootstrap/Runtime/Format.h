@@ -683,9 +683,10 @@ void setDebugEnabled(bool);
 void vdmesgln(StringView fmtstr, TypeErasedFormatParams&);
 
 template<typename... Parameters>
-void dmesgln(CheckedFormatString<Parameters...>&& fmt, Parameters const&... parameters)
-{
+void dmesgln(CheckedFormatString<Parameters...>&& fmt, Parameters const&... parameters) {
+
     VariadicFormatParams variadic_format_params { parameters... };
+    
     vdmesgln(fmt.view(), variadic_format_params);
 }
 
@@ -694,68 +695,84 @@ void v_critical_dmesgln(StringView fmtstr, TypeErasedFormatParams&);
 // be very careful to not cause any allocations here, since we could be in
 // a very unstable situation
 template<typename... Parameters>
-void critical_dmesgln(CheckedFormatString<Parameters...>&& fmt, Parameters const&... parameters)
-{
+void critical_dmesgln(CheckedFormatString<Parameters...>&& fmt, Parameters const&... parameters) {
+
     VariadicFormatParams variadic_format_params { parameters... };
+    
     v_critical_dmesgln(fmt.view(), variadic_format_params);
 }
+
 #endif
 
 template<typename T>
 class FormatIfSupported {
+
 public:
+
     explicit FormatIfSupported(const T& value)
-        : m_value(value)
-    {
-    }
+        : m_value(value) { }
 
     const T& value() const { return m_value; }
 
 private:
+
     const T& m_value;
 };
+
 template<typename T, bool Supported = false>
 struct __FormatIfSupported : Formatter<StringView> {
-    ErrorOr<void> format(FormatBuilder& builder, FormatIfSupported<T> const&)
-    {
+
+    ErrorOr<void> format(FormatBuilder& builder, FormatIfSupported<T> const&) {
+
         return Formatter<StringView>::format(builder, "?");
     }
 };
+
 template<typename T>
 struct __FormatIfSupported<T, true> : Formatter<T> {
-    ErrorOr<void> format(FormatBuilder& builder, FormatIfSupported<T> const& value)
-    {
+
+    ErrorOr<void> format(FormatBuilder& builder, FormatIfSupported<T> const& value) {
+
         return Formatter<T>::format(builder, value.value());
     }
 };
+
 template<typename T>
-struct Formatter<FormatIfSupported<T>> : __FormatIfSupported<T, HasFormatter<T>> {
-};
+struct Formatter<FormatIfSupported<T>> : __FormatIfSupported<T, HasFormatter<T>> { };
 
 // This is a helper class, the idea is that if you want to implement a formatter you can inherit
 // from this class to "break down" the formatting.
-struct FormatString {
-};
+struct FormatString { };
+
 template<>
 struct Formatter<FormatString> : Formatter<StringView> {
+
     template<typename... Parameters>
-    ErrorOr<void> format(FormatBuilder& builder, StringView fmtstr, Parameters const&... parameters)
-    {
+    ErrorOr<void> format(FormatBuilder& builder, StringView fmtstr, Parameters const&... parameters) {
+
         VariadicFormatParams variadic_format_params { parameters... };
         return vformat(builder, fmtstr, variadic_format_params);
     }
+
     ErrorOr<void> vformat(FormatBuilder& builder, StringView fmtstr, TypeErasedFormatParams& params);
 };
 
 template<>
 struct Formatter<Error> : Formatter<FormatString> {
-    ErrorOr<void> format(FormatBuilder& builder, Error const& error)
-    {
+
+    ErrorOr<void> format(FormatBuilder& builder, Error const& error) {
+
 #if defined(__serenity__) && defined(KERNEL)
-        if (error.isErrorCode())
+        
+        if (error.isErrorCode()) {
+
             return Formatter<FormatString>::format(builder, "Error(errno={})", error.code());
+        }
+
         return Formatter<FormatString>::format(builder, "Error({})", error.stringLiteral());
+
 #else
+
         if (error.isSyscall()) {
 
             return Formatter<FormatString>::format(builder, "{}: {} (errno={})", error.stringLiteral(), strerror(error.code()), error.code());
@@ -767,6 +784,7 @@ struct Formatter<Error> : Formatter<FormatString> {
         }
 
         return Formatter<FormatString>::format(builder, "{}", error.stringLiteral());
+        
 #endif
     }
 };

@@ -73,8 +73,8 @@ public:
     }
 
     Function(Function&& other) {
-        
-        move_from(move(other));
+
+        moveFrom(move(other));
     }
 
     // Note: Despite this method being const, a mutable lambda _may_ modify its own captures.
@@ -128,7 +128,7 @@ public:
 
             clear();
 
-            move_from(move(other));
+            moveFrom(move(other));
         }
 
         return *this;
@@ -240,7 +240,7 @@ private:
         }
     }
 
-    void move_from(Function&& other) {
+    void moveFrom(Function&& other) {
 
         VERIFY(m_call_nesting_level == 0 && other.m_call_nesting_level == 0);
 

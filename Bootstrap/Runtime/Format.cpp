@@ -900,7 +900,7 @@ void vout(FILE* file, StringView fmtstr, TypeErasedFormatParams& params, bool ne
         builder.append('\n');
 
     auto const string = builder.string_view();
-    auto const retval = ::fwrite(string.characters_without_null_termination(), 1, string.length(), file);
+    auto const retval = ::fwrite(string.charactersWithoutNullTermination(), 1, string.length(), file);
     
     if (static_cast<size_t>(retval) != string.length()) {
 
@@ -967,12 +967,12 @@ void vdbgln(StringView fmtstr, TypeErasedFormatParams& params) {
 #ifdef __serenity__
 #    ifdef KERNEL
     if (!Kernel::Processor::is_initialized()) {
-        kernelearlyputstr(string.characters_without_null_termination(), string.length());
+        kernelearlyputstr(string.charactersWithoutNullTermination(), string.length());
         return;
     }
 #    endif
 #endif
-    dbgputstr(string.characters_without_null_termination(), string.length());
+    dbgputstr(string.charactersWithoutNullTermination(), string.length());
 }
 
 #ifdef KERNEL
@@ -1000,7 +1000,7 @@ void vdmesgln(StringView fmtstr, TypeErasedFormatParams& params)
     builder.append('\n');
 
     auto const string = builder.string_view();
-    kernelputstr(string.characters_without_null_termination(), string.length());
+    kernelputstr(string.charactersWithoutNullTermination(), string.length());
 }
 
 void v_critical_dmesgln(StringView fmtstr, TypeErasedFormatParams& params)
@@ -1022,7 +1022,7 @@ void v_critical_dmesgln(StringView fmtstr, TypeErasedFormatParams& params)
     builder.append('\n');
 
     auto const string = builder.string_view();
-    kernelcriticalputstr(string.characters_without_null_termination(), string.length());
+    kernelcriticalputstr(string.charactersWithoutNullTermination(), string.length());
 }
 
 #endif
