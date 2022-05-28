@@ -68,7 +68,7 @@ public:
 
         for (auto& item : list) {
 
-            unchecked_append(item);
+            uncheckedAppend(item);
         }
     }
 
@@ -325,7 +325,7 @@ public:
 #endif
 
     template<typename U = T>
-    ALWAYS_INLINE void unchecked_append(U&& value) requires(CanBePlacedInsideVector<U>)
+    ALWAYS_INLINE void uncheckedAppend(U&& value) requires(CanBePlacedInsideVector<U>)
     {
         VERIFY((size() + 1) <= capacity());
         if constexpr (contains_reference)
@@ -335,81 +335,106 @@ public:
         ++m_size;
     }
 
-    ALWAYS_INLINE void unchecked_append(StorageType const* values, size_t count)
-    {
-        if (count == 0)
+    ALWAYS_INLINE void uncheckedAppend(StorageType const* values, size_t count) {
+
+        if (count == 0) {
+
             return;
+        }
+
         VERIFY((size() + count) <= capacity());
+        
         TypedTransfer<StorageType>::copy(slot(m_size), values, count);
+        
         m_size += count;
     }
 
 #ifndef KERNEL
+
     template<class... Args>
-    void empend(Args&&... args) requires(!contains_reference)
-    {
+    void empend(Args&&... args) requires(!contains_reference) {
+
         MUST(try_empend(forward<Args>(args)...));
     }
 
     template<typename U = T>
-    void prepend(U&& value) requires(CanBePlacedInsideVector<U>)
-    {
+    void prepend(U&& value) requires(CanBePlacedInsideVector<U>) {
+
         MUST(try_insert(0, forward<U>(value)));
     }
 
-    void prepend(Vector&& other)
-    {
+    void prepend(Vector&& other) {
+
         MUST(try_prepend(move(other)));
     }
 
-    void prepend(StorageType const* values, size_t count)
-    {
+    void prepend(StorageType const* values, size_t count) {
+
         MUST(try_prepend(values, count));
     }
 
 #endif
 
     // FIXME: What about assigning from a vector with lower inline capacity?
-    Vector& operator=(Vector&& other)
-    {
+    
+    Vector& operator=(Vector&& other) {
+
         if (this != &other) {
+
             clear();
+            
             m_size = other.m_size;
             m_capacity = other.m_capacity;
             m_outline_buffer = other.m_outline_buffer;
+            
             if constexpr (inline_capacity > 0) {
+
                 if (!m_outline_buffer) {
+                    
                     for (size_t i = 0; i < m_size; ++i) {
+
                         new (&inline_buffer()[i]) StorageType(move(other.inline_buffer()[i]));
+                        
                         other.inline_buffer()[i].~StorageType();
                     }
                 }
             }
+
             other.m_outline_buffer = nullptr;
             other.m_size = 0;
             other.reset_capacity();
         }
+
         return *this;
     }
 
-    Vector& operator=(Vector const& other)
-    {
+    Vector& operator=(Vector const& other) {
+
         if (this != &other) {
+
             clear();
+            
             ensureCapacity(other.size());
+            
             TypedTransfer<StorageType>::copy(data(), other.data(), other.size());
+            
             m_size = other.size();
         }
+
         return *this;
     }
 
     template<size_t other_inline_capacity>
-    Vector& operator=(Vector<T, other_inline_capacity> const& other)
-    {
+    Vector& operator=(Vector<T, other_inline_capacity> const& other) {
+
         clear();
+
         ensureCapacity(other.size());
+
         TypedTransfer<StorageType>::copy(data(), other.data(), other.size());
+        
         m_size = other.size();
+        
         return *this;
     }
 
@@ -573,7 +598,7 @@ public:
 
     T take(size_t index) {
 
-        auto value = move(raw_at(index));
+        auto value = move(rawAt(index));
         
         remove(index);
         
@@ -591,7 +616,7 @@ public:
 
         VERIFY(index < m_size);
         
-        swap(raw_at(index), raw_at(m_size - 1));
+        swap(rawAt(index), rawAt(m_size - 1));
         
         return take_last();
     }
@@ -1028,27 +1053,35 @@ private:
         return reinterpret_cast<StorageType const*>(m_inline_buffer_storage);
     }
 
-    StorageType& rawLast() { return raw_at(size() - 1); }
-    StorageType& rawFirst() { return raw_at(0); }
-    StorageType& raw_at(size_t index) { return *slot(index); }
+    StorageType& rawLast() { return rawAt(size() - 1); }
+    StorageType& rawFirst() { return rawAt(0); }
+    StorageType& rawAt(size_t index) { return *slot(index); }
 
     size_t m_size { 0 };
     size_t m_capacity { 0 };
 
-    static constexpr size_t storage_size()
-    {
-        if constexpr (inline_capacity == 0)
+    static constexpr size_t storage_size() {
+
+        if constexpr (inline_capacity == 0) {
+
             return 0;
-        else
+        }
+        else {
+
             return sizeof(StorageType) * inline_capacity;
+        }
     }
 
-    static constexpr size_t storage_alignment()
-    {
-        if constexpr (inline_capacity == 0)
+    static constexpr size_t storage_alignment() {
+
+        if constexpr (inline_capacity == 0) {
+
             return 1;
-        else
+        }
+        else {
+
             return alignof(StorageType);
+        }
     }
 
     alignas(storage_alignment()) unsigned char m_inline_buffer_storage[storage_size()];

@@ -217,7 +217,7 @@ public:
         Vector<K> list;
         list.ensureCapacity(size());
         for (auto& it : *this)
-            list.unchecked_append(it.key);
+            list.uncheckedAppend(it.key);
         return list;
     }
 
