@@ -20,7 +20,7 @@ StringBuilder::StringBuilder()
 {
 }
 
-ErrorOr<void> StringBuilder::try_append(StringView string)
+ErrorOr<void> StringBuilder::tryAppend(StringView string)
 {
     if (string.isEmpty())
         return {};
@@ -29,7 +29,7 @@ ErrorOr<void> StringBuilder::try_append(StringView string)
     return {};
 }
 
-ErrorOr<void> StringBuilder::try_append(char ch)
+ErrorOr<void> StringBuilder::tryAppend(char ch)
 {
     TRY(will_append(1));
     TRY(m_buffer.push(ch));
@@ -38,22 +38,22 @@ ErrorOr<void> StringBuilder::try_append(char ch)
 
 void StringBuilder::append(StringView string)
 {
-    MUST(try_append(string));
+    MUST(tryAppend(string));
 }
 
-ErrorOr<void> StringBuilder::try_append(char const* characters, size_t length)
+ErrorOr<void> StringBuilder::tryAppend(char const* characters, size_t length)
 {
-    return try_append(StringView { characters, length });
+    return tryAppend(StringView { characters, length });
 }
 
 void StringBuilder::append(char const* characters, size_t length)
 {
-    MUST(try_append(characters, length));
+    MUST(tryAppend(characters, length));
 }
 
 void StringBuilder::append(char ch)
 {
-    MUST(try_append(ch));
+    MUST(tryAppend(ch));
 }
 
 String StringBuilder::to_string() const
@@ -82,9 +82,9 @@ ErrorOr<void> StringBuilder::try_append_code_point(u32 code_point)
 {
     auto nwritten = UnicodeUtils::code_point_to_utf8(code_point, [this](char c) { append(c); });
     if (nwritten < 0) {
-        TRY(try_append(0xef));
-        TRY(try_append(0xbf));
-        TRY(try_append(0xbd));
+        TRY(tryAppend(0xef));
+        TRY(tryAppend(0xbf));
+        TRY(tryAppend(0xbd));
     }
     return {};
 }
@@ -112,25 +112,25 @@ ErrorOr<void> StringBuilder::try_append_escaped_for_json(StringView string)
     for (auto ch : string) {
         switch (ch) {
         case '\b':
-            TRY(try_append("\\b"));
+            TRY(tryAppend("\\b"));
             break;
         case '\n':
-            TRY(try_append("\\n"));
+            TRY(tryAppend("\\n"));
             break;
         case '\t':
-            TRY(try_append("\\t"));
+            TRY(tryAppend("\\t"));
             break;
         case '\"':
-            TRY(try_append("\\\""));
+            TRY(tryAppend("\\\""));
             break;
         case '\\':
-            TRY(try_append("\\\\"));
+            TRY(tryAppend("\\\\"));
             break;
         default:
             if (ch >= 0 && ch <= 0x1f)
                 TRY(try_appendff("\\u{:04x}", ch));
             else
-                TRY(try_append(ch));
+                TRY(tryAppend(ch));
         }
     }
     return {};

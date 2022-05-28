@@ -20,16 +20,16 @@ public:
     explicit StringBuilder();
     ~StringBuilder() = default;
 
-    ErrorOr<void> try_append(StringView);
+    ErrorOr<void> tryAppend(StringView);
     ErrorOr<void> try_append_code_point(u32);
-    ErrorOr<void> try_append(char);
+    ErrorOr<void> tryAppend(char);
     template<typename... Parameters>
     ErrorOr<void> try_appendff(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters)
     {
         VariadicFormatParams variadic_format_params { parameters... };
         return vformat(*this, fmtstr.view(), variadic_format_params);
     }
-    ErrorOr<void> try_append(char const*, size_t);
+    ErrorOr<void> tryAppend(char const*, size_t);
     ErrorOr<void> try_append_escaped_for_json(StringView);
 
     void append(StringView);

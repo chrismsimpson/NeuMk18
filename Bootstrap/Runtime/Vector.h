@@ -307,20 +307,20 @@ public:
     ALWAYS_INLINE void append(T&& value)
     {
         if constexpr (contains_reference)
-            MUST(try_append(value));
+            MUST(tryAppend(value));
         else
-            MUST(try_append(move(value)));
+            MUST(tryAppend(move(value)));
     }
 
     ALWAYS_INLINE void append(T const& value) requires(!contains_reference)
     {
-        MUST(try_append(T(value)));
+        MUST(tryAppend(T(value)));
     }
 
 #ifndef KERNEL
     void append(StorageType const* values, size_t count)
     {
-        MUST(try_append(values, count));
+        MUST(tryAppend(values, count));
     }
 #endif
 
@@ -631,7 +631,7 @@ public:
 
         if (index == size()) {
 
-            return try_append(forward<U>(value));
+            return tryAppend(forward<U>(value));
         }
 
         TRY(try_grow_capacity(size() + 1));
@@ -682,7 +682,7 @@ public:
             }
         }
 
-        TRY(try_append(forward<U>(value)));
+        TRY(tryAppend(forward<U>(value)));
 
         if (inserted_index) {
 
@@ -725,7 +725,7 @@ public:
         return { };
     }
 
-    ErrorOr<void> try_append(T&& value) {
+    ErrorOr<void> tryAppend(T&& value) {
 
         TRY(try_grow_capacity(size() + 1));
         
@@ -743,12 +743,12 @@ public:
         return { };
     }
 
-    ErrorOr<void> try_append(T const& value) requires(!contains_reference) {
+    ErrorOr<void> tryAppend(T const& value) requires(!contains_reference) {
 
-        return try_append(T(value));
+        return tryAppend(T(value));
     }
 
-    ErrorOr<void> try_append(StorageType const* values, size_t count) {
+    ErrorOr<void> tryAppend(StorageType const* values, size_t count) {
 
         if (count == 0) {
 
