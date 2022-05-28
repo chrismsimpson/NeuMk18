@@ -81,15 +81,15 @@ public:
     ErrorType& error() { return this->template get<ErrorType>(); }
     ErrorType const& error() const { return this->template get<ErrorType>(); }
 
-    bool is_error() const { return this->template has<ErrorType>(); }
+    bool isError() const { return this->template has<ErrorType>(); }
 
-    T release_value() { return move(value()); }
-    ErrorType release_error() { return move(error()); }
+    T releaseValue() { return move(value()); }
+    ErrorType releaseError() { return move(error()); }
 
     T release_value_but_fixme_should_propagate_errors()
     {
-        VERIFY(!is_error());
-        return release_value();
+        VERIFY(!isError());
+        return releaseValue();
     }
 
 private:
@@ -122,9 +122,9 @@ public:
     ErrorOr& operator=(ErrorOr const& other) = default;
 
     ErrorType& error() { return m_error.value(); }
-    bool is_error() const { return m_error.has_value(); }
-    ErrorType release_error() { return m_error.release_value(); }
-    void release_value() { }
+    bool isError() const { return m_error.has_value(); }
+    ErrorType releaseError() { return m_error.releaseValue(); }
+    void releaseValue() { }
 
 private:
     Optional<ErrorType> m_error;

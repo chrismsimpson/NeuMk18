@@ -70,7 +70,7 @@ public:
         : m_has_value(other.m_has_value)
     {
         if (other.has_value())
-            new (&m_storage) T(other.release_value());
+            new (&m_storage) T(other.releaseValue());
     }
 
     template<typename U>
@@ -86,7 +86,7 @@ public:
         : m_has_value(other.m_has_value)
     {
         if (other.has_value())
-            new (&m_storage) T(other.release_value());
+            new (&m_storage) T(other.releaseValue());
     }
 
     template<typename U = T>
@@ -117,7 +117,7 @@ public:
             clear();
             m_has_value = other.m_has_value;
             if (other.has_value()) {
-                new (&m_storage) T(other.release_value());
+                new (&m_storage) T(other.releaseValue());
             }
         }
         return *this;
@@ -175,10 +175,10 @@ public:
 
     [[nodiscard]] ALWAYS_INLINE T value() &&
     {
-        return release_value();
+        return releaseValue();
     }
 
-    [[nodiscard]] ALWAYS_INLINE T release_value()
+    [[nodiscard]] ALWAYS_INLINE T releaseValue()
     {
         VERIFY(m_has_value);
         T released_value = move(value());
@@ -339,7 +339,7 @@ public:
         return fallback;
     }
 
-    [[nodiscard]] ALWAYS_INLINE T release_value()
+    [[nodiscard]] ALWAYS_INLINE T releaseValue()
     {
         return *exchange(m_pointer, nullptr);
     }

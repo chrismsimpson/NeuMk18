@@ -27,7 +27,7 @@ class FormatBuilder;
 
 template<typename T, typename = void>
 struct Formatter {
-    
+
     using __no_formatter_defined = void;
 };
 
@@ -652,7 +652,7 @@ template<typename T, typename ErrorType>
 struct Formatter<ErrorOr<T, ErrorType>> : Formatter<FormatString> {
     ErrorOr<void> format(FormatBuilder& builder, ErrorOr<T, ErrorType> const& error_or)
     {
-        if (error_or.is_error())
+        if (error_or.isError())
             return Formatter<FormatString>::format(builder, "{}", error_or.error());
         return Formatter<FormatString>::format(builder, "{{{}}}", error_or.value());
     }
