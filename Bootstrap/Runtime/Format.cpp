@@ -31,7 +31,7 @@ public:
 
     explicit FormatParser(StringView input);
 
-    StringView consume_literal();
+    StringView consumeLiteral();
     bool consume_number(size_t& value);
     bool consume_specifier(FormatSpecifier& specifier);
     bool consume_replacement_field(size_t& index);
@@ -73,7 +73,7 @@ static constexpr size_t convert_unsigned_to_string(u64 value, LinearArray<u8, 12
 
 ErrorOr<void> vformat_impl(TypeErasedFormatParams& params, FormatBuilder& builder, FormatParser& parser)
 {
-    auto const literal = parser.consume_literal();
+    auto const literal = parser.consumeLiteral();
     TRY(builder.put_literal(literal));
 
     FormatParser::FormatSpecifier specifier;
@@ -99,8 +99,9 @@ FormatParser::FormatParser(StringView input)
     : GenericLexer(input)
 {
 }
-StringView FormatParser::consume_literal()
-{
+
+StringView FormatParser::consumeLiteral() {
+
     auto const begin = tell();
 
     while (!is_eof()) {
@@ -565,12 +566,17 @@ void StandardFormatter::parse(TypeErasedFormatParams& params, FormatParser& pars
     }
 
     if (parser.consume_specific('.')) {
+        
         if (size_t index = 0; parser.consume_replacement_field(index)) {
-            if (index == use_next_index)
+
+            if (index == use_next_index) {
+
                 index = params.take_next_index();
+            }
 
             m_precision = params.parameters().at(index).toSize();
-        } else if (size_t precision = 0; parser.consume_number(precision)) {
+        } 
+        else if (size_t precision = 0; parser.consume_number(precision)) {
             m_precision = precision;
         }
     }
