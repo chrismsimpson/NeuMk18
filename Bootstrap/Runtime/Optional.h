@@ -37,11 +37,10 @@ public:
 
     ALWAYS_INLINE Optional() = default;
 
-    ALWAYS_INLINE Optional(NullOptional)
-    {
-    }
+    ALWAYS_INLINE Optional(NullOptional) { }
 
 #ifdef HAS_CONDITIONALLY_TRIVIAL
+
     Optional(Optional const& other) requires(!IsCopyConstructible<T>) = delete;
     Optional(Optional const& other) = default;
 
@@ -60,22 +59,26 @@ public:
 #ifdef HAS_CONDITIONALLY_TRIVIAL
         requires(!IsTriviallyCopyConstructible<T>)
 #endif
-        : m_has_value(other.m_has_value)
-    {
-        if (other.has_value())
+        : m_hasValue(other.m_hasValue) {
+
+        if (other.has_value()) {
+
             new (&m_storage) T(other.value());
+        }
     }
 
     ALWAYS_INLINE Optional(Optional&& other)
-        : m_has_value(other.m_has_value)
-    {
-        if (other.has_value())
+        : m_hasValue(other.m_hasValue) {
+            
+        if (other.has_value()) {
+
             new (&m_storage) T(other.releaseValue());
+        }
     }
 
     template<typename U>
     requires(IsConstructible<T, U const&> && !IsSpecializationOf<T, Optional> && !IsSpecializationOf<U, Optional>) ALWAYS_INLINE explicit Optional(Optional<U> const& other)
-        : m_has_value(other.m_has_value)
+        : m_hasValue(other.m_hasValue)
     {
         if (other.has_value())
             new (&m_storage) T(other.value());
@@ -83,7 +86,7 @@ public:
 
     template<typename U>
     requires(IsConstructible<T, U&&> && !IsSpecializationOf<T, Optional> && !IsSpecializationOf<U, Optional>) ALWAYS_INLINE explicit Optional(Optional<U>&& other)
-        : m_has_value(other.m_has_value)
+        : m_hasValue(other.m_hasValue)
     {
         if (other.has_value())
             new (&m_storage) T(other.releaseValue());
@@ -91,7 +94,7 @@ public:
 
     template<typename U = T>
     ALWAYS_INLINE explicit(!IsConvertible<U&&, T>) Optional(U&& value) requires(!IsSame<RemoveConstVolatileReference<U>, Optional<T>> && IsConstructible<T, U&&>)
-        : m_has_value(true)
+        : m_hasValue(true)
     {
         new (&m_storage) T(forward<U>(value));
     }
@@ -103,7 +106,7 @@ public:
     {
         if (this != &other) {
             clear();
-            m_has_value = other.m_has_value;
+            m_hasValue = other.m_hasValue;
             if (other.has_value()) {
                 new (&m_storage) T(other.value());
             }
@@ -115,7 +118,7 @@ public:
     {
         if (this != &other) {
             clear();
-            m_has_value = other.m_has_value;
+            m_hasValue = other.m_hasValue;
             if (other.has_value()) {
                 new (&m_storage) T(other.releaseValue());
             }
@@ -145,9 +148,9 @@ public:
 
     ALWAYS_INLINE void clear()
     {
-        if (m_has_value) {
+        if (m_hasValue) {
             value().~T();
-            m_has_value = false;
+            m_hasValue = false;
         }
     }
 
@@ -155,21 +158,21 @@ public:
     ALWAYS_INLINE void emplace(Parameters&&... parameters)
     {
         clear();
-        m_has_value = true;
+        m_hasValue = true;
         new (&m_storage) T(forward<Parameters>(parameters)...);
     }
 
-    [[nodiscard]] ALWAYS_INLINE bool has_value() const { return m_has_value; }
+    [[nodiscard]] ALWAYS_INLINE bool has_value() const { return m_hasValue; }
 
     [[nodiscard]] ALWAYS_INLINE T& value() &
     {
-        VERIFY(m_has_value);
+        VERIFY(m_hasValue);
         return *__builtin_launder(reinterpret_cast<T*>(&m_storage));
     }
 
     [[nodiscard]] ALWAYS_INLINE T const& value() const&
     {
-        VERIFY(m_has_value);
+        VERIFY(m_hasValue);
         return *__builtin_launder(reinterpret_cast<T const*>(&m_storage));
     }
 
@@ -180,23 +183,23 @@ public:
 
     [[nodiscard]] ALWAYS_INLINE T releaseValue()
     {
-        VERIFY(m_has_value);
+        VERIFY(m_hasValue);
         T released_value = move(value());
         value().~T();
-        m_has_value = false;
+        m_hasValue = false;
         return released_value;
     }
 
     [[nodiscard]] ALWAYS_INLINE T value_or(T const& fallback) const&
     {
-        if (m_has_value)
+        if (m_hasValue)
             return value();
         return fallback;
     }
 
     [[nodiscard]] ALWAYS_INLINE T value_or(T&& fallback) &&
     {
-        if (m_has_value)
+        if (m_hasValue)
             return move(value());
         return move(fallback);
     }
@@ -204,7 +207,7 @@ public:
     template<typename Callback>
     [[nodiscard]] ALWAYS_INLINE T value_or_lazy_evaluated(Callback callback) const
     {
-        if (m_has_value)
+        if (m_hasValue)
             return value();
         return callback();
     }
@@ -217,7 +220,7 @@ public:
 
 private:
     alignas(T) u8 m_storage[sizeof(T)];
-    bool m_has_value { false };
+    bool m_hasValue { false };
 };
 
 template<typename T>
