@@ -31,7 +31,7 @@
 //     StringBuilder builder;
 //     builder.append("abc");
 //     builder.append("123");
-//     s = builder.to_string();
+//     s = builder.toString();
 
 class String {
 public:

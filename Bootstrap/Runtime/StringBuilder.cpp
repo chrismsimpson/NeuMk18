@@ -56,7 +56,7 @@ void StringBuilder::append(char ch)
     MUST(tryAppend(ch));
 }
 
-String StringBuilder::to_string() const
+String StringBuilder::toString() const
 {
     if (isEmpty())
         return String::empty();
@@ -65,7 +65,7 @@ String StringBuilder::to_string() const
 
 String StringBuilder::build() const
 {
-    return to_string();
+    return toString();
 }
 
 StringView StringBuilder::string_view() const
@@ -89,7 +89,7 @@ ErrorOr<void> StringBuilder::tryAppendCodePoint(u32 code_point)
     return {};
 }
 
-void StringBuilder::append_code_point(u32 code_point)
+void StringBuilder::appendCodePoint(u32 code_point)
 {
     MUST(tryAppendCodePoint(code_point));
 }

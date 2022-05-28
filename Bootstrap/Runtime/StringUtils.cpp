@@ -463,7 +463,7 @@ String to_snakecase(StringView str) {
         builder.appendAsLowercase(ch);
     }
 
-    return builder.to_string();
+    return builder.toString();
 }
 
 String to_titlecase(StringView str) {
@@ -476,17 +476,17 @@ String to_titlecase(StringView str) {
 
         if (next_is_upper) {
 
-            builder.append_code_point(toAsciiUppercase(ch));
+            builder.appendCodePoint(toAsciiUppercase(ch));
         }
         else {
 
-            builder.append_code_point(toAsciiLowercase(ch));
+            builder.appendCodePoint(toAsciiLowercase(ch));
         }
-        
+
         next_is_upper = ch == ' ';
     }
 
-    return builder.to_string();
+    return builder.toString();
 }
 
 String replace(StringView str, StringView needle, StringView replacement, bool all_occurrences)

@@ -38,7 +38,7 @@ public:
 
     void append(StringView);
     void append(char);
-    void append_code_point(u32);
+    void appendCodePoint(u32);
     void append(char const*, size_t);
 
     void appendAsLowercase(char);
@@ -53,7 +53,7 @@ public:
 
 #ifndef KERNEL
     [[nodiscard]] String build() const;
-    [[nodiscard]] String to_string() const;
+    [[nodiscard]] String toString() const;
 #endif
 
     [[nodiscard]] StringView string_view() const;
@@ -103,6 +103,6 @@ struct Formatter<JaktInternal::Array<T>> : Formatter<StringView> {
             }
         }
         string_builder.append("]");
-        return Formatter<StringView>::format(builder, string_builder.to_string());
+        return Formatter<StringView>::format(builder, string_builder.toString());
     }
 };

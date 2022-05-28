@@ -210,7 +210,7 @@ bool StringView::operator==(String const& string) const
     return *this == string.view();
 }
 
-String StringView::to_string() const { return String { *this }; }
+String StringView::toString() const { return String { *this }; }
 
 String StringView::replace(StringView needle, StringView replacement, bool all_occurrences) const
 {

@@ -253,11 +253,13 @@ public:
     constexpr bool operator>=(StringView other) const { return compare(other) >= 0; }
 
 #ifndef KERNEL
-    [[nodiscard]] String to_string() const;
+
+    [[nodiscard]] String toString() const;
+
 #endif
 
-    [[nodiscard]] bool is_whitespace() const
-    {
+    [[nodiscard]] bool is_whitespace() const {
+        
         return StringUtils::is_whitespace(*this);
     }
 

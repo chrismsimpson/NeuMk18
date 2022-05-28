@@ -287,7 +287,7 @@ String String::roman_number_from(size_t value)
         }
     }
 
-    return builder.to_string();
+    return builder.toString();
 }
 
 bool String::matches(StringView mask, Vector<MaskSpan>& mask_spans, CaseSensitivity case_sensitivity) const
@@ -321,7 +321,7 @@ String String::reverse() const
     for (size_t i = length(); i-- > 0;) {
         reversed_string.append(characters()[i]);
     }
-    return reversed_string.to_string();
+    return reversed_string.toString();
 }
 
 String escape_html_entities(StringView html)
@@ -339,7 +339,7 @@ String escape_html_entities(StringView html)
         else
             builder.append(html[i]);
     }
-    return builder.to_string();
+    return builder.toString();
 }
 
 String String::to_lowercase() const
@@ -395,7 +395,7 @@ String String::vformatted(StringView fmtstr, TypeErasedFormatParams& params)
 {
     StringBuilder builder;
     MUST(vformat(builder, fmtstr, params));
-    return builder.to_string();
+    return builder.toString();
 }
 
 Vector<size_t> String::find_all(StringView needle) const
@@ -411,7 +411,7 @@ String& String::operator+=(String const& other)
     StringBuilder builder;
     builder.append(*this);
     builder.append(other);
-    *this = builder.to_string();
+    *this = builder.toString();
     return *this;
 }
 
@@ -420,5 +420,5 @@ String operator+(String const& a, String const& b)
     StringBuilder builder;
     builder.append(a);
     builder.append(b);
-    return builder.to_string();
+    return builder.toString();
 }
