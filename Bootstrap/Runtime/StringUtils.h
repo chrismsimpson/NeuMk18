@@ -60,7 +60,7 @@ bool equals_ignoring_case(StringView, StringView);
 bool ends_with(StringView a, StringView b, CaseSensitivity);
 bool starts_with(StringView, StringView, CaseSensitivity);
 bool contains(StringView, StringView, CaseSensitivity);
-bool is_whitespace(StringView);
+bool isWhitespace(StringView);
 StringView trim(StringView string, StringView characters, TrimMode mode);
 StringView trim_whitespace(StringView string, TrimMode mode);
 

@@ -108,7 +108,7 @@ public:
     [[nodiscard]] String to_snakecase() const;
     [[nodiscard]] String to_titlecase() const;
 
-    [[nodiscard]] bool is_whitespace() const { return StringUtils::is_whitespace(*this); }
+    [[nodiscard]] bool isWhitespace() const { return StringUtils::isWhitespace(*this); }
 
     [[nodiscard]] String trim(StringView characters, TrimMode mode = TrimMode::Both) const
     {

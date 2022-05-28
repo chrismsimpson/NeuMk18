@@ -258,16 +258,19 @@ public:
 
 #endif
 
-    [[nodiscard]] bool is_whitespace() const {
-        
-        return StringUtils::is_whitespace(*this);
+    [[nodiscard]] bool isWhitespace() const {
+
+        return StringUtils::isWhitespace(*this);
     }
 
 #ifndef KERNEL
+
     [[nodiscard]] String replace(StringView needle, StringView replacement, bool all_occurrences = false) const;
+
 #endif
-    [[nodiscard]] size_t count(StringView needle) const
-    {
+
+    [[nodiscard]] size_t count(StringView needle) const {
+
         return StringUtils::count(*this, needle);
     }
 
