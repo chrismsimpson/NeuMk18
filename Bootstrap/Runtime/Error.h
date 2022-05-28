@@ -24,35 +24,33 @@ public:
 
     static Error fromErrorCode(int code) { return Error(code); }
     static Error fromSyscall(StringView syscallName, int rc) { return Error(syscallName, rc); }
-    static Error fromStringLiteral(StringView string_literal) { return Error(string_literal); }
+    static Error fromStringLiteral(StringView stringLiteral) { return Error(stringLiteral); }
 
     bool is_errno() const { return m_code != 0; }
     bool is_syscall() const { return m_syscall; }
 
     int code() const { return m_code; }
-    StringView string_literal() const { return m_string_literal; }
+    StringView stringLiteral() const { return m_stringLiteral; }
 
 protected:
+
     Error(int code)
-        : m_code(code)
-    {
-    }
+        : m_code(code) { }
 
 private:
-    Error(StringView string_literal)
-        : m_string_literal(string_literal)
-    {
-    }
+
+    Error(StringView stringLiteral)
+        : m_stringLiteral(stringLiteral) { }
 
     Error(StringView syscallName, int rc)
         : m_code(-rc)
-        , m_string_literal(syscallName)
+        , m_stringLiteral(syscallName)
         , m_syscall(true)
     {
     }
 
     int m_code { 0 };
-    StringView m_string_literal;
+    StringView m_stringLiteral;
     bool m_syscall { false };
 };
 

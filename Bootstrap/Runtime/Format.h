@@ -630,14 +630,14 @@ struct Formatter<Error> : Formatter<FormatString> {
 #if defined(__serenity__) && defined(KERNEL)
         if (error.is_errno())
             return Formatter<FormatString>::format(builder, "Error(errno={})", error.code());
-        return Formatter<FormatString>::format(builder, "Error({})", error.string_literal());
+        return Formatter<FormatString>::format(builder, "Error({})", error.stringLiteral());
 #else
         if (error.is_syscall())
-            return Formatter<FormatString>::format(builder, "{}: {} (errno={})", error.string_literal(), strerror(error.code()), error.code());
+            return Formatter<FormatString>::format(builder, "{}: {} (errno={})", error.stringLiteral(), strerror(error.code()), error.code());
         if (error.is_errno())
             return Formatter<FormatString>::format(builder, "{} (errno={})", strerror(error.code()), error.code());
 
-        return Formatter<FormatString>::format(builder, "{}", error.string_literal());
+        return Formatter<FormatString>::format(builder, "{}", error.stringLiteral());
 #endif
     }
 };
