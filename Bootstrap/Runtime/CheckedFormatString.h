@@ -54,9 +54,9 @@ namespace Format::Detail {
 
         struct {
 
-            size_t index_value { 0 };
+            size_t indexValue { 0 };
 
-            bool saw_explicit_index { false };
+            bool sawExplicitIndex { false };
 
         } state;
 
@@ -69,26 +69,29 @@ namespace Format::Detail {
                 break;
             }
 
-            state.index_value *= 10;
-            state.index_value += c - '0';
-            state.saw_explicit_index = true;
+            state.indexValue *= 10;
+            state.indexValue += c - '0';
+            state.sawExplicitIndex = true;
         }
 
-        if (!state.saw_explicit_index)
-            return nextImplicitArgumentIndex++;
+        if (!state.sawExplicitIndex) {
 
-        return state.index_value;
+            return nextImplicitArgumentIndex++;
+        }
+
+        return state.indexValue;
     }
 
     // FIXME: We should rather parse these format strings at compile-time if possible.
+    
     template<size_t N>
-    consteval auto count_fmt_params(char const (&fmt)[N]) {
+    consteval auto countFormatParameters(char const (&fmt)[N]) {
 
         struct {
 
             // FIXME: Switch to variable-sized storage whenever we can come up with one :)
             
-            LinearArray<size_t, 128> used_arguments { 0 };
+            LinearArray<size_t, 128> usedArguments { 0 };
             
             size_t total_used_argument_count { 0 };
             size_t nextImplicitArgumentIndex { 0 };
@@ -158,7 +161,7 @@ namespace Format::Detail {
 
                     auto const specifierStartIndex = result.last_format_specifier_start[--result.total_used_last_format_specifier_start_count];
 
-                    if (result.total_used_argument_count >= result.used_arguments.size()) {
+                    if (result.total_used_argument_count >= result.usedArguments.size()) {
 
                         compileTimeFail("Format-String Checker internal error: Too many format arguments in format string");
                     }
@@ -170,7 +173,7 @@ namespace Format::Detail {
                         result.has_explicit_argument_references = true;
                     }
 
-                    result.used_arguments[result.total_used_argument_count++] = usedArgumentIndex;
+                    result.usedArguments[result.total_used_argument_count++] = usedArgumentIndex;
 
                 }
                 else {
@@ -221,7 +224,7 @@ namespace Format::Detail {
         template<size_t N, size_t param_count>
         consteval static bool check_format_parameter_consistency(char const (&fmt)[N]) {
 
-            auto check = count_fmt_params<N>(fmt);
+            auto check = countFormatParameters<N>(fmt);
 
             if (check.unclosed_braces != 0) {
 
@@ -234,9 +237,9 @@ namespace Format::Detail {
             }
 
             {
-                auto begin = check.used_arguments.begin();
+                auto begin = check.usedArguments.begin();
                 
-                auto end = check.used_arguments.begin() + check.total_used_argument_count;
+                auto end = check.usedArguments.begin() + check.total_used_argument_count;
                 
                 auto has_all_referenced_arguments = !anyOf(begin, end, [](auto& entry) { return entry >= param_count; });
 
@@ -277,8 +280,8 @@ namespace Format::Detail {
                     all_parameters,
                     [&](auto& entry) {
                         return contains(
-                            check.used_arguments.begin(),
-                            check.used_arguments.begin() + check.total_used_argument_count,
+                            check.usedArguments.begin(),
+                            check.usedArguments.begin() + check.total_used_argument_count,
                             entry);
                     });
 
