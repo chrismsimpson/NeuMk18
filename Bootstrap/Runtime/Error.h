@@ -27,7 +27,7 @@ public:
     static Error fromStringLiteral(StringView stringLiteral) { return Error(stringLiteral); }
 
     bool isErrorCode() const { return m_code != 0; }
-    bool is_syscall() const { return m_syscall; }
+    bool isSyscall() const { return m_syscall; }
 
     int code() const { return m_code; }
     StringView stringLiteral() const { return m_stringLiteral; }
@@ -62,22 +62,21 @@ public:
     using Variant<T, ErrorType>::Variant;
 
     template<typename U>
-    ALWAYS_INLINE ErrorOr(U&& value) requires(!IsSame<RemoveCVReference<U>, ErrorOr<T>>)
-        : Variant<T, ErrorType>(forward<U>(value))
-    {
-    }
+    ALWAYS_INLINE ErrorOr(U&& value) requires(!IsSame<RemoveConstVolatileReference<U>, ErrorOr<T>>)
+        : Variant<T, ErrorType>(forward<U>(value)) { }
 
 #ifdef __serenity__
+
     ErrorOr(ErrnoCode code)
-        : Variant<T, ErrorType>(Error::fromErrorCode(code))
-    {
-    }
+        : Variant<T, ErrorType>(Error::fromErrorCode(code)) { }
+
 #endif
 
-    T& value()
-    {
+    T& value() {
+
         return this->template get<T>();
     }
+
     T const& value() const { return this->template get<T>(); }
     ErrorType& error() { return this->template get<ErrorType>(); }
     ErrorType const& error() const { return this->template get<ErrorType>(); }

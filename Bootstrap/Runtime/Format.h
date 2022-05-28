@@ -27,6 +27,7 @@ class FormatBuilder;
 
 template<typename T, typename = void>
 struct Formatter {
+    
     using __no_formatter_defined = void;
 };
 
@@ -632,10 +633,15 @@ struct Formatter<Error> : Formatter<FormatString> {
             return Formatter<FormatString>::format(builder, "Error(errno={})", error.code());
         return Formatter<FormatString>::format(builder, "Error({})", error.stringLiteral());
 #else
-        if (error.is_syscall())
+        if (error.isSyscall()) {
+
             return Formatter<FormatString>::format(builder, "{}: {} (errno={})", error.stringLiteral(), strerror(error.code()), error.code());
-        if (error.isErrorCode())
+        }
+
+        if (error.isErrorCode()) {
+
             return Formatter<FormatString>::format(builder, "{} (errno={})", strerror(error.code()), error.code());
+        }
 
         return Formatter<FormatString>::format(builder, "{}", error.stringLiteral());
 #endif

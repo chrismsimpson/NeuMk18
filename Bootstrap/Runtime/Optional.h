@@ -90,7 +90,7 @@ public:
     }
 
     template<typename U = T>
-    ALWAYS_INLINE explicit(!IsConvertible<U&&, T>) Optional(U&& value) requires(!IsSame<RemoveCVReference<U>, Optional<T>> && IsConstructible<T, U&&>)
+    ALWAYS_INLINE explicit(!IsConvertible<U&&, T>) Optional(U&& value) requires(!IsSame<RemoveConstVolatileReference<U>, Optional<T>> && IsConstructible<T, U&&>)
         : m_has_value(true)
     {
         new (&m_storage) T(forward<U>(value));
@@ -226,7 +226,7 @@ requires(IsLvalueReference<T>) class [[nodiscard]] Optional<T> {
     friend class Optional;
 
     template<typename U>
-    constexpr static bool CanBePlacedInOptional = IsSame<RemoveReference<T>, RemoveReference<AddConstToReferencedType<U>>> && (IsBaseOf<RemoveCVReference<T>, RemoveCVReference<U>> || IsSame<RemoveCVReference<T>, RemoveCVReference<U>>);
+    constexpr static bool CanBePlacedInOptional = IsSame<RemoveReference<T>, RemoveReference<AddConstToReferencedType<U>>> && (IsBaseOf<RemoveConstVolatileReference<T>, RemoveConstVolatileReference<U>> || IsSame<RemoveConstVolatileReference<T>, RemoveConstVolatileReference<U>>);
 
 public:
     using ValueType = T;
@@ -324,7 +324,7 @@ public:
     }
 
     template<typename U>
-    requires(IsBaseOf<RemoveCVReference<T>, U>) [[nodiscard]] ALWAYS_INLINE AddConstToReferencedType<T> value_or(U& fallback) const
+    requires(IsBaseOf<RemoveConstVolatileReference<T>, U>) [[nodiscard]] ALWAYS_INLINE AddConstToReferencedType<T> value_or(U& fallback) const
     {
         if (m_pointer)
             return value();
@@ -332,7 +332,7 @@ public:
     }
 
     // Note that this ends up copying the value.
-    [[nodiscard]] ALWAYS_INLINE RemoveCVReference<T> value_or(RemoveCVReference<T> fallback) const
+    [[nodiscard]] ALWAYS_INLINE RemoveConstVolatileReference<T> value_or(RemoveConstVolatileReference<T> fallback) const
     {
         if (m_pointer)
             return value();
@@ -363,10 +363,10 @@ public:
     ALWAYS_INLINE RawPtr<RemoveReference<T>> operator->() { return &value(); }
 
     // Conversion operators from Optional<T&> -> Optional<T>
-    ALWAYS_INLINE operator Optional<RemoveCVReference<T>>() const
+    ALWAYS_INLINE operator Optional<RemoveConstVolatileReference<T>>() const
     {
         if (has_value())
-            return Optional<RemoveCVReference<T>>(value());
+            return Optional<RemoveConstVolatileReference<T>>(value());
         return {};
     }
 

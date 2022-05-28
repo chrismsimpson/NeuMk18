@@ -12,9 +12,13 @@ namespace Detail {
 
 template<class T, T v>
 struct IntegralConstant {
+
     static constexpr T value = v;
+    
     using ValueType = T;
+    
     using Type = IntegralConstant;
+    
     constexpr operator ValueType() const { return value; }
     constexpr ValueType operator()() const { return value; }
 };
@@ -27,16 +31,19 @@ using AddConst = const T;
 
 template<class T>
 struct __AddConstToReferencedType {
+
     using Type = T;
 };
 
 template<class T>
 struct __AddConstToReferencedType<T&> {
+
     using Type = AddConst<T>&;
 };
 
 template<class T>
 struct __AddConstToReferencedType<T&&> {
+
     using Type = AddConst<T>&&;
 };
 
@@ -45,22 +52,28 @@ using AddConstToReferencedType = typename __AddConstToReferencedType<T>::Type;
 
 template<class T>
 struct __RemoveConst {
+
     using Type = T;
 };
+
 template<class T>
 struct __RemoveConst<const T> {
+
     using Type = T;
 };
+
 template<class T>
 using RemoveConst = typename __RemoveConst<T>::Type;
 
 template<class T>
 struct __RemoveVolatile {
+
     using Type = T;
 };
 
 template<class T>
 struct __RemoveVolatile<volatile T> {
+    
     using Type = T;
 };
 
@@ -68,7 +81,7 @@ template<typename T>
 using RemoveVolatile = typename __RemoveVolatile<T>::Type;
 
 template<class T>
-using RemoveCV = RemoveVolatile<RemoveConst<T>>;
+using RemoveConstVolatile = RemoveVolatile<RemoveConst<T>>;
 
 template<typename...>
 using VoidType = void;
@@ -86,84 +99,123 @@ template<class T>
 inline constexpr bool __IsPointerHelper<T*> = true;
 
 template<class T>
-inline constexpr bool IsPointer = __IsPointerHelper<RemoveCV<T>>;
+inline constexpr bool IsPointer = __IsPointerHelper<RemoveConstVolatile<T>>;
 
 template<class>
 inline constexpr bool IsFunction = false;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args...)> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args..., ...)> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args...) const> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args..., ...) const> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args...) volatile> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args..., ...) volatile> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args...) const volatile> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args..., ...) const volatile> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args...)&> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args..., ...)&> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args...) const&> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args..., ...) const&> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args...) volatile&> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args..., ...) volatile&> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args...) const volatile&> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args..., ...) const volatile&> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args...) &&> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args..., ...) &&> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args...) const&&> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args..., ...) const&&> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args...) volatile&&> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args..., ...) volatile&&> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args...) const volatile&&> = true;
+
 template<class Ret, class... Args>
 inline constexpr bool IsFunction<Ret(Args..., ...) const volatile&&> = true;
 
+///
+
 template<class T>
 inline constexpr bool IsRvalueReference = false;
+
 template<class T>
 inline constexpr bool IsRvalueReference<T&&> = true;
 
+///
+
 template<class T>
 struct __RemovePointer {
+
     using Type = T;
 };
+
 template<class T>
 struct __RemovePointer<T*> {
+
     using Type = T;
 };
+
 template<class T>
 struct __RemovePointer<T* const> {
+
     using Type = T;
 };
+
 template<class T>
 struct __RemovePointer<T* volatile> {
+
     using Type = T;
 };
+
 template<class T>
 struct __RemovePointer<T* const volatile> {
+
     using Type = T;
 };
+
 template<typename T>
 using RemovePointer = typename __RemovePointer<T>::Type;
 
@@ -175,11 +227,13 @@ inline constexpr bool IsSame<T, T> = true;
 
 template<bool condition, class TrueType, class FalseType>
 struct __Conditional {
+
     using Type = TrueType;
 };
 
 template<class TrueType, class FalseType>
 struct __Conditional<false, TrueType, FalseType> {
+
     using Type = FalseType;
 };
 
@@ -187,18 +241,23 @@ template<bool condition, class TrueType, class FalseType>
 using Conditional = typename __Conditional<condition, TrueType, FalseType>::Type;
 
 template<typename T>
-inline constexpr bool IsNullPointer = IsSame<decltype(nullptr), RemoveCV<T>>;
+inline constexpr bool IsNullPointer = IsSame<decltype(nullptr), RemoveConstVolatile<T>>;
 
 template<typename T>
 struct __RemoveReference {
+
     using Type = T;
 };
+
 template<class T>
 struct __RemoveReference<T&> {
+
     using Type = T;
 };
+
 template<class T>
 struct __RemoveReference<T&&> {
+
     using Type = T;
 };
 
@@ -206,7 +265,7 @@ template<typename T>
 using RemoveReference = typename __RemoveReference<T>::Type;
 
 template<typename T>
-using RemoveCVReference = RemoveCV<RemoveReference<T>>;
+using RemoveConstVolatileReference = RemoveConstVolatile<RemoveReference<T>>;
 
 template<typename T>
 struct __MakeUnsigned {
@@ -353,7 +412,7 @@ template<typename... Ts>
 using CommonType = typename __CommonType<Ts...>::Type;
 
 template<class T>
-inline constexpr bool IsVoid = IsSame<void, RemoveCV<T>>;
+inline constexpr bool IsVoid = IsSame<void, RemoveConstVolatile<T>>;
 
 template<class T>
 inline constexpr bool IsConst = false;
@@ -396,7 +455,7 @@ template<>
 inline constexpr bool __IsIntegral<unsigned long long> = true;
 
 template<typename T>
-inline constexpr bool IsIntegral = __IsIntegral<MakeUnsigned<RemoveCV<T>>>;
+inline constexpr bool IsIntegral = __IsIntegral<MakeUnsigned<RemoveConstVolatile<T>>>;
 
 template<typename T>
 inline constexpr bool __IsFloatingPoint = false;
@@ -408,7 +467,7 @@ template<>
 inline constexpr bool __IsFloatingPoint<long double> = true;
 
 template<typename T>
-inline constexpr bool IsFloatingPoint = __IsFloatingPoint<RemoveCV<T>>;
+inline constexpr bool IsFloatingPoint = __IsFloatingPoint<RemoveConstVolatile<T>>;
 
 template<typename ReferenceType, typename T>
 using CopyConst = Conditional<IsConst<ReferenceType>, AddConst<T>, RemoveConst<T>>;
@@ -568,7 +627,7 @@ inline constexpr bool IsSpecializationOf<U<Us...>, U> = true;
 
 template<typename T>
 struct __decay {
-    typedef Detail::RemoveCVReference<T> type;
+    typedef Detail::RemoveConstVolatileReference<T> type;
 };
 template<typename T>
 struct __decay<T[]> {
@@ -583,7 +642,7 @@ template<typename T>
 using Decay = typename __decay<T>::type;
 
 template<typename T, typename U>
-inline constexpr bool IsPointerOfType = IsPointer<Decay<U>>&& IsSame<T, RemoveCV<RemovePointer<Decay<U>>>>;
+inline constexpr bool IsPointerOfType = IsPointer<Decay<U>>&& IsSame<T, RemoveConstVolatile<RemovePointer<Decay<U>>>>;
 
 template<typename T, typename U>
 inline constexpr bool IsHashCompatible = false;
@@ -594,7 +653,7 @@ template<typename T, typename... Ts>
 inline constexpr bool IsOneOf = (IsSame<T, Ts> || ...);
 
 template<typename T, typename U>
-inline constexpr bool IsSameIgnoringCV = IsSame<RemoveCV<T>, RemoveCV<U>>;
+inline constexpr bool IsSameIgnoringCV = IsSame<RemoveConstVolatile<T>, RemoveConstVolatile<U>>;
 
 template<typename T, typename... Ts>
 inline constexpr bool IsOneOfIgnoringCV = (IsSameIgnoringCV<T, Ts> || ...);
@@ -661,8 +720,8 @@ using Detail::MakeIntegerSequence;
 using Detail::MakeSigned;
 using Detail::MakeUnsigned;
 using Detail::RemoveConst;
-using Detail::RemoveCV;
-using Detail::RemoveCVReference;
+using Detail::RemoveConstVolatile;
+using Detail::RemoveConstVolatileReference;
 using Detail::RemovePointer;
 using Detail::RemoveReference;
 using Detail::RemoveVolatile;

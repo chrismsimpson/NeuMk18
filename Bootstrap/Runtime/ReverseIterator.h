@@ -63,7 +63,7 @@ public:
 private:
     static constexpr SimpleReverseIterator rbegin(Container& container)
     {
-        using RawContainerType = RemoveCV<Container>;
+        using RawContainerType = RemoveConstVolatile<Container>;
         if constexpr (IsSame<StringView, RawContainerType> || IsSame<String, RawContainerType>)
             return { container, static_cast<int>(container.length()) - 1 };
         else
