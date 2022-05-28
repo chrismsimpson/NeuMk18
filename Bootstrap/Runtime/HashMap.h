@@ -32,7 +32,7 @@ public:
 
     HashMap(std::initializer_list<Entry> list)
     {
-        MUST(ensure_capacity(list.size()));
+        MUST(ensureCapacity(list.size()));
         for (auto& item : list)
             MUST(set(item.key, item.value));
     }
@@ -44,7 +44,7 @@ public:
     [[nodiscard]] size_t size() const { return m_table.size(); }
     [[nodiscard]] size_t capacity() const { return m_table.capacity(); }
     void clear() { m_table.clear(); }
-    void clear_with_capacity() { m_table.clear_with_capacity(); }
+    void clearWithCapacity() { m_table.clearWithCapacity(); }
 
     ErrorOr<HashSetResult> set(const K& key, const V& value) { return m_table.try_set({ key, value }); }
     ErrorOr<HashSetResult> set(const K& key, V&& value) { return m_table.try_set({ key, move(value) }); }
@@ -119,7 +119,7 @@ public:
         return m_table.find(Traits<Key>::hash(key), [&](auto& entry) { return Traits<K>::equals(key, entry.key); });
     }
 
-    ErrorOr<void> ensure_capacity(size_t capacity) { return m_table.try_ensure_capacity(capacity); }
+    ErrorOr<void> ensureCapacity(size_t capacity) { return m_table.tryEnsureCapacity(capacity); }
 
     Optional<typename Traits<V>::ConstPeekType> get(const K& key) const requires(!IsPointer<typename Traits<V>::PeekType>)
     {
@@ -215,7 +215,7 @@ public:
     [[nodiscard]] Vector<K> keys() const
     {
         Vector<K> list;
-        list.ensure_capacity(size());
+        list.ensureCapacity(size());
         for (auto& it : *this)
             list.unchecked_append(it.key);
         return list;

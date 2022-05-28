@@ -64,7 +64,7 @@ public:
 
     Vector(std::initializer_list<T> list) requires(!IsLValueReference<T>) {
 
-        ensure_capacity(list.size());
+        ensureCapacity(list.size());
 
         for (auto& item : list) {
 
@@ -97,7 +97,7 @@ public:
 
     Vector(Vector const& other) {
 
-        ensure_capacity(other.size());
+        ensureCapacity(other.size());
         
         TypedTransfer<StorageType>::copy(data(), other.data(), other.size());
         
@@ -106,7 +106,7 @@ public:
 
     explicit Vector(Span<T const> other) requires(!IsLValueReference<T>) {
 
-        ensure_capacity(other.size());
+        ensureCapacity(other.size());
         
         TypedTransfer<StorageType>::copy(data(), other.data(), other.size());
         
@@ -116,7 +116,7 @@ public:
     template<size_t other_inline_capacity>
     Vector(Vector<T, other_inline_capacity> const& other) {
 
-        ensure_capacity(other.size());
+        ensureCapacity(other.size());
         
         TypedTransfer<StorageType>::copy(data(), other.data(), other.size());
         
@@ -238,31 +238,43 @@ public:
     }
 
     template<typename V>
-    bool operator==(V const& other) const
-    {
-        if (m_size != other.size())
+    bool operator==(V const& other) const {
+
+        if (m_size != other.size()) {
+
             return false;
+        }
+
         return TypedTransfer<StorageType>::compare(data(), other.data(), size());
     }
 
     template<typename V>
-    bool contains_slow(V const& value) const
-    {
+    bool contains_slow(V const& value) const {
+
         for (size_t i = 0; i < size(); ++i) {
-            if (Traits<VisibleType>::equals(at(i), value))
+
+            if (Traits<VisibleType>::equals(at(i), value)) {
+
                 return true;
+            }
         }
+
         return false;
     }
 
-    bool contains_in_range(VisibleType const& value, size_t const start, size_t const end) const
-    {
+    bool contains_in_range(VisibleType const& value, size_t const start, size_t const end) const {
+
         VERIFY(start <= end);
         VERIFY(end < size());
+
         for (size_t i = start; i <= end; ++i) {
-            if (Traits<VisibleType>::equals(at(i), value))
+
+            if (Traits<VisibleType>::equals(at(i), value)) {
+
                 return true;
+            }
         }
+
         return false;
     }
 
@@ -384,7 +396,7 @@ public:
     {
         if (this != &other) {
             clear();
-            ensure_capacity(other.size());
+            ensureCapacity(other.size());
             TypedTransfer<StorageType>::copy(data(), other.data(), other.size());
             m_size = other.size();
         }
@@ -395,39 +407,52 @@ public:
     Vector& operator=(Vector<T, other_inline_capacity> const& other)
     {
         clear();
-        ensure_capacity(other.size());
+        ensureCapacity(other.size());
         TypedTransfer<StorageType>::copy(data(), other.data(), other.size());
         m_size = other.size();
         return *this;
     }
 
-    void clear()
-    {
-        clear_with_capacity();
+    void clear() {
+
+        clearWithCapacity();
+
         if (m_outline_buffer) {
+
             kfree_sized(m_outline_buffer, m_capacity * sizeof(StorageType));
+            
             m_outline_buffer = nullptr;
         }
+
         reset_capacity();
     }
 
-    void clear_with_capacity()
-    {
-        for (size_t i = 0; i < m_size; ++i)
+    void clearWithCapacity() {
+
+        for (size_t i = 0; i < m_size; ++i) {
+
             data()[i].~StorageType();
+        }
+
         m_size = 0;
     }
 
-    void remove(size_t index)
-    {
+    void remove(size_t index) {
+
         VERIFY(index < m_size);
 
         if constexpr (Traits<StorageType>::isTrivial()) {
+            
             TypedTransfer<StorageType>::copy(slot(index), slot(index + 1), m_size - index - 1);
-        } else {
+        } 
+        else {
+
             at(index).~StorageType();
+
             for (size_t i = index + 1; i < m_size; ++i) {
+
                 new (slot(i - 1)) StorageType(move(at(i)));
+                
                 at(i).~StorageType();
             }
         }
@@ -435,20 +460,31 @@ public:
         --m_size;
     }
 
-    void remove(size_t index, size_t count)
-    {
-        if (count == 0)
+    void remove(size_t index, size_t count) {
+
+        if (count == 0) {
+
             return;
+        }
+        
         VERIFY(index + count > index);
         VERIFY(index + count <= m_size);
 
         if constexpr (Traits<StorageType>::isTrivial()) {
+
             TypedTransfer<StorageType>::copy(slot(index), slot(index + count), m_size - index - count);
-        } else {
-            for (size_t i = index; i < index + count; i++)
+        } 
+        else {
+
+            for (size_t i = index; i < index + count; i++) {
+
                 at(i).~StorageType();
+            }
+
             for (size_t i = index + count; i < m_size; ++i) {
+
                 new (slot(i - count)) StorageType(move(at(i)));
+                
                 at(i).~StorageType();
             }
         }
@@ -517,31 +553,46 @@ public:
         }
     }
 
-    T take_first()
-    {
+    T take_first() {
+
         VERIFY(!isEmpty());
+        
         auto value = move(rawFirst());
+        
         remove(0);
-        if constexpr (contains_reference)
+        
+        if constexpr (contains_reference) {
+
             return *value;
-        else
+        }
+        else {
+
             return value;
+        }
     }
 
-    T take(size_t index)
-    {
+    T take(size_t index) {
+
         auto value = move(raw_at(index));
+        
         remove(index);
-        if constexpr (contains_reference)
+        
+        if constexpr (contains_reference) {
+
             return *value;
-        else
+        }
+        else {
+
             return value;
+        }
     }
 
-    T unstable_take(size_t index)
-    {
+    T unstable_take(size_t index) {
+
         VERIFY(index < m_size);
+        
         swap(raw_at(index), raw_at(m_size - 1));
+        
         return take_last();
     }
 
@@ -744,7 +795,7 @@ public:
 
         if (count == 0) {
 
-            return {};
+            return { };
         }
 
         TRY(try_grow_capacity(size() + count));
@@ -755,24 +806,24 @@ public:
         
         m_size += count;
         
-        return {};
+        return { };
     }
 
     ErrorOr<void> try_grow_capacity(size_t needed_capacity) {
 
         if (m_capacity >= needed_capacity) {
 
-            return {};
+            return { };
         }
 
-        return try_ensure_capacity(padded_capacity(needed_capacity));
+        return tryEnsureCapacity(padded_capacity(needed_capacity));
     }
 
-    ErrorOr<void> try_ensure_capacity(size_t needed_capacity) {
+    ErrorOr<void> tryEnsureCapacity(size_t needed_capacity) {
 
         if (m_capacity >= needed_capacity) {
 
-            return {};
+            return { };
         }
 
         size_t new_capacity = kmalloc_good_size(needed_capacity * sizeof(StorageType)) / sizeof(StorageType);
@@ -809,52 +860,70 @@ public:
         return { };
     }
 
-    ErrorOr<void> try_resize(size_t new_size, bool keep_capacity = false) requires(!contains_reference)
-    {
+    ErrorOr<void> try_resize(size_t new_size, bool keep_capacity = false) requires(!contains_reference) {
+
         if (new_size <= size()) {
+
             shrink(new_size, keep_capacity);
-            return {};
+            
+            return { };
         }
 
-        TRY(try_ensure_capacity(new_size));
+        TRY(tryEnsureCapacity(new_size));
 
-        for (size_t i = size(); i < new_size; ++i)
+        for (size_t i = size(); i < new_size; ++i) {
+
             new (slot(i)) StorageType {};
+        }
+
         m_size = new_size;
-        return {};
+        
+        return { };
     }
 
-    ErrorOr<void> try_resize_and_keep_capacity(size_t new_size) requires(!contains_reference)
-    {
+    ErrorOr<void> try_resize_and_keep_capacity(size_t new_size) requires(!contains_reference) {
+
         return try_resize(new_size, true);
     }
 
-    void grow_capacity(size_t needed_capacity)
-    {
+    void grow_capacity(size_t needed_capacity) {
+
         MUST(try_grow_capacity(needed_capacity));
     }
 
-    void ensure_capacity(size_t needed_capacity)
-    {
-        MUST(try_ensure_capacity(needed_capacity));
+    void ensureCapacity(size_t needed_capacity) {
+
+        MUST(tryEnsureCapacity(needed_capacity));
     }
 
-    void shrink(size_t new_size, bool keep_capacity = false)
-    {
-        VERIFY(new_size <= size());
-        if (new_size == size())
-            return;
+    void shrink(size_t new_size, bool keep_capacity = false) {
 
-        if (new_size == 0) {
-            if (keep_capacity)
-                clear_with_capacity();
-            else
-                clear();
+        VERIFY(new_size <= size());
+
+        if (new_size == size()) {
+
             return;
         }
 
-        for (size_t i = new_size; i < size(); ++i)
+        if (new_size == 0) {
+
+            if (keep_capacity) {
+
+                clearWithCapacity();
+            }
+            else {
+
+                clear();
+            }
+
+            return;
+        }
+
+        for (size_t i = new_size; i < size(); ++i) {
+
             at(i).~StorageType();
+        }
+
         m_size = new_size;
     }
 

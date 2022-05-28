@@ -68,9 +68,9 @@ public:
 
     Vector<K> keys() const { return m_storage->map.keys(); }
 
-    ErrorOr<void> ensure_capacity(size_t capacity)
+    ErrorOr<void> ensureCapacity(size_t capacity)
     {
-        TRY(m_storage->map.ensure_capacity(capacity));
+        TRY(m_storage->map.ensureCapacity(capacity));
         return {};
     }
 
@@ -93,7 +93,7 @@ public:
     static ErrorOr<Dictionary> create_with_entries(std::initializer_list<Entry> list)
     {
         auto dictionary = TRY(create_empty());
-        TRY(dictionary.ensure_capacity(list.size()));
+        TRY(dictionary.ensureCapacity(list.size()));
         for (auto& item : list)
             TRY(dictionary.set(item.key, item.value));
         return dictionary;

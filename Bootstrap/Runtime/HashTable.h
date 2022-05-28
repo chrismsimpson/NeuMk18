@@ -218,13 +218,13 @@ public:
         MUST(try_set_from(from_array));
     }
 
-    void ensure_capacity(size_t capacity)
+    void ensureCapacity(size_t capacity)
     {
         VERIFY(capacity >= size());
         rehash(capacity * 2);
     }
 
-    ErrorOr<void> try_ensure_capacity(size_t capacity)
+    ErrorOr<void> tryEnsureCapacity(size_t capacity)
     {
         VERIFY(capacity >= size());
         return try_rehash(capacity * 2);
@@ -287,7 +287,8 @@ public:
     {
         *this = HashTable();
     }
-    void clear_with_capacity()
+
+    void clearWithCapacity()
     {
         if constexpr (!Detail::IsTriviallyDestructible<T>) {
             for (auto* bucket : *this)

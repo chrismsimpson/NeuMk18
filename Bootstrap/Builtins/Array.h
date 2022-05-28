@@ -17,7 +17,7 @@ public:
     size_t size() const { return m_size; }
     size_t capacity() const { return m_capacity; }
 
-    ErrorOr<void> ensure_capacity(size_t capacity)
+    ErrorOr<void> ensureCapacity(size_t capacity)
     {
         if (m_capacity >= capacity) {
             return {};
@@ -44,7 +44,7 @@ public:
         if (Checked<size_t>::additionWouldOverflow(m_capacity, capacity)) {
             return Error::fromErrorCode(EOVERFLOW);
         }
-        TRY(ensure_capacity(m_capacity + capacity));
+        TRY(ensureCapacity(m_capacity + capacity));
         return {};
     }
 
@@ -72,7 +72,7 @@ public:
 
     ErrorOr<void> resize(size_t size)
     {
-        TRY(ensure_capacity(size));
+        TRY(ensureCapacity(size));
         if (size > m_size) {
             for (size_t i = m_size; i < size; ++i) {
                 new (&m_elements[i]) T();
@@ -100,7 +100,7 @@ public:
 
     ErrorOr<void> push(T value)
     {
-        TRY(ensure_capacity(m_size + 1));
+        TRY(ensureCapacity(m_size + 1));
         new (&m_elements[m_size]) T(move(value));
         ++m_size;
         return {};
@@ -208,7 +208,7 @@ public:
     Array(std::initializer_list<T> list) requires(!IsLValueReference<T>)
     {
         // FIXME: Should not MUST()
-        MUST(ensure_capacity(list.size()));
+        MUST(ensureCapacity(list.size()));
         for (auto& item : list)
             MUST(push(item));
     }
@@ -251,10 +251,10 @@ public:
     T const& operator[](size_t index) const { return at(index); }
     T& operator[](size_t index) { return at(index); }
 
-    ErrorOr<void> ensure_capacity(size_t capacity)
+    ErrorOr<void> ensureCapacity(size_t capacity)
     {
         auto* storage = TRY(ensure_storage());
-        TRY(storage->ensure_capacity(capacity));
+        TRY(storage->ensureCapacity(capacity));
         return {};
     }
 
@@ -300,7 +300,7 @@ public:
     static ErrorOr<Array> filled(size_t size, T value)
     {
         Array array;
-        TRY(array.ensure_capacity(size));
+        TRY(array.ensureCapacity(size));
         for (size_t i = 0; i < size; ++i) {
             TRY(array.push(value));
         }
@@ -309,7 +309,7 @@ public:
 
     Array(Vector<T> const& vector)
     {
-        MUST(ensure_capacity(vector.size()));
+        MUST(ensureCapacity(vector.size()));
 
         for (auto value : vector) {
 

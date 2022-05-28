@@ -53,7 +53,7 @@ public:
 
     ErrorOr<HashSetResult> add(T const& value) { return m_storage->table.set(value); }
     ErrorOr<HashSetResult> add(T&& value) { return m_storage->table.set(move(value)); }
-    ErrorOr<void> ensure_capacity(size_t capacity) { return m_storage->table.try_ensure_capacity(capacity); }
+    ErrorOr<void> ensureCapacity(size_t capacity) { return m_storage->table.tryEnsureCapacity(capacity); }
 
     bool isEmpty() const { return m_storage->table.isEmpty(); }
     size_t capacity() const { return m_storage->table.capacity(); }
@@ -78,7 +78,7 @@ public:
     static ErrorOr<Set> create_with_values(std::initializer_list<T> list)
     {
         auto set = TRY(create_empty());
-        TRY(set.ensure_capacity(list.size()));
+        TRY(set.ensureCapacity(list.size()));
         for (auto& value : list)
             TRY(set.add(value));
         return set;
