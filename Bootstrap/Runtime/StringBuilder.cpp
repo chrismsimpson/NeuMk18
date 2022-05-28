@@ -78,7 +78,7 @@ void StringBuilder::clear()
     static_cast<void>(m_buffer.resize(0));
 }
 
-ErrorOr<void> StringBuilder::try_append_code_point(u32 code_point)
+ErrorOr<void> StringBuilder::tryAppendCodePoint(u32 code_point)
 {
     auto nwritten = UnicodeUtils::code_point_to_utf8(code_point, [this](char c) { append(c); });
     if (nwritten < 0) {
@@ -91,7 +91,7 @@ ErrorOr<void> StringBuilder::try_append_code_point(u32 code_point)
 
 void StringBuilder::append_code_point(u32 code_point)
 {
-    MUST(try_append_code_point(code_point));
+    MUST(tryAppendCodePoint(code_point));
 }
 
 void StringBuilder::append_as_lowercase(char ch)

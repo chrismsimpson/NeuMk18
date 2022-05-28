@@ -21,7 +21,7 @@ public:
     ~StringBuilder() = default;
 
     ErrorOr<void> tryAppend(StringView);
-    ErrorOr<void> try_append_code_point(u32);
+    ErrorOr<void> tryAppendCodePoint(u32);
     ErrorOr<void> tryAppend(char);
     template<typename... Parameters>
     ErrorOr<void> try_appendff(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters)
