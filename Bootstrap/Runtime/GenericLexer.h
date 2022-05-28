@@ -93,21 +93,25 @@ public:
     }
 
 #ifndef KERNEL
-    bool consumeSpecific(String const& next)
-    {
+
+    bool consumeSpecific(String const& next) {
+
         return consumeSpecific(StringView { next });
     }
+
 #endif
 
-    constexpr bool consumeSpecific(char const* next)
-    {
+    constexpr bool consumeSpecific(char const* next) {
+
         return consumeSpecific(StringView { next });
     }
 
-    constexpr char consume_escaped_character(char escape_char = '\\', StringView escape_map = "n\nr\rt\tb\bf\f")
-    {
-        if (!consumeSpecific(escape_char))
+    constexpr char consume_escaped_character(char escape_char = '\\', StringView escape_map = "n\nr\rt\tb\bf\f") {
+
+        if (!consumeSpecific(escape_char)) {
+
             return consume();
+        }
 
         auto c = consume();
 
@@ -127,25 +131,30 @@ public:
     StringView consume_until(StringView);
     StringView consume_quoted_string(char escape_char = 0);
 
-    constexpr void ignore(size_t count = 1)
-    {
+    constexpr void ignore(size_t count = 1) {
+
         count = min(count, m_input.length() - m_index);
+        
         m_index += count;
     }
 
-    constexpr void ignore_until(char stop)
-    {
+    constexpr void ignore_until(char stop) {
+
         while (!is_eof() && peek() != stop) {
+
             ++m_index;
         }
+
         ignore();
     }
 
-    constexpr void ignore_until(char const* stop)
-    {
+    constexpr void ignore_until(char const* stop) {
+
         while (!is_eof() && !next_is(stop)) {
+
             ++m_index;
         }
+
         ignore(__builtin_strlen(stop));
     }
 
@@ -160,8 +169,8 @@ public:
 
     // Test the next character against a Condition
     template<typename TPredicate>
-    constexpr bool next_is(TPredicate pred) const
-    {
+    constexpr bool next_is(TPredicate pred) const {
+        
         return pred(peek());
     }
 

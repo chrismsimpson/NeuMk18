@@ -24,7 +24,9 @@
 
 class FormatParser : public GenericLexer {
 public:
+
     struct FormatSpecifier {
+
         StringView flags;
         size_t index;
     };
@@ -33,8 +35,8 @@ public:
 
     StringView consumeLiteral();
     bool consumeNumber(size_t& value);
-    bool consume_specifier(FormatSpecifier& specifier);
-    bool consume_replacement_field(size_t& index);
+    bool consumeSpecifier(FormatSpecifier& specifier);
+    bool consumeReplacementField(size_t& index);
 };
 
 namespace {
@@ -58,17 +60,25 @@ static constexpr size_t convert_unsigned_to_string(u64 value, LinearArray<u8, 12
     }
 
     size_t used = 0;
+    
     while (value > 0) {
-        if (upperCase)
+
+        if (upperCase) {
+
             buffer[used++] = uppercase_lookup[value % base];
-        else
+        }
+        else {
+
             buffer[used++] = lowercase_lookup[value % base];
+        }
 
         value /= base;
     }
 
-    for (size_t i = 0; i < used / 2; ++i)
+    for (size_t i = 0; i < used / 2; ++i) {
+
         swap(buffer[i], buffer[used - i - 1]);
+    }
 
     return used;
 }
@@ -79,7 +89,7 @@ ErrorOr<void> vformat_impl(TypeErasedFormatParams& params, FormatBuilder& builde
     TRY(builder.putLiteral(literal));
 
     FormatParser::FormatSpecifier specifier;
-    if (!parser.consume_specifier(specifier)) {
+    if (!parser.consumeSpecifier(specifier)) {
         VERIFY(parser.is_eof());
         return {};
     }
@@ -145,7 +155,7 @@ bool FormatParser::consumeNumber(size_t& value) {
     return consumed_at_least_one;
 }
 
-bool FormatParser::consume_specifier(FormatSpecifier& specifier)
+bool FormatParser::consumeSpecifier(FormatSpecifier& specifier)
 {
     VERIFY(!next_is('}'));
 
@@ -185,7 +195,7 @@ bool FormatParser::consume_specifier(FormatSpecifier& specifier)
 
     return true;
 }
-bool FormatParser::consume_replacement_field(size_t& index)
+bool FormatParser::consumeReplacementField(size_t& index)
 {
     if (!consumeSpecific('{'))
         return false;
@@ -563,7 +573,7 @@ void StandardFormatter::parse(TypeErasedFormatParams& params, FormatParser& pars
     if (parser.consumeSpecific('0'))
         m_zero_pad = true;
 
-    if (size_t index = 0; parser.consume_replacement_field(index)) {
+    if (size_t index = 0; parser.consumeReplacementField(index)) {
 
         if (index == use_next_index) {
 
@@ -579,7 +589,7 @@ void StandardFormatter::parse(TypeErasedFormatParams& params, FormatParser& pars
 
     if (parser.consumeSpecific('.')) {
         
-        if (size_t index = 0; parser.consume_replacement_field(index)) {
+        if (size_t index = 0; parser.consumeReplacementField(index)) {
 
             if (index == use_next_index) {
 
