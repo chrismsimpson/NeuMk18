@@ -37,9 +37,9 @@ public:
             MUST(set(item.key, item.value));
     }
 
-    [[nodiscard]] bool is_empty() const
+    [[nodiscard]] bool isEmpty() const
     {
-        return m_table.is_empty();
+        return m_table.isEmpty();
     }
     [[nodiscard]] size_t size() const { return m_table.size(); }
     [[nodiscard]] size_t capacity() const { return m_table.capacity(); }

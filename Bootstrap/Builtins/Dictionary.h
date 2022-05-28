@@ -49,7 +49,7 @@ class Dictionary {
     using Storage = DictionaryStorage<K, V>;
 
 public:
-    bool is_empty() const { return m_storage->map.is_empty(); }
+    bool isEmpty() const { return m_storage->map.isEmpty(); }
     size_t size() const { return m_storage->map.size(); }
     void clear() { m_storage->map.clear(); }
 

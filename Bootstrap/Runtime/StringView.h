@@ -54,7 +54,7 @@ public:
     {
         return m_characters == nullptr;
     }
-    [[nodiscard]] constexpr bool is_empty() const { return m_length == 0; }
+    [[nodiscard]] constexpr bool isEmpty() const { return m_length == 0; }
 
     [[nodiscard]] constexpr char const* charactersWithoutNullTermination() const { return m_characters; }
     [[nodiscard]] constexpr size_t length() const { return m_length; }
@@ -70,7 +70,7 @@ public:
 
     [[nodiscard]] constexpr unsigned hash() const
     {
-        if (is_empty())
+        if (isEmpty())
             return 0;
         return string_hash(charactersWithoutNullTermination(), length());
     }
@@ -136,9 +136,9 @@ public:
     template<VoidFunction<StringView> Callback>
     void for_each_split_view(StringView separator, bool keep_empty, Callback callback) const
     {
-        VERIFY(!separator.is_empty());
+        VERIFY(!separator.isEmpty());
 
-        if (is_empty())
+        if (isEmpty())
             return;
 
         StringView view { *this };
@@ -152,7 +152,7 @@ public:
             view = view.substring_view_starting_after_substring(part_with_separator);
             maybe_separator_index = view.find(separator);
         }
-        if (keep_empty || !view.is_empty())
+        if (keep_empty || !view.isEmpty())
             callback(view);
     }
 
@@ -301,7 +301,7 @@ struct Traits<StringView> : public GenericTraits<StringView> {
 struct CaseInsensitiveStringViewTraits : public Traits<StringView> {
     static unsigned hash(StringView s)
     {
-        if (s.is_empty())
+        if (s.isEmpty())
             return 0;
         return case_insensitive_string_hash(s.charactersWithoutNullTermination(), s.length());
     }

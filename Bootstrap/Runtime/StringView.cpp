@@ -40,7 +40,7 @@ Vector<StringView> StringView::split_view(StringView separator, bool keep_empty)
 
 Vector<StringView> StringView::lines(bool consider_cr) const
 {
-    if (is_empty())
+    if (isEmpty())
         return {};
 
     if (!consider_cr)
@@ -80,7 +80,7 @@ Vector<StringView> StringView::lines(bool consider_cr) const
 
 bool StringView::starts_with(char ch) const
 {
-    if (is_empty())
+    if (isEmpty())
         return false;
     return ch == charactersWithoutNullTermination()[0];
 }
@@ -92,7 +92,7 @@ bool StringView::starts_with(StringView str, CaseSensitivity case_sensitivity) c
 
 bool StringView::ends_with(char ch) const
 {
-    if (is_empty())
+    if (isEmpty())
         return false;
     return ch == charactersWithoutNullTermination()[length() - 1];
 }
@@ -225,7 +225,7 @@ Vector<size_t> StringView::find_all(StringView needle) const
 
 Vector<StringView> StringView::split_view_if(Function<bool(char)> const& predicate, bool keep_empty) const
 {
-    if (is_empty())
+    if (isEmpty())
         return {};
 
     Vector<StringView> v;

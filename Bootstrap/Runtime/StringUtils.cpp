@@ -85,7 +85,7 @@ Optional<T> convert_to_int(StringView str, TrimWhitespace trim_whitespace)
     auto string = trim_whitespace == TrimWhitespace::Yes
         ? str.trim_whitespace()
         : str;
-    if (string.is_empty())
+    if (string.isEmpty())
         return {};
 
     T sign = 1;
@@ -126,7 +126,7 @@ Optional<T> convert_to_uint(StringView str, TrimWhitespace trim_whitespace)
     auto string = trim_whitespace == TrimWhitespace::Yes
         ? str.trim_whitespace()
         : str;
-    if (string.is_empty())
+    if (string.isEmpty())
         return {};
 
     T value = 0;
@@ -159,7 +159,7 @@ Optional<T> convert_to_uint_from_hex(StringView str, TrimWhitespace trim_whitesp
     auto string = trim_whitespace == TrimWhitespace::Yes
         ? str.trim_whitespace()
         : str;
-    if (string.is_empty())
+    if (string.isEmpty())
         return {};
 
     T value = 0;
@@ -198,7 +198,7 @@ Optional<T> convert_to_uint_from_octal(StringView str, TrimWhitespace trim_white
     auto string = trim_whitespace == TrimWhitespace::Yes
         ? str.trim_whitespace()
         : str;
-    if (string.is_empty())
+    if (string.isEmpty())
         return {};
 
     T value = 0;
@@ -240,9 +240,9 @@ bool equals_ignoring_case(StringView a, StringView b)
 
 bool ends_with(StringView str, StringView end, CaseSensitivity case_sensitivity)
 {
-    if (end.is_empty())
+    if (end.isEmpty())
         return true;
-    if (str.is_empty())
+    if (str.isEmpty())
         return false;
     if (end.length() > str.length())
         return false;
@@ -263,9 +263,9 @@ bool ends_with(StringView str, StringView end, CaseSensitivity case_sensitivity)
 
 bool starts_with(StringView str, StringView start, CaseSensitivity case_sensitivity)
 {
-    if (start.is_empty())
+    if (start.isEmpty())
         return true;
-    if (str.is_empty())
+    if (str.isEmpty())
         return false;
     if (start.length() > str.length())
         return false;
@@ -288,9 +288,9 @@ bool starts_with(StringView str, StringView start, CaseSensitivity case_sensitiv
 
 bool contains(StringView str, StringView needle, CaseSensitivity case_sensitivity)
 {
-    if (str.is_null() || needle.is_null() || str.is_empty() || needle.length() > str.length())
+    if (str.is_null() || needle.is_null() || str.isEmpty() || needle.length() > str.length())
         return false;
-    if (needle.is_empty())
+    if (needle.isEmpty())
         return true;
     auto str_chars = str.charactersWithoutNullTermination();
     auto needle_chars = needle.charactersWithoutNullTermination();
@@ -401,7 +401,7 @@ Vector<size_t> find_all(StringView haystack, StringView needle)
 
 Optional<size_t> find_any_of(StringView haystack, StringView needles, SearchDirection direction)
 {
-    if (haystack.is_empty() || needles.is_empty())
+    if (haystack.isEmpty() || needles.isEmpty())
         return {};
     if (direction == SearchDirection::Forward) {
         for (size_t i = 0; i < haystack.length(); ++i) {
@@ -462,7 +462,7 @@ String to_titlecase(StringView str)
 
 String replace(StringView str, StringView needle, StringView replacement, bool all_occurrences)
 {
-    if (str.is_empty())
+    if (str.isEmpty())
         return str;
 
     Vector<size_t> positions;
@@ -492,7 +492,7 @@ String replace(StringView str, StringView needle, StringView replacement, bool a
 // TODO: Benchmark against KMP (AK/MemMem.h) and switch over if it's faster for short strings too
 size_t count(StringView str, StringView needle)
 {
-    if (needle.is_empty())
+    if (needle.isEmpty())
         return str.length();
 
     size_t count = 0;

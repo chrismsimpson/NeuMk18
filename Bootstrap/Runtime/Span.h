@@ -125,7 +125,7 @@ public:
 
     [[nodiscard]] ALWAYS_INLINE constexpr size_t size() const { return this->m_size; }
     [[nodiscard]] ALWAYS_INLINE constexpr bool is_null() const { return this->m_values == nullptr; }
-    [[nodiscard]] ALWAYS_INLINE constexpr bool is_empty() const { return this->m_size == 0; }
+    [[nodiscard]] ALWAYS_INLINE constexpr bool isEmpty() const { return this->m_size == 0; }
 
     [[nodiscard]] ALWAYS_INLINE constexpr Span slice(size_t start, size_t length) const
     {

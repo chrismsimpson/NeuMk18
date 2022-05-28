@@ -128,7 +128,7 @@ public:
     operator Span<StorageType>() { return span(); }
     operator Span<StorageType const>() const { return span(); }
 
-    bool is_empty() const { return size() == 0; }
+    bool isEmpty() const { return size() == 0; }
     ALWAYS_INLINE size_t size() const { return m_size; }
     size_t capacity() const { return m_capacity; }
 
@@ -391,7 +391,7 @@ public:
     {
         VERIFY(index < m_size);
 
-        if constexpr (Traits<StorageType>::is_trivial()) {
+        if constexpr (Traits<StorageType>::isTrivial()) {
             TypedTransfer<StorageType>::copy(slot(index), slot(index + 1), m_size - index - 1);
         } else {
             at(index).~StorageType();
@@ -411,7 +411,7 @@ public:
         VERIFY(index + count > index);
         VERIFY(index + count <= m_size);
 
-        if constexpr (Traits<StorageType>::is_trivial()) {
+        if constexpr (Traits<StorageType>::isTrivial()) {
             TypedTransfer<StorageType>::copy(slot(index), slot(index + count), m_size - index - count);
         } else {
             for (size_t i = index; i < index + count; i++)
@@ -454,7 +454,7 @@ public:
 
     ALWAYS_INLINE T take_last()
     {
-        VERIFY(!is_empty());
+        VERIFY(!isEmpty());
         auto value = move(raw_last());
         if constexpr (!contains_reference)
             last().~T();
@@ -467,7 +467,7 @@ public:
 
     T take_first()
     {
-        VERIFY(!is_empty());
+        VERIFY(!isEmpty());
         auto value = move(raw_first());
         remove(0);
         if constexpr (contains_reference)
@@ -494,131 +494,198 @@ public:
     }
 
     template<typename U = T>
-    ErrorOr<void> try_insert(size_t index, U&& value) requires(CanBePlacedInsideVector<U>)
-    {
-        if (index > size())
+    ErrorOr<void> try_insert(size_t index, U&& value) requires(CanBePlacedInsideVector<U>) {
+
+        if (index > size()) {
+
             return Error::fromErrorCode(EINVAL);
-        if (index == size())
+        }
+
+        if (index == size()) {
+
             return try_append(forward<U>(value));
+        }
+
         TRY(try_grow_capacity(size() + 1));
+        
         ++m_size;
-        if constexpr (Traits<StorageType>::is_trivial()) {
+        
+        if constexpr (Traits<StorageType>::isTrivial()) {
+            
             TypedTransfer<StorageType>::move(slot(index + 1), slot(index), m_size - index - 1);
-        } else {
+        } 
+        else {
+
             for (size_t i = size() - 1; i > index; --i) {
+
                 new (slot(i)) StorageType(move(at(i - 1)));
+
                 at(i - 1).~StorageType();
             }
         }
-        if constexpr (contains_reference)
+
+        if constexpr (contains_reference) {
+
             new (slot(index)) StorageType(&value);
-        else
+        }
+        else {
+
             new (slot(index)) StorageType(forward<U>(value));
-        return {};
+        }
+
+        return { };
     }
 
     template<typename TUnaryPredicate, typename U = T>
-    ErrorOr<void> try_insert_before_matching(U&& value, TUnaryPredicate predicate, size_t first_index = 0, size_t* inserted_index = nullptr) requires(CanBePlacedInsideVector<U>)
-    {
+    ErrorOr<void> try_insert_before_matching(U&& value, TUnaryPredicate predicate, size_t first_index = 0, size_t* inserted_index = nullptr) requires(CanBePlacedInsideVector<U>) {
+
         for (size_t i = first_index; i < size(); ++i) {
+
             if (predicate(at(i))) {
+
                 TRY(try_insert(i, forward<U>(value)));
-                if (inserted_index)
+                
+                if (inserted_index) {
+
                     *inserted_index = i;
-                return {};
+                }
+
+                return { };
             }
         }
+
         TRY(try_append(forward<U>(value)));
-        if (inserted_index)
+
+        if (inserted_index) {
+
             *inserted_index = size() - 1;
-        return {};
-    }
-
-    ErrorOr<void> try_extend(Vector&& other)
-    {
-        if (is_empty() && capacity() <= other.capacity()) {
-            *this = move(other);
-            return {};
         }
+
+        return { };
+    }
+
+    ErrorOr<void> try_extend(Vector&& other) {
+
+        if (isEmpty() && capacity() <= other.capacity()) {
+
+            *this = move(other);
+            
+            return { };
+        }
+        
         auto other_size = other.size();
+        
         Vector tmp = move(other);
+        
         TRY(try_grow_capacity(size() + other_size));
+        
         TypedTransfer<StorageType>::move(data() + m_size, tmp.data(), other_size);
+        
         m_size += other_size;
-        return {};
+        
+        return { };
     }
 
-    ErrorOr<void> try_extend(Vector const& other)
-    {
+    ErrorOr<void> try_extend(Vector const& other) {
+
         TRY(try_grow_capacity(size() + other.size()));
+        
         TypedTransfer<StorageType>::copy(data() + m_size, other.data(), other.size());
+        
         m_size += other.m_size;
-        return {};
+        
+        return { };
     }
 
-    ErrorOr<void> try_append(T&& value)
-    {
+    ErrorOr<void> try_append(T&& value) {
+
         TRY(try_grow_capacity(size() + 1));
-        if constexpr (contains_reference)
+        
+        if constexpr (contains_reference) {
+
             new (slot(m_size)) StorageType(&value);
-        else
+        }
+        else {
+
             new (slot(m_size)) StorageType(move(value));
+        }
+
         ++m_size;
-        return {};
+        
+        return { };
     }
 
-    ErrorOr<void> try_append(T const& value) requires(!contains_reference)
-    {
+    ErrorOr<void> try_append(T const& value) requires(!contains_reference) {
+
         return try_append(T(value));
     }
 
-    ErrorOr<void> try_append(StorageType const* values, size_t count)
-    {
-        if (count == 0)
-            return {};
-        TRY(try_grow_capacity(size() + count));
-        TypedTransfer<StorageType>::copy(slot(m_size), values, count);
-        m_size += count;
-        return {};
-    }
+    ErrorOr<void> try_append(StorageType const* values, size_t count) {
 
-    template<class... Args>
-    ErrorOr<void> try_empend(Args&&... args) requires(!contains_reference)
-    {
-        TRY(try_grow_capacity(m_size + 1));
-        new (slot(m_size)) StorageType { forward<Args>(args)... };
-        ++m_size;
-        return {};
-    }
+        if (count == 0) {
 
-    template<typename U = T>
-    ErrorOr<void> try_prepend(U&& value) requires(CanBePlacedInsideVector<U>)
-    {
-        return try_insert(0, forward<U>(value));
-    }
-
-    ErrorOr<void> try_prepend(Vector&& other)
-    {
-        if (other.is_empty())
-            return {};
-
-        if (is_empty()) {
-            *this = move(other);
             return {};
         }
 
+        TRY(try_grow_capacity(size() + count));
+        
+        TypedTransfer<StorageType>::copy(slot(m_size), values, count);
+        
+        m_size += count;
+        
+        return { };
+    }
+
+    template<class... Args>
+    ErrorOr<void> try_empend(Args&&... args) requires(!contains_reference) {
+
+        TRY(try_grow_capacity(m_size + 1));
+        
+        new (slot(m_size)) StorageType { forward<Args>(args)... };
+        
+        ++m_size;
+        
+        return { };
+    }
+
+    template<typename U = T>
+    ErrorOr<void> try_prepend(U&& value) requires(CanBePlacedInsideVector<U>) {
+
+        return try_insert(0, forward<U>(value));
+    }
+
+    ErrorOr<void> try_prepend(Vector&& other) {
+
+        if (other.isEmpty()) {
+
+            return { };
+        }
+
+        if (isEmpty()) {
+
+            *this = move(other);
+            
+            return { };
+        }
+
         auto other_size = other.size();
+
         TRY(try_grow_capacity(size() + other_size));
 
         for (size_t i = size() + other_size - 1; i >= other.size(); --i) {
+
             new (slot(i)) StorageType(move(at(i - other_size)));
+
             at(i - other_size).~StorageType();
         }
 
         Vector tmp = move(other);
+        
         TypedTransfer<StorageType>::move(slot(0), tmp.data(), tmp.size());
+        
         m_size += other_size;
-        return {};
+        
+        return { };
     }
 
     ErrorOr<void> try_prepend(StorageType const* values, size_t count)
@@ -639,10 +706,13 @@ public:
         return try_ensure_capacity(padded_capacity(needed_capacity));
     }
 
-    ErrorOr<void> try_ensure_capacity(size_t needed_capacity)
-    {
-        if (m_capacity >= needed_capacity)
+    ErrorOr<void> try_ensure_capacity(size_t needed_capacity) {
+        
+        if (m_capacity >= needed_capacity) {
+
             return {};
+        }
+
         size_t new_capacity = kmalloc_good_size(needed_capacity * sizeof(StorageType)) / sizeof(StorageType);
         auto* new_buffer = static_cast<StorageType*>(kmalloc_array(new_capacity, sizeof(StorageType)));
 
@@ -651,7 +721,7 @@ public:
             return Error::fromErrorCode(ENOMEM);
         }
 
-        if constexpr (Traits<StorageType>::is_trivial()) {
+        if constexpr (Traits<StorageType>::isTrivial()) {
             
             TypedTransfer<StorageType>::copy(new_buffer, data(), m_size);
         }
@@ -809,7 +879,7 @@ private:
     }
 
     static size_t padded_capacity(size_t capacity) {
-        
+
         return max(static_cast<size_t>(4), capacity + (capacity / 4) + 4);
     }
 

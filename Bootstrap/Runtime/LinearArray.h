@@ -38,7 +38,7 @@ struct LinearArray {
     [[nodiscard]] constexpr T const& last() const requires(Size > 0) { return at(Size - 1); }
     [[nodiscard]] constexpr T& last() requires(Size > 0) { return at(Size - 1); }
 
-    [[nodiscard]] constexpr bool is_empty() const { return size() == 0; }
+    [[nodiscard]] constexpr bool isEmpty() const { return size() == 0; }
 
     [[nodiscard]] constexpr T const& operator[](size_t index) const { return at(index); }
     [[nodiscard]] constexpr T& operator[](size_t index) { return at(index); }
@@ -96,7 +96,7 @@ namespace Detail {
 
     template<typename T, size_t... Is>
     constexpr auto integer_sequence_generate_LinearArray([[maybe_unused]] T const offset, IntegerSequence<T, Is...>) -> LinearArray<T, sizeof...(Is)> {
-        
+
         return { { (offset + Is)... } };
     }
 }

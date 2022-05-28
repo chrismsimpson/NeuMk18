@@ -56,7 +56,7 @@ public:
     void clear();
 
     [[nodiscard]] size_t length() const { return m_buffer.size(); }
-    [[nodiscard]] bool is_empty() const { return m_buffer.is_empty(); }
+    [[nodiscard]] bool isEmpty() const { return m_buffer.isEmpty(); }
 
     template<class SeparatorType, class CollectionType>
     void join(SeparatorType const& separator, CollectionType const& collection, StringView fmtstr = "{}"sv)

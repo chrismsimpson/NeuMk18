@@ -16,7 +16,7 @@ public:
         if (count == 0)
             return;
 
-        if constexpr (Traits<T>::is_trivial()) {
+        if constexpr (Traits<T>::isTrivial()) {
             __builtin_memmove(destination, source, count * sizeof(T));
             return;
         }
@@ -34,7 +34,7 @@ public:
         if (count == 0)
             return 0;
 
-        if constexpr (Traits<T>::is_trivial()) {
+        if constexpr (Traits<T>::isTrivial()) {
             if (count == 1)
                 *destination = *source;
             else
@@ -57,7 +57,7 @@ public:
         if (count == 0)
             return true;
 
-        if constexpr (Traits<T>::is_trivial())
+        if constexpr (Traits<T>::isTrivial())
             return !__builtin_memcmp(a, b, count * sizeof(T));
 
         for (size_t i = 0; i < count; ++i) {

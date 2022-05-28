@@ -95,7 +95,7 @@ Vector<String> String::split(char separator, bool keep_empty) const
 
 Vector<String> String::split_limit(char separator, size_t limit, bool keep_empty) const
 {
-    if (is_empty())
+    if (isEmpty())
         return {};
 
     Vector<String> v;
@@ -117,7 +117,7 @@ Vector<String> String::split_limit(char separator, size_t limit, bool keep_empty
 
 Vector<StringView> String::split_view(Function<bool(char)> separator, bool keep_empty) const
 {
-    if (is_empty())
+    if (isEmpty())
         return {};
 
     Vector<StringView> v;
@@ -172,7 +172,7 @@ bool String::starts_with(StringView str, CaseSensitivity case_sensitivity) const
 
 bool String::starts_with(char ch) const
 {
-    if (is_empty())
+    if (isEmpty())
         return false;
     return characters()[0] == ch;
 }
@@ -184,7 +184,7 @@ bool String::ends_with(StringView str, CaseSensitivity case_sensitivity) const
 
 bool String::ends_with(char ch) const
 {
-    if (is_empty())
+    if (isEmpty())
         return false;
     return characters()[length() - 1] == ch;
 }
@@ -201,7 +201,7 @@ String String::repeated(char ch, size_t count)
 
 String String::repeated(StringView string, size_t count)
 {
-    if (!count || string.is_empty())
+    if (!count || string.isEmpty())
         return empty();
     char* buffer;
     auto impl = StringImpl::create_uninitialized(count * string.length(), buffer);
@@ -405,7 +405,7 @@ Vector<size_t> String::find_all(StringView needle) const
 
 String& String::operator+=(String const& other)
 {
-    if (other.is_empty())
+    if (other.isEmpty())
         return *this;
 
     StringBuilder builder;

@@ -201,7 +201,7 @@ public:
             swap(a.m_collection_data, b.m_collection_data);
     }
 
-    [[nodiscard]] bool is_empty() const { return m_size == 0; }
+    [[nodiscard]] bool isEmpty() const { return m_size == 0; }
     [[nodiscard]] size_t size() const { return m_size; }
     [[nodiscard]] size_t capacity() const { return m_capacity; }
 
@@ -642,7 +642,7 @@ private:
     template<typename TUnaryPredicate>
     [[nodiscard]] BucketType* lookup_with_hash(unsigned hash, TUnaryPredicate predicate) const
     {
-        if (is_empty())
+        if (isEmpty())
             return nullptr;
 
         for (;;) {

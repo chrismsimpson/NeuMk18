@@ -150,7 +150,7 @@ public:
     [[nodiscard]] StringView substring_view(size_t start) const;
 
     [[nodiscard]] bool is_null() const { return !m_impl; }
-    [[nodiscard]] ALWAYS_INLINE bool is_empty() const { return length() == 0; }
+    [[nodiscard]] ALWAYS_INLINE bool isEmpty() const { return length() == 0; }
     [[nodiscard]] ALWAYS_INLINE size_t length() const { return m_impl ? m_impl->length() : 0; }
     // Includes NUL-terminator, if non-nullptr.
     [[nodiscard]] ALWAYS_INLINE char const* characters() const { return m_impl ? m_impl->characters() : nullptr; }
@@ -246,7 +246,7 @@ public:
     template<typename BufferType>
     [[nodiscard]] static String copy(BufferType const& buffer, ShouldChomp should_chomp = NoChomp)
     {
-        if (buffer.is_empty())
+        if (buffer.isEmpty())
             return empty();
         return String((char const*)buffer.data(), buffer.size(), should_chomp);
     }

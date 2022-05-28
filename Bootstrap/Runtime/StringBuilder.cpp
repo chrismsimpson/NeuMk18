@@ -22,7 +22,7 @@ StringBuilder::StringBuilder()
 
 ErrorOr<void> StringBuilder::try_append(StringView string)
 {
-    if (string.is_empty())
+    if (string.isEmpty())
         return {};
     TRY(will_append(string.length()));
     TRY(m_buffer.push_values((u8 const*)string.charactersWithoutNullTermination(), string.length()));
@@ -58,7 +58,7 @@ void StringBuilder::append(char ch)
 
 String StringBuilder::to_string() const
 {
-    if (is_empty())
+    if (isEmpty())
         return String::empty();
     return String((char const*)data(), length());
 }

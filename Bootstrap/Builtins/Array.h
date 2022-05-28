@@ -13,7 +13,7 @@ class ArrayStorage : public RefCounted<ArrayStorage<T>> {
 public:
     ArrayStorage() { }
 
-    bool is_empty() const { return m_size == 0; }
+    bool isEmpty() const { return m_size == 0; }
     size_t size() const { return m_size; }
     size_t capacity() const { return m_capacity; }
 
@@ -143,7 +143,7 @@ public:
         VERIFY(m_offset < m_storage->size());
     }
 
-    bool is_empty() const { return size() == 0; }
+    bool isEmpty() const { return size() == 0; }
     size_t size() const
     {
         if (!m_storage)
@@ -213,7 +213,7 @@ public:
             MUST(push(item));
     }
 
-    bool is_empty() const { return !m_storage || m_storage->is_empty(); }
+    bool isEmpty() const { return !m_storage || m_storage->isEmpty(); }
     size_t size() const { return m_storage ? m_storage->size() : 0; }
     size_t capacity() const { return m_storage ? m_storage->capacity() : 0; }
 
@@ -290,7 +290,7 @@ public:
 
     Optional<T> pop()
     {
-        if (is_empty())
+        if (isEmpty())
             return {};
         auto value = move(at(size() - 1));
         static_cast<void>(resize(size() - 1));
