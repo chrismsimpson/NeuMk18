@@ -42,7 +42,7 @@ inline constexpr bool IsFunctionPointer = (IsPointer<F> && IsFunction<RemovePoin
 
 // Not a function pointer, and not an lvalue reference.
 template<typename F>
-inline constexpr bool IsFunctionObject = (!IsFunctionPointer<F> && IsRvalueReference<F&&>);
+inline constexpr bool IsFunctionObject = (!IsFunctionPointer<F> && IsRValueReference<F&&>);
 
 template<typename Out, typename... In>
 class Function<Out(In...)> {

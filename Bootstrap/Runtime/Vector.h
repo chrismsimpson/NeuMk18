@@ -23,26 +23,31 @@
 
 namespace Detail {
 
-template<typename StorageType, bool>
-struct CanBePlacedInsideVectorHelper;
+    template<typename StorageType, bool>
+    struct CanBePlacedInsideVectorHelper;
 
-template<typename StorageType>
-struct CanBePlacedInsideVectorHelper<StorageType, true> {
-    template<typename U>
-    static constexpr bool value = requires(U&& u) { StorageType { &u }; };
-};
+    template<typename StorageType>
+    struct CanBePlacedInsideVectorHelper<StorageType, true> {
 
-template<typename StorageType>
-struct CanBePlacedInsideVectorHelper<StorageType, false> {
-    template<typename U>
-    static constexpr bool value = requires(U&& u) { StorageType(forward<U>(u)); };
-};
+        template<typename U>
+        static constexpr bool value = requires(U&& u) { StorageType { &u }; };
+    };
+
+    template<typename StorageType>
+    struct CanBePlacedInsideVectorHelper<StorageType, false> {
+
+        template<typename U>
+        static constexpr bool value = requires(U&& u) { StorageType(forward<U>(u)); };
+    };
 }
 
 template<typename T, size_t inline_capacity>
-requires(!IsRvalueReference<T>) class Vector {
+requires(!IsRValueReference<T>) class Vector {
+
 private:
-    static constexpr bool contains_reference = IsLvalueReference<T>;
+
+    static constexpr bool contains_reference = IsLValueReference<T>;
+
     using StorageType = Conditional<contains_reference, RawPtr<RemoveReference<T>>, T>;
 
     using VisibleType = RemoveReference<T>;
@@ -51,32 +56,40 @@ private:
     static constexpr bool CanBePlacedInsideVector = Detail::CanBePlacedInsideVectorHelper<StorageType, contains_reference>::template value<U>;
 
 public:
-    using ValueType = T;
-    Vector()
-        : m_capacity(inline_capacity)
-    {
-    }
 
-    Vector(std::initializer_list<T> list) requires(!IsLvalueReference<T>)
-    {
+    using ValueType = T;
+    
+    Vector()
+        : m_capacity(inline_capacity) { }
+
+    Vector(std::initializer_list<T> list) requires(!IsLValueReference<T>) {
+
         ensure_capacity(list.size());
-        for (auto& item : list)
+
+        for (auto& item : list) {
+
             unchecked_append(item);
+        }
     }
 
     Vector(Vector&& other)
         : m_size(other.m_size)
         , m_capacity(other.m_capacity)
-        , m_outline_buffer(other.m_outline_buffer)
-    {
+        , m_outline_buffer(other.m_outline_buffer) {
+
         if constexpr (inline_capacity > 0) {
+
             if (!m_outline_buffer) {
+
                 for (size_t i = 0; i < m_size; ++i) {
+
                     new (&inline_buffer()[i]) StorageType(move(other.inline_buffer()[i]));
+                    
                     other.inline_buffer()[i].~StorageType();
                 }
             }
         }
+
         other.m_outline_buffer = nullptr;
         other.m_size = 0;
         other.reset_capacity();
@@ -89,7 +102,7 @@ public:
         m_size = other.size();
     }
 
-    explicit Vector(Span<T const> other) requires(!IsLvalueReference<T>)
+    explicit Vector(Span<T const> other) requires(!IsLValueReference<T>)
     {
         ensure_capacity(other.size());
         TypedTransfer<StorageType>::copy(data(), other.data(), other.size());

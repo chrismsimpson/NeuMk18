@@ -76,7 +76,7 @@ template<typename T>
 class WeakPtr;
 
 template<typename T, size_t inline_capacity = 0>
-requires(!IsRvalueReference<T>) class Vector;
+requires(!IsRValueReference<T>) class Vector;
 
 template<typename T, typename ErrorType = Error>
 class [[nodiscard]] ErrorOr;

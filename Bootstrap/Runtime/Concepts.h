@@ -40,7 +40,7 @@ template<typename U, typename... Ts>
 concept OneOf = IsOneOf<U, Ts...>;
 
 template<typename U, typename... Ts>
-concept OneOfIgnoringCV = IsOneOfIgnoringConstVolatile<U, Ts...>;
+concept OneOfIgnoringConstVolatile = IsOneOfIgnoringConstVolatile<U, Ts...>;
 
 template<typename T, template<typename...> typename S>
 concept SpecializationOf = IsSpecializationOf<T, S>;
@@ -124,7 +124,7 @@ using Concepts::IterableContainer;
 using Concepts::IteratorFunction;
 using Concepts::IteratorPairWith;
 using Concepts::OneOf;
-using Concepts::OneOfIgnoringCV;
+using Concepts::OneOfIgnoringConstVolatile;
 using Concepts::SameAs;
 using Concepts::Signed;
 using Concepts::SpecializationOf;

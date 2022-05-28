@@ -40,7 +40,7 @@ constexpr T&& forward(Detail::RemoveReference<T>& param)
 template<typename T>
 constexpr T&& forward(Detail::RemoveReference<T>&& param) noexcept
 {
-    static_assert(!IsLvalueReference<T>, "Can't forward an rvalue as an lvalue.");
+    static_assert(!IsLValueReference<T>, "Can't forward an rvalue as an lvalue.");
     return static_cast<T&&>(param);
 }
 

@@ -26,12 +26,12 @@ class Optional;
 struct NullOptional {};
 
 template<typename T>
-requires(!IsLvalueReference<T>) class [[nodiscard]] Optional<T> {
+requires(!IsLValueReference<T>) class [[nodiscard]] Optional<T> {
 
     template<typename U>
     friend class Optional;
 
-    static_assert(!IsLvalueReference<T> && !IsRvalueReference<T>);
+    static_assert(!IsLValueReference<T> && !IsRValueReference<T>);
 
 public:
     using ValueType = T;
@@ -225,7 +225,7 @@ private:
 };
 
 template<typename T>
-requires(IsLvalueReference<T>) class [[nodiscard]] Optional<T> {
+requires(IsLValueReference<T>) class [[nodiscard]] Optional<T> {
     template<typename>
     friend class Optional;
 
@@ -302,7 +302,7 @@ public:
 
     // Note: Disallows assignment from a temporary as this does not do any lifetime extension.
     template<typename U>
-    ALWAYS_INLINE Optional& operator=(U&& value) requires(CanBePlacedInOptional<U>&& IsLvalueReference<U>)
+    ALWAYS_INLINE Optional& operator=(U&& value) requires(CanBePlacedInOptional<U>&& IsLValueReference<U>)
     {
         m_pointer = &value;
         return *this;

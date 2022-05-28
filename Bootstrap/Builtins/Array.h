@@ -205,7 +205,7 @@ public:
         return ArrayIterator<T> { *m_storage };
     }
 
-    Array(std::initializer_list<T> list) requires(!IsLvalueReference<T>)
+    Array(std::initializer_list<T> list) requires(!IsLValueReference<T>)
     {
         // FIXME: Should not MUST()
         MUST(ensure_capacity(list.size()));
