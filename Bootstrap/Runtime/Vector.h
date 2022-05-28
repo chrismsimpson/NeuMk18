@@ -612,7 +612,7 @@ public:
         }
     }
 
-    T unstable_take(size_t index) {
+    T unstableTake(size_t index) {
 
         VERIFY(index < m_size);
         
