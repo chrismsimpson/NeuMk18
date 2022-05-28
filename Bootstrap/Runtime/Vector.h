@@ -73,9 +73,9 @@ public:
     }
 
     Vector(Vector&& other)
-        : m_size(other.m_size)
-        , m_capacity(other.m_capacity)
-        , m_outline_buffer(other.m_outline_buffer) {
+        : m_size(other.m_size), 
+          m_capacity(other.m_capacity), 
+          m_outline_buffer(other.m_outline_buffer) {
 
         if constexpr (inline_capacity > 0) {
 
@@ -95,30 +95,36 @@ public:
         other.reset_capacity();
     }
 
-    Vector(Vector const& other)
-    {
+    Vector(Vector const& other) {
+
         ensure_capacity(other.size());
+        
         TypedTransfer<StorageType>::copy(data(), other.data(), other.size());
+        
         m_size = other.size();
     }
 
-    explicit Vector(Span<T const> other) requires(!IsLValueReference<T>)
-    {
+    explicit Vector(Span<T const> other) requires(!IsLValueReference<T>) {
+
         ensure_capacity(other.size());
+        
         TypedTransfer<StorageType>::copy(data(), other.data(), other.size());
+        
         m_size = other.size();
     }
 
     template<size_t other_inline_capacity>
-    Vector(Vector<T, other_inline_capacity> const& other)
-    {
+    Vector(Vector<T, other_inline_capacity> const& other) {
+
         ensure_capacity(other.size());
+        
         TypedTransfer<StorageType>::copy(data(), other.data(), other.size());
+        
         m_size = other.size();
     }
 
-    ~Vector()
-    {
+    ~Vector() {
+
         clear();
     }
 
@@ -132,36 +138,52 @@ public:
     ALWAYS_INLINE size_t size() const { return m_size; }
     size_t capacity() const { return m_capacity; }
 
-    ALWAYS_INLINE StorageType* data()
-    {
-        if constexpr (inline_capacity > 0)
+    ALWAYS_INLINE StorageType* data() {
+
+        if constexpr (inline_capacity > 0) {
+
             return m_outline_buffer ? m_outline_buffer : inline_buffer();
+        }
+
         return m_outline_buffer;
     }
 
-    ALWAYS_INLINE StorageType const* data() const
-    {
-        if constexpr (inline_capacity > 0)
+    ALWAYS_INLINE StorageType const* data() const {
+
+        if constexpr (inline_capacity > 0) {
+
             return m_outline_buffer ? m_outline_buffer : inline_buffer();
+        }
+
         return m_outline_buffer;
     }
 
-    ALWAYS_INLINE VisibleType const& at(size_t i) const
-    {
+    ALWAYS_INLINE VisibleType const& at(size_t i) const {
+
         VERIFY(i < m_size);
-        if constexpr (contains_reference)
+        
+        if constexpr (contains_reference) {
+
             return *data()[i];
-        else
+        }
+        else {
+
             return data()[i];
+        }
     }
 
-    ALWAYS_INLINE VisibleType& at(size_t i)
-    {
+    ALWAYS_INLINE VisibleType& at(size_t i) {
+
         VERIFY(i < m_size);
-        if constexpr (contains_reference)
+
+        if constexpr (contains_reference) {
+
             return *data()[i];
-        else
+        }
+        else {
+
             return data()[i];
+        }
     }
 
     ALWAYS_INLINE VisibleType const& operator[](size_t i) const { return at(i); }
@@ -174,36 +196,45 @@ public:
     VisibleType& last() { return at(size() - 1); }
 
     template<typename TUnaryPredicate>
-    Optional<VisibleType&> first_matching(TUnaryPredicate predicate) requires(!contains_reference)
-    {
+    Optional<VisibleType&> firstMatching(TUnaryPredicate predicate) requires(!contains_reference) {
+
         for (size_t i = 0; i < size(); ++i) {
+
             if (predicate(at(i))) {
+
                 return at(i);
             }
         }
-        return {};
+
+        return { };
     }
 
     template<typename TUnaryPredicate>
-    Optional<VisibleType const&> first_matching(TUnaryPredicate predicate) const requires(!contains_reference)
-    {
+    Optional<VisibleType const&> firstMatching(TUnaryPredicate predicate) const requires(!contains_reference) {
+
         for (size_t i = 0; i < size(); ++i) {
+
             if (predicate(at(i))) {
+
                 return Optional<VisibleType const&>(at(i));
             }
         }
-        return {};
+
+        return { };
     }
 
     template<typename TUnaryPredicate>
-    Optional<VisibleType&> last_matching(TUnaryPredicate predicate) requires(!contains_reference)
-    {
+    Optional<VisibleType&> last_matching(TUnaryPredicate predicate) requires(!contains_reference) {
+
         for (ssize_t i = size() - 1; i >= 0; --i) {
+
             if (predicate(at(i))) {
+
                 return at(i);
             }
         }
-        return {};
+
+        return { };
     }
 
     template<typename V>
@@ -426,49 +457,70 @@ public:
     }
 
     template<typename TUnaryPredicate>
-    bool remove_first_matching(TUnaryPredicate predicate)
-    {
+    bool removeFirstMatching(TUnaryPredicate predicate) {
+
         for (size_t i = 0; i < size(); ++i) {
+
             if (predicate(at(i))) {
+
                 remove(i);
+
                 return true;
             }
         }
+        
         return false;
     }
 
     template<typename TUnaryPredicate>
-    bool remove_all_matching(TUnaryPredicate predicate)
-    {
+    bool remove_all_matching(TUnaryPredicate predicate) {
+
         bool something_was_removed = false;
+
         for (size_t i = 0; i < size();) {
+
             if (predicate(at(i))) {
+                
                 remove(i);
+                
                 something_was_removed = true;
-            } else {
+            } 
+            else {
+
                 ++i;
             }
         }
+
         return something_was_removed;
     }
 
-    ALWAYS_INLINE T take_last()
-    {
+    ALWAYS_INLINE T take_last() {
+
         VERIFY(!isEmpty());
-        auto value = move(raw_last());
-        if constexpr (!contains_reference)
+        
+        auto value = move(rawLast());
+        
+        if constexpr (!contains_reference) {
+
             last().~T();
+        }
+
         --m_size;
-        if constexpr (contains_reference)
+        
+        if constexpr (contains_reference) {
+
             return *value;
-        else
+        }
+        else {
+
             return value;
+        }
     }
 
     T take_first()
     {
         VERIFY(!isEmpty());
-        auto value = move(raw_first());
+        auto value = move(rawFirst());
         remove(0);
         if constexpr (contains_reference)
             return *value;
@@ -688,26 +740,36 @@ public:
         return { };
     }
 
-    ErrorOr<void> try_prepend(StorageType const* values, size_t count)
-    {
-        if (count == 0)
+    ErrorOr<void> try_prepend(StorageType const* values, size_t count) {
+
+        if (count == 0) {
+
             return {};
+        }
+
         TRY(try_grow_capacity(size() + count));
+        
         TypedTransfer<StorageType>::move(slot(count), slot(0), m_size);
+        
         TypedTransfer<StorageType>::copy(slot(0), values, count);
+        
         m_size += count;
+        
         return {};
     }
 
-    ErrorOr<void> try_grow_capacity(size_t needed_capacity)
-    {
-        if (m_capacity >= needed_capacity)
+    ErrorOr<void> try_grow_capacity(size_t needed_capacity) {
+
+        if (m_capacity >= needed_capacity) {
+
             return {};
+        }
+
         return try_ensure_capacity(padded_capacity(needed_capacity));
     }
 
     ErrorOr<void> try_ensure_capacity(size_t needed_capacity) {
-        
+
         if (m_capacity >= needed_capacity) {
 
             return {};
@@ -897,8 +959,8 @@ private:
         return reinterpret_cast<StorageType const*>(m_inline_buffer_storage);
     }
 
-    StorageType& raw_last() { return raw_at(size() - 1); }
-    StorageType& raw_first() { return raw_at(0); }
+    StorageType& rawLast() { return raw_at(size() - 1); }
+    StorageType& rawFirst() { return raw_at(0); }
     StorageType& raw_at(size_t index) { return *slot(index); }
 
     size_t m_size { 0 };
