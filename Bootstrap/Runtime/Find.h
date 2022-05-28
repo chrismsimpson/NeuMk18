@@ -26,12 +26,12 @@ constexpr TIterator findIf(TIterator first, TEndIterator last, TUnaryPredicate&&
 
 template<typename TEndIterator, IteratorPairWith<TEndIterator> TIterator, typename T>
 constexpr TIterator find(TIterator first, TEndIterator last, T const& value) {
-    
+
     return findIf(first, last, [&](auto const& v) { return Traits<T>::equals(value, v); });
 }
 
 template<typename TEndIterator, IteratorPairWith<TEndIterator> TIterator, typename T>
-constexpr size_t find_index(TIterator first, TEndIterator last, T const& value) requires(requires(TIterator it) { it.index(); }) {
+constexpr size_t findIndex(TIterator first, TEndIterator last, T const& value) requires(requires(TIterator it) { it.index(); }) {
 
     return findIf(first, last, [&](auto const& v) { return Traits<T>::equals(value, v); }).index();
 }

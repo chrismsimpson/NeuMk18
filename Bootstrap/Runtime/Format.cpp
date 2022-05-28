@@ -559,7 +559,7 @@ void StandardFormatter::parse(TypeErasedFormatParams& params, FormatParser& pars
         if (index == use_next_index)
             index = params.take_next_index();
 
-        m_width = params.parameters().at(index).to_size();
+        m_width = params.parameters().at(index).toSize();
     } else if (size_t width = 0; parser.consume_number(width)) {
         m_width = width;
     }
@@ -569,7 +569,7 @@ void StandardFormatter::parse(TypeErasedFormatParams& params, FormatParser& pars
             if (index == use_next_index)
                 index = params.take_next_index();
 
-            m_precision = params.parameters().at(index).to_size();
+            m_precision = params.parameters().at(index).toSize();
         } else if (size_t precision = 0; parser.consume_number(precision)) {
             m_precision = precision;
         }

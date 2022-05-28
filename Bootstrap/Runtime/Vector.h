@@ -58,7 +58,7 @@ private:
 public:
 
     using ValueType = T;
-    
+
     Vector()
         : m_capacity(inline_capacity) { }
 
@@ -785,27 +785,31 @@ public:
 
     Optional<size_t> find_first_index(VisibleType const& value) const
     {
-        if (auto const index = find_index(begin(), end(), value);
+        if (auto const index = findIndex(begin(), end(), value);
             index < size()) {
             return index;
         }
-        return {};
+
+        return { };
     }
 
-    void reverse()
-    {
-        for (size_t i = 0; i < size() / 2; ++i)
+    void reverse() {
+
+        for (size_t i = 0; i < size() / 2; ++i) {
+
             ::swap(at(i), at(size() - i - 1));
+        }
     }
 
 private:
-    void reset_capacity()
-    {
+
+    void reset_capacity() {
+
         m_capacity = inline_capacity;
     }
 
-    static size_t padded_capacity(size_t capacity)
-    {
+    static size_t padded_capacity(size_t capacity) {
+        
         return max(static_cast<size_t>(4), capacity + (capacity / 4) + 4);
     }
 

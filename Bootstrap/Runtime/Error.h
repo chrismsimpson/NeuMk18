@@ -43,9 +43,9 @@ private:
         : m_stringLiteral(stringLiteral) { }
 
     Error(StringView syscallName, int rc)
-        : m_code(-rc)
-        , m_stringLiteral(syscallName)
-        , m_syscall(true) { }
+        : m_code(-rc), 
+          m_stringLiteral(syscallName), 
+          m_syscall(true) { }
 
     int m_code { 0 };
     
