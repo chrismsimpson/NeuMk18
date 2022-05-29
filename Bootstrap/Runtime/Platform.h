@@ -95,18 +95,18 @@
 #if !defined(__serenity__) && !defined(_WIN32)
 // On macOS (at least Mojave), Apple's version of this header is not wrapped
 // in extern "C".
-#    ifdef AK_OS_MACOS
+#    ifdef OS_MACOS
 extern "C" {
 #    endif
 #    include <unistd.h>
 #    undef PAGE_SIZE
 #    define PAGE_SIZE sysconf(_SC_PAGESIZE)
-#    ifdef AK_OS_MACOS
+#    ifdef OS_MACOS
 };
 #    endif
 #endif
 
-#ifdef AK_OS_BSD_GENERIC
+#ifdef OS_BSD_GENERIC
 #    define CLOCK_MONOTONIC_COARSE CLOCK_MONOTONIC
 #    define CLOCK_REALTIME_COARSE CLOCK_REALTIME
 #endif

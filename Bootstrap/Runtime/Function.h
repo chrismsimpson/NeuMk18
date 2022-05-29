@@ -82,9 +82,9 @@ public:
     {
         auto* wrapper = callable_wrapper();
         VERIFY(wrapper);
-        ++m_call_nesting_level;
+        ++m_callNestingLevel;
         ScopeGuard guard([this] {
-            if (--m_call_nesting_level == 0 && m_deferred_clear)
+            if (--m_callNestingLevel == 0 && m_deferred_clear)
                 const_cast<Function*>(this)->clear(false);
         });
         return wrapper->call(forward<In>(in)...);
@@ -157,72 +157,93 @@ private:
         {
         }
 
-        Out call(In... in) final override
-        {
+        Out call(In... in) final override {
+            
             return m_callable(forward<In>(in)...);
         }
 
-        void destroy() final override
-        {
+        void destroy() final override {
+
             delete this;
         }
 
         // NOLINTNEXTLINE(readability-non-const-parameter) False positive; destination is used in a placement new expression
-        void init_and_swap(u8* destination, size_t size) final override
-        {
+        void init_and_swap(u8* destination, size_t size) final override {
+
             VERIFY(size >= sizeof(CallableWrapper));
+
             new (destination) CallableWrapper { move(m_callable) };
         }
 
     private:
+
         CallableType m_callable;
     };
 
     enum class FunctionKind {
+
         NullPointer,
         Inline,
         Outline,
     };
 
-    CallableWrapperBase* callable_wrapper() const
-    {
+    CallableWrapperBase* callable_wrapper() const {
+
         switch (m_kind) {
+
         case FunctionKind::NullPointer:
             return nullptr;
+        
         case FunctionKind::Inline:
             return bitCast<CallableWrapperBase*>(&m_storage);
+        
         case FunctionKind::Outline:
             return *bitCast<CallableWrapperBase**>(&m_storage);
+        
         default:
             VERIFY_NOT_REACHED();
         }
     }
 
-    void clear(bool may_defer = true)
-    {
-        bool called_from_inside_function = m_call_nesting_level > 0;
+    void clear(bool may_defer = true) {
+
+        bool called_from_inside_function = m_callNestingLevel > 0;
+        
         // NOTE: This VERIFY could fail because a Function is destroyed from within itself.
+        
         VERIFY(may_defer || !called_from_inside_function);
+        
         if (called_from_inside_function && may_defer) {
+            
             m_deferred_clear = true;
+            
             return;
         }
+
         m_deferred_clear = false;
+        
         auto* wrapper = callable_wrapper();
+        
         if (m_kind == FunctionKind::Inline) {
+        
             VERIFY(wrapper);
+        
             wrapper->~CallableWrapperBase();
-        } else if (m_kind == FunctionKind::Outline) {
+        } 
+        else if (m_kind == FunctionKind::Outline) {
+            
             VERIFY(wrapper);
+            
             wrapper->destroy();
         }
+
         m_kind = FunctionKind::NullPointer;
     }
 
     template<typename Callable>
     void initWithCallable(Callable&& callable) {
         
-        VERIFY(m_call_nesting_level == 0);
+        VERIFY(m_callNestingLevel == 0);
         
         using WrapperType = CallableWrapper<Callable>;
         
@@ -242,7 +263,7 @@ private:
 
     void moveFrom(Function&& other) {
 
-        VERIFY(m_call_nesting_level == 0 && other.m_call_nesting_level == 0);
+        VERIFY(m_callNestingLevel == 0 && other.m_callNestingLevel == 0);
 
         auto* other_wrapper = other.callable_wrapper();
 
@@ -270,7 +291,7 @@ private:
 
     FunctionKind m_kind { FunctionKind::NullPointer };
     bool m_deferred_clear { false };
-    mutable Atomic<u16> m_call_nesting_level { 0 };
+    mutable Atomic<u16> m_callNestingLevel { 0 };
     // Empirically determined to fit most lambdas and functions.
     static constexpr size_t inline_capacity = 4 * sizeof(void*);
     alignas(max(alignof(CallableWrapperBase), alignof(CallableWrapperBase*))) u8 m_storage[inline_capacity];

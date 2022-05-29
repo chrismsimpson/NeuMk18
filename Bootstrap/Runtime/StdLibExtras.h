@@ -26,7 +26,7 @@ constexpr bool is_power_of_two(T value) requires(IsIntegral<T>)
 // Disabling formatting for that doesn't help either.
 //
 // clang-format off
-#ifndef AK_DONT_REPLACE_STD
+#ifndef DONT_REPLACE_STD
 namespace std { // NOLINT(cert-dcl58-cpp) Names in std to aid tools
 
 // NOTE: These are in the "std" namespace since some compilers and static analyzers rely on it.
@@ -138,7 +138,7 @@ constexpr decltype(auto) to_underlying(V value) requires(IsEnum<V>)
     return static_cast<UnderlyingType<V>>(value);
 }
 
-constexpr bool is_constant_evaluated()
+constexpr bool isConstantEvaluated()
 {
 #if __has_builtin(__builtin_is_constant_evaluated)
     return __builtin_is_constant_evaluated();
@@ -150,10 +150,11 @@ constexpr bool is_constant_evaluated()
 // These can't be exported into the global namespace as they would clash with the C standard library.
 
 #define __DEFINE_GENERIC_ABS(type, zero, intrinsic) \
-    constexpr type absolute(type num)               \
-    {                                               \
-        if (is_constant_evaluated())                \
+    constexpr type absolute(type num) {             \
+                                                    \
+        if (isConstantEvaluated()) {                \
             return num < (zero) ? -num : num;       \
+        }                                           \
         return __builtin_##intrinsic(num);          \
     }
 

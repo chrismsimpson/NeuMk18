@@ -25,7 +25,7 @@ public:
         : m_characters(characters), 
           m_length(length) {
 
-        if (!is_constant_evaluated()) {
+        if (!isConstantEvaluated()) {
 
             VERIFY(!Checked<uintptr_t>::additionWouldOverflow((uintptr_t)characters, length));
         }
@@ -102,17 +102,22 @@ public:
     [[nodiscard]] StringView trim_whitespace(TrimMode mode = TrimMode::Both) const { return StringUtils::trim_whitespace(*this, mode); }
 
 #ifndef KERNEL
+
     [[nodiscard]] String to_lowercase_string() const;
     [[nodiscard]] String to_uppercase_string() const;
     [[nodiscard]] String to_titlecase_string() const;
+
 #endif
 
-    [[nodiscard]] Optional<size_t> find(char needle, size_t start = 0) const
-    {
+    [[nodiscard]] Optional<size_t> find(char needle, size_t start = 0) const {
+
         return StringUtils::find(*this, needle, start);
     }
+
     [[nodiscard]] Optional<size_t> find(StringView needle, size_t start = 0) const { return StringUtils::find(*this, needle, start); }
+    
     [[nodiscard]] Optional<size_t> find_last(char needle) const { return StringUtils::find_last(*this, needle); }
+    
     // FIXME: Implement find_last(StringView) for API symmetry.
 
     [[nodiscard]] Vector<size_t> find_all(StringView needle) const;
@@ -120,17 +125,23 @@ public:
     using SearchDirection = StringUtils::SearchDirection;
     [[nodiscard]] Optional<size_t> find_any_of(StringView needles, SearchDirection direction = SearchDirection::Forward) const { return StringUtils::find_any_of(*this, needles, direction); }
 
-    [[nodiscard]] constexpr StringView substring_view(size_t start, size_t length) const
-    {
-        if (!is_constant_evaluated())
+    [[nodiscard]] constexpr StringView substring_view(size_t start, size_t length) const {
+
+        if (!isConstantEvaluated()) {
+
             VERIFY(start + length <= m_length);
+        }
+
         return { m_characters + start, length };
     }
 
-    [[nodiscard]] constexpr StringView substring_view(size_t start) const
-    {
-        if (!is_constant_evaluated())
+    [[nodiscard]] constexpr StringView substring_view(size_t start) const {
+
+        if (!isConstantEvaluated()) {
+
             VERIFY(start <= length());
+        }
+
         return substring_view(start, length() - start);
     }
 
@@ -151,22 +162,35 @@ public:
 
         VERIFY(!separator.isEmpty());
 
-        if (isEmpty())
+        if (isEmpty()) {
+
             return;
+        }
 
         StringView view { *this };
 
         auto maybe_separator_index = find(separator);
+
         while (maybe_separator_index.hasValue()) {
+
             auto separator_index = maybe_separator_index.value();
+            
             auto part_with_separator = view.substring_view(0, separator_index + separator.length());
-            if (keep_empty || separator_index > 0)
+            
+            if (keep_empty || separator_index > 0) {
+
                 callback(part_with_separator.substring_view(0, separator_index));
+            }
+
             view = view.substring_view_starting_after_substring(part_with_separator);
+            
             maybe_separator_index = view.find(separator);
         }
-        if (keep_empty || !view.isEmpty())
+
+        if (keep_empty || !view.isEmpty()) {
+
             callback(view);
+        }
     }
 
     // Create a Vector of StringViews split by line endings. As of CommonMark
@@ -355,14 +379,19 @@ private:
 
 template<>
 struct Traits<StringView> : public GenericTraits<StringView> {
+
     static unsigned hash(StringView s) { return s.hash(); }
 };
 
 struct CaseInsensitiveStringViewTraits : public Traits<StringView> {
-    static unsigned hash(StringView s)
-    {
-        if (s.isEmpty())
+
+    static unsigned hash(StringView s) {
+
+        if (s.isEmpty()) {
+
             return 0;
+        }
+
         return caseInsensitiveStringHash(s.charactersWithoutNullTermination(), s.length());
     }
 };
@@ -370,12 +399,12 @@ struct CaseInsensitiveStringViewTraits : public Traits<StringView> {
 // FIXME: Remove this when clang fully supports consteval (specifically in the context of default parameter initialization).
 // See: https://stackoverflow.com/questions/68789984/immediate-function-as-default-function-argument-initializer-in-clang
 #if defined(__clang__)
-#    define AK_STRING_VIEW_LITERAL_CONSTEVAL constexpr
+#    define STRING_VIEW_LITERAL_CONSTEVAL constexpr
 #else
-#    define AK_STRING_VIEW_LITERAL_CONSTEVAL consteval
+#    define STRING_VIEW_LITERAL_CONSTEVAL consteval
 #endif
 
-[[nodiscard]] ALWAYS_INLINE AK_STRING_VIEW_LITERAL_CONSTEVAL StringView operator"" sv(char const* cstring, size_t length)
-{
+[[nodiscard]] ALWAYS_INLINE STRING_VIEW_LITERAL_CONSTEVAL StringView operator"" sv(char const* cstring, size_t length) {
+
     return StringView(cstring, length);
 }

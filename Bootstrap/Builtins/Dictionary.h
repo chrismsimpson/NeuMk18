@@ -11,7 +11,7 @@
 #include "../Runtime/RefCounted.h"
 #include "../Runtime/Tuple.h"
 
-namespace JaktInternal {
+namespace NeuInternal {
 
 template<typename K, typename V>
 struct DictionaryStorage : public RefCounted<DictionaryStorage<K, V>> {
@@ -112,4 +112,4 @@ private:
 
 }
 
-using JaktInternal::Dictionary;
+using NeuInternal::Dictionary;

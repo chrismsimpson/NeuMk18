@@ -9,7 +9,7 @@
 #include <AK/HashTable.h>
 #include <initializer_list>
 
-namespace JaktInternal {
+namespace NeuInternal {
 
 template<typename T>
 struct SetStorage : public RefCounted<SetStorage<T>> {
@@ -97,4 +97,4 @@ private:
 
 }
 
-using JaktInternal::Set;
+using NeuInternal::Set;

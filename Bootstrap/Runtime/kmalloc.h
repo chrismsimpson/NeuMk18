@@ -28,7 +28,7 @@ inline void kfree_sized(void* ptr, size_t)
 #ifndef __serenity__
 #    include "Types.h"
 
-#    ifndef AK_OS_MACOS
+#    ifndef OS_MACOS
 extern "C" {
 inline size_t malloc_good_size(size_t size) { return size; }
 }

@@ -84,8 +84,8 @@ private:
 };
 
 template<typename T>
-struct Formatter<JaktInternal::Array<T>> : Formatter<StringView> {
-    ErrorOr<void> format(FormatBuilder& builder, JaktInternal::Array<T> const& value)
+struct Formatter<NeuInternal::Array<T>> : Formatter<StringView> {
+    ErrorOr<void> format(FormatBuilder& builder, NeuInternal::Array<T> const& value)
     {
         StringBuilder string_builder;
         string_builder.append("[");
