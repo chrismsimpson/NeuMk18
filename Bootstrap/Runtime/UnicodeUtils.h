@@ -11,7 +11,7 @@
 namespace UnicodeUtils {
 
 template<typename Callback>
-[[nodiscard]] constexpr int code_point_to_utf8(u32 code_point, Callback callback)
+[[nodiscard]] constexpr int code_point_to_utf8(UInt32 code_point, Callback callback)
 {
     if (code_point <= 0x7f) {
         callback((char)code_point);

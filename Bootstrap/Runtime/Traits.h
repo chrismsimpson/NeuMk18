@@ -59,11 +59,11 @@ requires(IsFloatingPoint<T>) struct Traits<T> : public GenericTraits<T> {
 
         if constexpr (sizeof(T) < 8) {
 
-            return int_hash(bitCast<u32>(value));
+            return int_hash(bitCast<UInt32>(value));
         }
         else {
 
-            return u64_hash(bitCast<u64>(value));
+            return u64_hash(bitCast<UInt64>(value));
         }
     }
 };

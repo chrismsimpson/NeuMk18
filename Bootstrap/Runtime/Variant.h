@@ -217,7 +217,7 @@ template<typename... Ts>
 struct Variant
     : public Detail::MergeAndDeduplicatePacks<Detail::VariantConstructors<Ts, Variant<Ts...>>...> {
 private:
-    using IndexType = Conditional<sizeof...(Ts) < 255, u8, size_t>; // Note: size+1 reserved for internal value checks
+    using IndexType = Conditional<sizeof...(Ts) < 255, UInt8, size_t>; // Note: size+1 reserved for internal value checks
     static constexpr IndexType invalid_index = sizeof...(Ts);
 
     template<typename T>
@@ -460,6 +460,6 @@ private:
     // Note: Make sure not to default-initialize!
     //       VariantConstructors::VariantConstructors(T) will set this to the correct value
     //       So default-constructing to anything will leave the first initialization with that value instead of the correct one.
-    alignas(data_alignment) u8 m_data[data_size];
+    alignas(data_alignment) UInt8 m_data[data_size];
     IndexType m_index;
 };

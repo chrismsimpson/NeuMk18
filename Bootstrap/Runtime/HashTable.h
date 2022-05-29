@@ -31,7 +31,7 @@ enum class HashSetExistingEntryBehavior {
 // - 1: used bucket
 // - F: end bucket
 // Lower nibble determines state within a class.
-enum class BucketState : u8 {
+enum class BucketState : UInt8 {
     Free = 0x00,
     Used = 0x10,
     Deleted = 0x01,
@@ -42,12 +42,12 @@ enum class BucketState : u8 {
 // Note that because there's the end state, used and free are not 100% opposites!
 constexpr bool is_used_bucket(BucketState state)
 {
-    return (static_cast<u8>(state) & 0xf0) == 0x10;
+    return (static_cast<UInt8>(state) & 0xf0) == 0x10;
 }
 
 constexpr bool is_free_bucket(BucketState state)
 {
-    return (static_cast<u8>(state) & 0xf0) == 0x00;
+    return (static_cast<UInt8>(state) & 0xf0) == 0x00;
 }
 
 template<typename HashTableType, typename T, typename BucketType>
@@ -110,7 +110,7 @@ class HashTable {
 
     struct Bucket {
         BucketState state;
-        alignas(T) u8 storage[sizeof(T)];
+        alignas(T) UInt8 storage[sizeof(T)];
 
         T* slot() { return reinterpret_cast<T*>(storage); }
         const T* slot() const { return reinterpret_cast<const T*>(storage); }
@@ -120,7 +120,7 @@ class HashTable {
         OrderedBucket* previous;
         OrderedBucket* next;
         BucketState state;
-        alignas(T) u8 storage[sizeof(T)];
+        alignas(T) UInt8 storage[sizeof(T)];
         T* slot() { return reinterpret_cast<T*>(storage); }
         const T* slot() const { return reinterpret_cast<const T*>(storage); }
     };

@@ -255,7 +255,7 @@ public:
 
 private:
 
-    alignas(T) u8 m_storage[sizeof(T)];
+    alignas(T) UInt8 m_storage[sizeof(T)];
 
     bool m_hasValue { false };
 };

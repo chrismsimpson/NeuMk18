@@ -237,7 +237,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] u32 hash() const
+    [[nodiscard]] UInt32 hash() const
     {
         if (!m_impl)
             return 0;

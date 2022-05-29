@@ -8,7 +8,7 @@
 
 #include "Types.h"
 
-constexpr unsigned int_hash(u32 key)
+constexpr unsigned int_hash(UInt32 key)
 {
     key += ~(key << 15);
     key ^= (key >> 10);
@@ -19,7 +19,7 @@ constexpr unsigned int_hash(u32 key)
     return key;
 }
 
-constexpr unsigned double_hash(u32 key)
+constexpr unsigned double_hash(UInt32 key)
 {
     unsigned const magic = 0xBA5EDB01;
     if (key == magic)
@@ -33,15 +33,15 @@ constexpr unsigned double_hash(u32 key)
     return key;
 }
 
-constexpr unsigned pair_int_hash(u32 key1, u32 key2)
+constexpr unsigned pair_int_hash(UInt32 key1, UInt32 key2)
 {
     return int_hash((int_hash(key1) * 209) ^ (int_hash(key2 * 413)));
 }
 
-constexpr unsigned u64_hash(u64 key)
+constexpr unsigned u64_hash(UInt64 key)
 {
-    u32 first = key & 0xFFFFFFFF;
-    u32 last = key >> 32;
+    UInt32 first = key & 0xFFFFFFFF;
+    UInt32 last = key >> 32;
     return pair_int_hash(first, last);
 }
 

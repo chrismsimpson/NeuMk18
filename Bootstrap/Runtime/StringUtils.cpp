@@ -135,9 +135,9 @@ namespace StringUtils {
         return value;
     }
 
-    template Optional<i8> convert_to_int(StringView str, TrimWhitespace);
-    template Optional<i16> convert_to_int(StringView str, TrimWhitespace);
-    template Optional<i32> convert_to_int(StringView str, TrimWhitespace);
+    template Optional<Int8> convert_to_int(StringView str, TrimWhitespace);
+    template Optional<Int16> convert_to_int(StringView str, TrimWhitespace);
+    template Optional<Int32> convert_to_int(StringView str, TrimWhitespace);
     template Optional<long> convert_to_int(StringView str, TrimWhitespace);
     template Optional<long long> convert_to_int(StringView str, TrimWhitespace);
 
@@ -166,9 +166,9 @@ namespace StringUtils {
         return value;
     }
 
-    template Optional<u8> convert_to_uint(StringView str, TrimWhitespace);
-    template Optional<u16> convert_to_uint(StringView str, TrimWhitespace);
-    template Optional<u32> convert_to_uint(StringView str, TrimWhitespace);
+    template Optional<UInt8> convert_to_uint(StringView str, TrimWhitespace);
+    template Optional<UInt16> convert_to_uint(StringView str, TrimWhitespace);
+    template Optional<UInt32> convert_to_uint(StringView str, TrimWhitespace);
     template Optional<unsigned long> convert_to_uint(StringView str, TrimWhitespace);
     template Optional<unsigned long long> convert_to_uint(StringView str, TrimWhitespace);
     template Optional<long> convert_to_uint(StringView str, TrimWhitespace);
@@ -189,7 +189,7 @@ namespace StringUtils {
 
         for (size_t i = 0; i < count; i++) {
             char digit = string[i];
-            u8 digit_val;
+            UInt8 digit_val;
             if (value > (upper_bound >> 4))
                 return {};
 
@@ -208,10 +208,10 @@ namespace StringUtils {
         return value;
     }
 
-    template Optional<u8> convert_to_uint_from_hex(StringView str, TrimWhitespace);
-    template Optional<u16> convert_to_uint_from_hex(StringView str, TrimWhitespace);
-    template Optional<u32> convert_to_uint_from_hex(StringView str, TrimWhitespace);
-    template Optional<u64> convert_to_uint_from_hex(StringView str, TrimWhitespace);
+    template Optional<UInt8> convert_to_uint_from_hex(StringView str, TrimWhitespace);
+    template Optional<UInt16> convert_to_uint_from_hex(StringView str, TrimWhitespace);
+    template Optional<UInt32> convert_to_uint_from_hex(StringView str, TrimWhitespace);
+    template Optional<UInt64> convert_to_uint_from_hex(StringView str, TrimWhitespace);
 
     template<typename T>
     Optional<T> convert_to_uint_from_octal(StringView str, TrimWhitespace trim_whitespace)
@@ -228,7 +228,7 @@ namespace StringUtils {
 
         for (size_t i = 0; i < count; i++) {
             char digit = string[i];
-            u8 digit_val;
+            UInt8 digit_val;
             if (value > (upper_bound >> 3))
                 return {};
 
@@ -243,10 +243,10 @@ namespace StringUtils {
         return value;
     }
 
-    template Optional<u8> convert_to_uint_from_octal(StringView str, TrimWhitespace);
-    template Optional<u16> convert_to_uint_from_octal(StringView str, TrimWhitespace);
-    template Optional<u32> convert_to_uint_from_octal(StringView str, TrimWhitespace);
-    template Optional<u64> convert_to_uint_from_octal(StringView str, TrimWhitespace);
+    template Optional<UInt8> convert_to_uint_from_octal(StringView str, TrimWhitespace);
+    template Optional<UInt16> convert_to_uint_from_octal(StringView str, TrimWhitespace);
+    template Optional<UInt32> convert_to_uint_from_octal(StringView str, TrimWhitespace);
+    template Optional<UInt64> convert_to_uint_from_octal(StringView str, TrimWhitespace);
 
     bool equals_ignoring_case(StringView a, StringView b)
     {

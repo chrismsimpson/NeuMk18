@@ -8,11 +8,11 @@
 
 #include "Types.h"
 
-constexpr u32 stringHash(char const* characters, size_t length, u32 seed = 0)
+constexpr UInt32 stringHash(char const* characters, size_t length, UInt32 seed = 0)
 {
-    u32 hash = seed;
+    UInt32 hash = seed;
     for (size_t i = 0; i < length; ++i) {
-        hash += (u32)characters[i];
+        hash += (UInt32)characters[i];
         hash += (hash << 10);
         hash ^= (hash >> 6);
     }
@@ -22,16 +22,16 @@ constexpr u32 stringHash(char const* characters, size_t length, u32 seed = 0)
     return hash;
 }
 
-constexpr u32 caseInsensitiveStringHash(char const* characters, size_t length, u32 seed = 0)
+constexpr UInt32 caseInsensitiveStringHash(char const* characters, size_t length, UInt32 seed = 0)
 {
     // AK/CharacterTypes.h cannot be included from here.
-    auto to_lowercase = [](char ch) -> u32 {
+    auto to_lowercase = [](char ch) -> UInt32 {
         if (ch >= 'A' && ch <= 'Z')
-            return static_cast<u32>(ch) + 0x20;
-        return static_cast<u32>(ch);
+            return static_cast<UInt32>(ch) + 0x20;
+        return static_cast<UInt32>(ch);
     };
 
-    u32 hash = seed;
+    UInt32 hash = seed;
     for (size_t i = 0; i < length; ++i) {
         hash += to_lowercase(characters[i]);
         hash += (hash << 10);

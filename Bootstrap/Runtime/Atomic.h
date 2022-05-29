@@ -175,7 +175,7 @@ public:
         // We use this hack to prevent unnecessary initialization, even if T has a default constructor.
         // NOTE: Will need to investigate if it pessimizes the generated assembly.
         
-        alignas(T) u8 buffer[sizeof(T)];
+        alignas(T) UInt8 buffer[sizeof(T)];
         
         T* ret = reinterpret_cast<T*>(buffer);
         
@@ -201,7 +201,7 @@ public:
 
     ALWAYS_INLINE T load(MemoryOrder order = DefaultMemoryOrder) const volatile noexcept {
 
-        alignas(T) u8 buffer[sizeof(T)];
+        alignas(T) UInt8 buffer[sizeof(T)];
         
         T* ret = reinterpret_cast<T*>(buffer);
         

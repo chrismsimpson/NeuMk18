@@ -16,7 +16,7 @@
 #    include <string.h>
 #endif
 
-ALWAYS_INLINE void fast_u32_copy(u32* dest, u32 const* src, size_t count)
+ALWAYS_INLINE void fast_u32_copy(UInt32* dest, UInt32 const* src, size_t count)
 {
 #if ARCH(I386) || ARCH(X86_64)
     asm volatile(
@@ -27,7 +27,7 @@ ALWAYS_INLINE void fast_u32_copy(u32* dest, u32 const* src, size_t count)
 #endif
 }
 
-ALWAYS_INLINE void fast_u32_fill(u32* dest, u32 value, size_t count)
+ALWAYS_INLINE void fast_u32_fill(UInt32* dest, UInt32 value, size_t count)
 {
 #if ARCH(I386) || ARCH(X86_64)
     asm volatile(
@@ -61,7 +61,7 @@ inline bool timing_safe_compare(void const* b1, void const* b2, size_t len)
     auto* c1 = static_cast<char const*>(b1);
     auto* c2 = static_cast<char const*>(b2);
 
-    u8 res = 0;
+    UInt8 res = 0;
     for (size_t i = 0; i < len; i++) {
         res |= c1[i] ^ c2[i];
     }

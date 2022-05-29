@@ -25,7 +25,7 @@ ErrorOr<void> StringBuilder::tryAppend(StringView string)
     if (string.isEmpty())
         return {};
     TRY(will_append(string.length()));
-    TRY(m_buffer.push_values((u8 const*)string.charactersWithoutNullTermination(), string.length()));
+    TRY(m_buffer.push_values((UInt8 const*)string.charactersWithoutNullTermination(), string.length()));
     return {};
 }
 
@@ -78,7 +78,7 @@ void StringBuilder::clear()
     static_cast<void>(m_buffer.resize(0));
 }
 
-ErrorOr<void> StringBuilder::tryAppendCodePoint(u32 code_point)
+ErrorOr<void> StringBuilder::tryAppendCodePoint(UInt32 code_point)
 {
     auto nwritten = UnicodeUtils::code_point_to_utf8(code_point, [this](char c) { append(c); });
     if (nwritten < 0) {
@@ -89,7 +89,7 @@ ErrorOr<void> StringBuilder::tryAppendCodePoint(u32 code_point)
     return {};
 }
 
-void StringBuilder::appendCodePoint(u32 code_point)
+void StringBuilder::appendCodePoint(UInt32 code_point)
 {
     MUST(tryAppendCodePoint(code_point));
 }

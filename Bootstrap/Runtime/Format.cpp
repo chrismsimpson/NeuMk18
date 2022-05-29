@@ -45,7 +45,7 @@ namespace {
 
     // The worst case is that we have the largest 64-bit value formatted as binary number, this would take
     // 65 bytes. Choosing a larger power of two won't hurt and is a bit of mitigation against out-of-bounds accesses.
-    static constexpr size_t convertUnsignedToString(u64 value, LinearArray<u8, 128>& buffer, u8 base, bool upperCase) {
+    static constexpr size_t convertUnsignedToString(UInt64 value, LinearArray<UInt8, 128>& buffer, UInt8 base, bool upperCase) {
 
         VERIFY(base >= 2 && base <= 16);
 
@@ -279,8 +279,8 @@ ErrorOr<void> FormatBuilder::putString(
 }
 
 ErrorOr<void> FormatBuilder::putU64(
-    u64 value,
-    u8 base,
+    UInt64 value,
+    UInt8 base,
     bool prefix,
     bool upperCase,
     bool zero_pad,
@@ -295,7 +295,7 @@ ErrorOr<void> FormatBuilder::putU64(
         align = Align::Right;
     }
 
-    LinearArray<u8, 128> buffer;
+    LinearArray<UInt8, 128> buffer;
 
     auto const used_by_digits = convertUnsignedToString(value, buffer, base, upperCase);
 
@@ -384,8 +384,8 @@ ErrorOr<void> FormatBuilder::putU64(
 }
 
 ErrorOr<void> FormatBuilder::putI64(
-    i64 value,
-    u8 base,
+    Int64 value,
+    UInt8 base,
     bool prefix,
     bool upperCase,
     bool zero_pad,
@@ -397,14 +397,14 @@ ErrorOr<void> FormatBuilder::putI64(
     auto const is_negative = value < 0;
     value = is_negative ? -value : value;
 
-    TRY(putU64(static_cast<u64>(value), base, prefix, upperCase, zero_pad, align, min_width, fill, sign_mode, is_negative));
+    TRY(putU64(static_cast<UInt64>(value), base, prefix, upperCase, zero_pad, align, min_width, fill, sign_mode, is_negative));
     return {};
 }
 
 #ifndef KERNEL
 ErrorOr<void> FormatBuilder::putF64(
     double value,
-    u8 base,
+    UInt8 base,
     bool upperCase,
     bool zero_pad,
     Align align,
@@ -436,13 +436,13 @@ ErrorOr<void> FormatBuilder::putF64(
     if (is_negative)
         value = -value;
 
-    TRY(format_builder.putU64(static_cast<u64>(value), base, false, upperCase, false, Align::Right, 0, ' ', sign_mode, is_negative));
+    TRY(format_builder.putU64(static_cast<UInt64>(value), base, false, upperCase, false, Align::Right, 0, ' ', sign_mode, is_negative));
 
     if (precision > 0) {
         // FIXME: This is a terrible approximation but doing it properly would be a lot of work. If someone is up for that, a good
         // place to start would be the following video from CppCon 2019:
         // https://youtu.be/4P_kbF0EbZM (Stephan T. Lavavej “Floating-Point <charconv>: Making Your Code 10x Faster With C++17's Final Boss”)
-        value -= static_cast<i64>(value);
+        value -= static_cast<Int64>(value);
 
         double epsilon = 0.5;
         for (size_t i = 0; i < precision; ++i)
@@ -450,7 +450,7 @@ ErrorOr<void> FormatBuilder::putF64(
 
         size_t visible_precision = 0;
         for (; visible_precision < precision; ++visible_precision) {
-            if (value - static_cast<i64>(value) < epsilon)
+            if (value - static_cast<Int64>(value) < epsilon)
                 break;
             value *= 10.0;
             epsilon *= 10.0;
@@ -460,7 +460,7 @@ ErrorOr<void> FormatBuilder::putF64(
             TRY(string_builder.tryAppend('.'));
 
         if (visible_precision > 0)
-            TRY(format_builder.putU64(static_cast<u64>(value), base, false, upperCase, true, Align::Right, visible_precision));
+            TRY(format_builder.putU64(static_cast<UInt64>(value), base, false, upperCase, true, Align::Right, visible_precision));
 
         if (zero_pad && (precision - visible_precision) > 0)
             TRY(format_builder.putU64(0, base, false, false, true, Align::Right, precision - visible_precision));
@@ -472,7 +472,7 @@ ErrorOr<void> FormatBuilder::putF64(
 
 ErrorOr<void> FormatBuilder::putF80(
     long double value,
-    u8 base,
+    UInt8 base,
     bool upperCase,
     Align align,
     size_t min_width,
@@ -503,13 +503,13 @@ ErrorOr<void> FormatBuilder::putF80(
     if (is_negative)
         value = -value;
 
-    TRY(format_builder.putU64(static_cast<u64>(value), base, false, upperCase, false, Align::Right, 0, ' ', sign_mode, is_negative));
+    TRY(format_builder.putU64(static_cast<UInt64>(value), base, false, upperCase, false, Align::Right, 0, ' ', sign_mode, is_negative));
 
     if (precision > 0) {
         // FIXME: This is a terrible approximation but doing it properly would be a lot of work. If someone is up for that, a good
         // place to start would be the following video from CppCon 2019:
         // https://youtu.be/4P_kbF0EbZM (Stephan T. Lavavej “Floating-Point <charconv>: Making Your Code 10x Faster With C++17's Final Boss”)
-        value -= static_cast<i64>(value);
+        value -= static_cast<Int64>(value);
 
         long double epsilon = 0.5l;
         for (size_t i = 0; i < precision; ++i)
@@ -517,7 +517,7 @@ ErrorOr<void> FormatBuilder::putF80(
 
         size_t visible_precision = 0;
         for (; visible_precision < precision; ++visible_precision) {
-            if (value - static_cast<i64>(value) < epsilon)
+            if (value - static_cast<Int64>(value) < epsilon)
                 break;
             value *= 10.0l;
             epsilon *= 10.0l;
@@ -525,7 +525,7 @@ ErrorOr<void> FormatBuilder::putF80(
 
         if (visible_precision > 0) {
             string_builder.append('.');
-            TRY(format_builder.putU64(static_cast<u64>(value), base, false, upperCase, true, Align::Right, visible_precision));
+            TRY(format_builder.putU64(static_cast<UInt64>(value), base, false, upperCase, true, Align::Right, visible_precision));
         }
     }
 
@@ -804,7 +804,7 @@ ErrorOr<void> Formatter<T>::format(FormatBuilder& builder, T value) {
         m_zero_pad = true;
     }
 
-    u8 base = 0;
+    UInt8 base = 0;
     
     bool upperCase = false;
 
@@ -881,9 +881,9 @@ ErrorOr<void> Formatter<wchar_t>::format(FormatBuilder& builder, wchar_t value) 
 
     if (m_mode == Mode::Binary || m_mode == Mode::BinaryUppercase || m_mode == Mode::Decimal || m_mode == Mode::Octal || m_mode == Mode::Hexadecimal || m_mode == Mode::HexadecimalUppercase) {
 
-        Formatter<u32> formatter { *this };
+        Formatter<UInt32> formatter { *this };
 
-        return formatter.format(builder, static_cast<u32>(value));
+        return formatter.format(builder, static_cast<UInt32>(value));
     } 
     else {
 
@@ -899,9 +899,9 @@ ErrorOr<void> Formatter<bool>::format(FormatBuilder& builder, bool value) {
     
     if (m_mode == Mode::Binary || m_mode == Mode::BinaryUppercase || m_mode == Mode::Decimal || m_mode == Mode::Octal || m_mode == Mode::Hexadecimal || m_mode == Mode::HexadecimalUppercase) {
         
-        Formatter<u8> formatter { *this };
+        Formatter<UInt8> formatter { *this };
         
-        return formatter.format(builder, static_cast<u8>(value));
+        return formatter.format(builder, static_cast<UInt8>(value));
     } 
     else if (m_mode == Mode::HexDump) {
 
@@ -919,7 +919,7 @@ ErrorOr<void> Formatter<bool>::format(FormatBuilder& builder, bool value) {
 
 ErrorOr<void> Formatter<long double>::format(FormatBuilder& builder, long double value) {
 
-    u8 base;
+    UInt8 base;
     bool upperCase;
 
     if (m_mode == Mode::Default || m_mode == Mode::Float) {
@@ -950,7 +950,7 @@ ErrorOr<void> Formatter<long double>::format(FormatBuilder& builder, long double
 
 ErrorOr<void> Formatter<double>::format(FormatBuilder& builder, double value) {
 
-    u8 base;
+    UInt8 base;
     bool upperCase;
 
     if (m_mode == Mode::Default || m_mode == Mode::Float) {
@@ -1058,7 +1058,7 @@ void vdbgln(StringView fmtstr, TypeErasedFormatParams& params) {
 #endif
 
     MUST(vformat(builder, fmtstr, params));
-    
+
     builder.append('\n');
 
     auto const string = builder.string_view();

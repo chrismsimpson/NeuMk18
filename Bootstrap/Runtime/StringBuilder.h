@@ -23,7 +23,7 @@ public:
     ~StringBuilder() = default;
 
     ErrorOr<void> tryAppend(StringView);
-    ErrorOr<void> tryAppendCodePoint(u32);
+    ErrorOr<void> tryAppendCodePoint(UInt32);
     ErrorOr<void> tryAppend(char);
     template<typename... Parameters>
     
@@ -38,7 +38,7 @@ public:
 
     void append(StringView);
     void append(char);
-    void appendCodePoint(u32);
+    void appendCodePoint(UInt32);
     void append(char const*, size_t);
 
     void appendAsLowercase(char);
@@ -77,10 +77,10 @@ public:
 
 private:
     ErrorOr<void> will_append(size_t);
-    u8* data() { return m_buffer.unsafe_data(); }
-    u8 const* data() const { return const_cast<StringBuilder*>(this)->m_buffer.unsafe_data(); }
+    UInt8* data() { return m_buffer.unsafe_data(); }
+    UInt8 const* data() const { return const_cast<StringBuilder*>(this)->m_buffer.unsafe_data(); }
 
-    Array<u8> m_buffer;
+    Array<UInt8> m_buffer;
 };
 
 template<typename T>

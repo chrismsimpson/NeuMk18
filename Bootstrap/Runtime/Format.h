@@ -124,28 +124,28 @@ struct TypeErasedParameter {
         switch (type) {
 
         case TypeErasedParameter::Type::UInt8:
-            return visitor(*static_cast<u8 const*>(value));
+            return visitor(*static_cast<UInt8 const*>(value));
         
         case TypeErasedParameter::Type::UInt16:
-            return visitor(*static_cast<u16 const*>(value));
+            return visitor(*static_cast<UInt16 const*>(value));
         
         case TypeErasedParameter::Type::UInt32:
-            return visitor(*static_cast<u32 const*>(value));
+            return visitor(*static_cast<UInt32 const*>(value));
         
         case TypeErasedParameter::Type::UInt64:
-            return visitor(*static_cast<u64 const*>(value));
+            return visitor(*static_cast<UInt64 const*>(value));
         
         case TypeErasedParameter::Type::Int8:
-            return visitor(*static_cast<i8 const*>(value));
+            return visitor(*static_cast<Int8 const*>(value));
         
         case TypeErasedParameter::Type::Int16:
-            return visitor(*static_cast<i16 const*>(value));
+            return visitor(*static_cast<Int16 const*>(value));
         
         case TypeErasedParameter::Type::Int32:
-            return visitor(*static_cast<i32 const*>(value));
+            return visitor(*static_cast<Int32 const*>(value));
         
         case TypeErasedParameter::Type::Int64:
-            return visitor(*static_cast<i64 const*>(value));
+            return visitor(*static_cast<Int64 const*>(value));
         
         default:
             TODO();
@@ -212,8 +212,8 @@ public:
         char fill = ' ');
 
     ErrorOr<void> putU64(
-        u64 value,
-        u8 base = 10,
+        UInt64 value,
+        UInt8 base = 10,
         bool prefix = false,
         bool upperCase = false,
         bool zero_pad = false,
@@ -224,8 +224,8 @@ public:
         bool is_negative = false);
 
     ErrorOr<void> putI64(
-        i64 value,
-        u8 base = 10,
+        Int64 value,
+        UInt8 base = 10,
         bool prefix = false,
         bool upperCase = false,
         bool zero_pad = false,
@@ -235,10 +235,10 @@ public:
         SignMode sign_mode = SignMode::OnlyIfNeeded);
 
     ErrorOr<void> putFixedPoint(
-        i64 integer_value,
-        u64 fraction_value,
-        u64 fraction_one,
-        u8 base = 10,
+        Int64 integer_value,
+        UInt64 fraction_value,
+        UInt64 fraction_one,
+        UInt8 base = 10,
         bool upperCase = false,
         bool zero_pad = false,
         Align align = Align::Right,
@@ -251,7 +251,7 @@ public:
 
     ErrorOr<void> putF80(
         long double value,
-        u8 base = 10,
+        UInt8 base = 10,
         bool upperCase = false,
         Align align = Align::Right,
         size_t min_width = 0,
@@ -261,7 +261,7 @@ public:
 
     ErrorOr<void> putF64(
         double value,
-        u8 base = 10,
+        UInt8 base = 10,
         bool upperCase = false,
         bool zero_pad = false,
         Align align = Align::Right,

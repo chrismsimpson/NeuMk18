@@ -60,9 +60,9 @@ public:
     size_t size() const { return m_storage->table.size(); }
     void clear() { m_storage->table.clear(); }
 
-    [[nodiscard]] u32 hash() const
+    [[nodiscard]] UInt32 hash() const
     {
-        u32 hash = 0;
+        UInt32 hash = 0;
         for (auto& value : *this) {
             hash = pair_int_hash(hash, value.hash());
         }

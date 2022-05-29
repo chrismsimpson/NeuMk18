@@ -148,10 +148,10 @@ Optional<T> String::to_int(TrimWhitespace trim_whitespace) const
     return StringUtils::convert_to_int<T>(view(), trim_whitespace);
 }
 
-template Optional<i8> String::to_int(TrimWhitespace) const;
-template Optional<i16> String::to_int(TrimWhitespace) const;
-template Optional<i32> String::to_int(TrimWhitespace) const;
-template Optional<i64> String::to_int(TrimWhitespace) const;
+template Optional<Int8> String::to_int(TrimWhitespace) const;
+template Optional<Int16> String::to_int(TrimWhitespace) const;
+template Optional<Int32> String::to_int(TrimWhitespace) const;
+template Optional<Int64> String::to_int(TrimWhitespace) const;
 
 template<typename T>
 Optional<T> String::to_uint(TrimWhitespace trim_whitespace) const
@@ -159,9 +159,9 @@ Optional<T> String::to_uint(TrimWhitespace trim_whitespace) const
     return StringUtils::convert_to_uint<T>(view(), trim_whitespace);
 }
 
-template Optional<u8> String::to_uint(TrimWhitespace) const;
-template Optional<u16> String::to_uint(TrimWhitespace) const;
-template Optional<u32> String::to_uint(TrimWhitespace) const;
+template Optional<UInt8> String::to_uint(TrimWhitespace) const;
+template Optional<UInt16> String::to_uint(TrimWhitespace) const;
+template Optional<UInt32> String::to_uint(TrimWhitespace) const;
 template Optional<unsigned long> String::to_uint(TrimWhitespace) const;
 template Optional<unsigned long long> String::to_uint(TrimWhitespace) const;
 

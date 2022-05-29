@@ -143,7 +143,7 @@ private:
         // Note: This is not const to allow storing mutable lambdas.
         virtual Out call(In...) = 0;
         virtual void destroy() = 0;
-        virtual void init_and_swap(u8*, size_t) = 0;
+        virtual void init_and_swap(UInt8*, size_t) = 0;
     };
 
     template<typename CallableType>
@@ -168,7 +168,7 @@ private:
         }
 
         // NOLINTNEXTLINE(readability-non-const-parameter) False positive; destination is used in a placement new expression
-        void init_and_swap(u8* destination, size_t size) final override {
+        void init_and_swap(UInt8* destination, size_t size) final override {
 
             VERIFY(size >= sizeof(CallableWrapper));
 
@@ -291,8 +291,8 @@ private:
 
     FunctionKind m_kind { FunctionKind::NullPointer };
     bool m_deferred_clear { false };
-    mutable Atomic<u16> m_callNestingLevel { 0 };
+    mutable Atomic<UInt16> m_callNestingLevel { 0 };
     // Empirically determined to fit most lambdas and functions.
     static constexpr size_t inlineCapacity = 4 * sizeof(void*);
-    alignas(max(alignof(CallableWrapperBase), alignof(CallableWrapperBase*))) u8 m_storage[inlineCapacity];
+    alignas(max(alignof(CallableWrapperBase), alignof(CallableWrapperBase*))) UInt8 m_storage[inlineCapacity];
 };

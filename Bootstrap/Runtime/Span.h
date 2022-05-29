@@ -53,49 +53,49 @@ protected:
 };
 
 template<>
-class Span<u8> {
+class Span<UInt8> {
 public:
     ALWAYS_INLINE constexpr Span() = default;
 
-    ALWAYS_INLINE constexpr Span(u8* values, size_t size)
+    ALWAYS_INLINE constexpr Span(UInt8* values, size_t size)
         : m_values(values)
         , m_size(size)
     {
     }
     ALWAYS_INLINE Span(void* values, size_t size)
-        : m_values(reinterpret_cast<u8*>(values))
+        : m_values(reinterpret_cast<UInt8*>(values))
         , m_size(size)
     {
     }
 
 protected:
-    u8* m_values { nullptr };
+    UInt8* m_values { nullptr };
     size_t m_size { 0 };
 };
 
 template<>
-class Span<u8 const> {
+class Span<UInt8 const> {
 public:
     ALWAYS_INLINE constexpr Span() = default;
 
-    ALWAYS_INLINE constexpr Span(u8 const* values, size_t size)
+    ALWAYS_INLINE constexpr Span(UInt8 const* values, size_t size)
         : m_values(values)
         , m_size(size)
     {
     }
     ALWAYS_INLINE Span(void const* values, size_t size)
-        : m_values(reinterpret_cast<u8 const*>(values))
+        : m_values(reinterpret_cast<UInt8 const*>(values))
         , m_size(size)
     {
     }
     ALWAYS_INLINE Span(char const* values, size_t size)
-        : m_values(reinterpret_cast<u8 const*>(values))
+        : m_values(reinterpret_cast<UInt8 const*>(values))
         , m_size(size)
     {
     }
 
 protected:
-    u8 const* m_values { nullptr };
+    UInt8 const* m_values { nullptr };
     size_t m_size { 0 };
 };
 
@@ -257,5 +257,5 @@ struct Traits<Span<T>> : public GenericTraits<Span<T>> {
     }
 };
 
-using ReadOnlyBytes = Span<u8 const>;
-using Bytes = Span<u8>;
+using ReadOnlyBytes = Span<UInt8 const>;
+using Bytes = Span<UInt8>;

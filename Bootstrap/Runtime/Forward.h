@@ -31,8 +31,8 @@ struct LinearArray;
 template<typename Container, typename ValueType>
 class SimpleIterator;
 
-using ReadOnlyBytes = ReadOnlySpan<u8>;
-using Bytes = Span<u8>;
+using ReadOnlyBytes = ReadOnlySpan<UInt8>;
+using Bytes = Span<UInt8>;
 
 template<typename T, MemoryOrder DefaultMemoryOrder>
 class Atomic;
