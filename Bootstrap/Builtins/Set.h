@@ -22,7 +22,7 @@ class SetIterator {
     using Iterator = typename HashTable<T>::Iterator;
 
 public:
-    SetIterator(NonnullRefPtr<Storage> storage)
+    SetIterator(NonNullReferencePointer<Storage> storage)
         : m_storage(move(storage))
         , m_iterator(m_storage->table.begin())
     {
@@ -38,7 +38,7 @@ public:
     }
 
 private:
-    NonnullRefPtr<Storage> m_storage;
+    NonNullReferencePointer<Storage> m_storage;
     Iterator m_iterator;
 };
 
@@ -87,12 +87,12 @@ public:
     SetIterator<T> iterator() const { return SetIterator<T> { m_storage }; }
 
 private:
-    explicit Set(NonnullRefPtr<Storage> storage)
+    explicit Set(NonNullReferencePointer<Storage> storage)
         : m_storage(move(storage))
     {
     }
 
-    NonnullRefPtr<Storage> m_storage;
+    NonNullReferencePointer<Storage> m_storage;
 };
 
 }

@@ -32,7 +32,7 @@ StringImpl::~StringImpl()
 {
 }
 
-NonnullRefPtr<StringImpl> StringImpl::create_uninitialized(size_t length, char*& buffer)
+NonNullReferencePointer<StringImpl> StringImpl::create_uninitialized(size_t length, char*& buffer)
 {
     VERIFY(length);
     void* slot = kmalloc(allocation_size_for_stringimpl(length));
@@ -110,7 +110,7 @@ RefPtr<StringImpl> StringImpl::create_uppercased(char const* cstring, size_t len
     return impl;
 }
 
-NonnullRefPtr<StringImpl> StringImpl::to_lowercase() const
+NonNullReferencePointer<StringImpl> StringImpl::to_lowercase() const
 {
     for (size_t i = 0; i < m_length; ++i) {
         if (isAsciiUpperAlpha(characters()[i]))
@@ -119,7 +119,7 @@ NonnullRefPtr<StringImpl> StringImpl::to_lowercase() const
     return const_cast<StringImpl&>(*this);
 }
 
-NonnullRefPtr<StringImpl> StringImpl::to_uppercase() const
+NonNullReferencePointer<StringImpl> StringImpl::to_uppercase() const
 {
     for (size_t i = 0; i < m_length; ++i) {
         if (isAsciiLowerAlpha(characters()[i]))

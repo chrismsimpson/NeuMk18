@@ -166,7 +166,7 @@ namespace NeuInternal {
         ArraySlice& operator=(ArraySlice&&) = default;
         ~ArraySlice() = default;
 
-        ArraySlice(NonnullRefPtr<ArrayStorage<T>> storage, size_t offset, size_t size)
+        ArraySlice(NonNullReferencePointer<ArrayStorage<T>> storage, size_t offset, size_t size)
             : m_storage(move(storage)), 
               m_offset(offset), 
               m_size(size) {
@@ -210,10 +210,8 @@ namespace NeuInternal {
         using Storage = ArrayStorage<T>;
 
     public:
-        ArrayIterator(NonnullRefPtr<Storage> storage)
-            : m_storage(move(storage))
-        {
-        }
+        ArrayIterator(NonNullReferencePointer<Storage> storage)
+            : m_storage(move(storage)) { }
 
         Optional<T> next()
         {
@@ -226,7 +224,7 @@ namespace NeuInternal {
         }
 
     private:
-        NonnullRefPtr<Storage> m_storage;
+        NonNullReferencePointer<Storage> m_storage;
         size_t m_index { 0 };
     };
 

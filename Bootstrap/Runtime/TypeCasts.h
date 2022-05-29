@@ -28,7 +28,7 @@ ALWAYS_INLINE bool is(InputType* input)
 }
 
 template<typename OutputType, typename InputType>
-ALWAYS_INLINE bool is(NonnullRefPtr<InputType> const& input)
+ALWAYS_INLINE bool is(NonNullReferencePointer<InputType> const& input)
 {
     return is<OutputType>(*input);
 }

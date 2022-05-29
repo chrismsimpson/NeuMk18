@@ -16,61 +16,61 @@
 #    include "Atomic.h"
 #    include "Error.h"
 #    include "Format.h"
-#    include "NonnullRefPtr.h"
+#    include "NonNullReferencePointer.h"
 #    include "StdLibExtras.h"
 #    include "Traits.h"
 #    include "Types.h"
 
 template<typename T>
 class [[nodiscard]] RefPtr {
+
     template<typename U>
     friend class RefPtr;
+
     template<typename U>
     friend class WeakPtr;
 
 public:
+
     enum AdoptTag {
         Adopt
     };
 
     RefPtr() = default;
+
     RefPtr(T const* ptr)
-        : m_ptr(const_cast<T*>(ptr))
-    {
-        ref_if_not_null(m_ptr);
+        : m_ptr(const_cast<T*>(ptr)) {
+
+        refIfNotNull(m_ptr);
     }
 
     RefPtr(T const& object)
-        : m_ptr(const_cast<T*>(&object))
-    {
+        : m_ptr(const_cast<T*>(&object)) {
+
         m_ptr->ref();
     }
 
     RefPtr(AdoptTag, T& object)
-        : m_ptr(&object)
-    {
-    }
+        : m_ptr(&object) { }
 
     RefPtr(RefPtr&& other)
-        : m_ptr(other.leak_ref())
-    {
-    }
+        : m_ptr(other.leak_ref()) { }
 
-    ALWAYS_INLINE RefPtr(NonnullRefPtr<T> const& other)
-        : m_ptr(const_cast<T*>(other.ptr()))
-    {
+    ALWAYS_INLINE RefPtr(NonNullReferencePointer<T> const& other)
+        : m_ptr(const_cast<T*>(other.ptr())) {
+
         m_ptr->ref();
     }
 
     template<typename U>
-    ALWAYS_INLINE RefPtr(NonnullRefPtr<U> const& other) requires(IsConvertible<U*, T*>)
+    ALWAYS_INLINE RefPtr(NonNullReferencePointer<U> const& other) requires(IsConvertible<U*, T*>)
         : m_ptr(const_cast<T*>(static_cast<T const*>(other.ptr())))
     {
         m_ptr->ref();
     }
 
     template<typename U>
-    ALWAYS_INLINE RefPtr(NonnullRefPtr<U>&& other) requires(IsConvertible<U*, T*>)
+    ALWAYS_INLINE RefPtr(NonNullReferencePointer<U>&& other) requires(IsConvertible<U*, T*>)
         : m_ptr(static_cast<T*>(&other.leak_ref()))
     {
     }
@@ -84,14 +84,14 @@ public:
     RefPtr(RefPtr const& other)
         : m_ptr(other.m_ptr)
     {
-        ref_if_not_null(m_ptr);
+        refIfNotNull(m_ptr);
     }
 
     template<typename U>
     RefPtr(RefPtr<U> const& other) requires(IsConvertible<U*, T*>)
         : m_ptr(const_cast<T*>(static_cast<T const*>(other.ptr())))
     {
-        ref_if_not_null(m_ptr);
+        refIfNotNull(m_ptr);
     }
 
     ALWAYS_INLINE ~RefPtr()
@@ -129,14 +129,14 @@ public:
     }
 
     template<typename U>
-    ALWAYS_INLINE RefPtr& operator=(NonnullRefPtr<U>&& other) requires(IsConvertible<U*, T*>)
+    ALWAYS_INLINE RefPtr& operator=(NonNullReferencePointer<U>&& other) requires(IsConvertible<U*, T*>)
     {
         RefPtr tmp { move(other) };
         swap(tmp);
         return *this;
     }
 
-    ALWAYS_INLINE RefPtr& operator=(NonnullRefPtr<T> const& other)
+    ALWAYS_INLINE RefPtr& operator=(NonNullReferencePointer<T> const& other)
     {
         RefPtr tmp { other };
         swap(tmp);
@@ -144,7 +144,7 @@ public:
     }
 
     template<typename U>
-    ALWAYS_INLINE RefPtr& operator=(NonnullRefPtr<U> const& other) requires(IsConvertible<U*, T*>)
+    ALWAYS_INLINE RefPtr& operator=(NonNullReferencePointer<U> const& other) requires(IsConvertible<U*, T*>)
     {
         RefPtr tmp { other };
         swap(tmp);
@@ -224,11 +224,11 @@ public:
         return exchange(m_ptr, nullptr);
     }
 
-    NonnullRefPtr<T> release_nonnull()
+    NonNullReferencePointer<T> release_nonnull()
     {
         auto* ptr = leak_ref();
         VERIFY(ptr);
-        return NonnullRefPtr<T>(NonnullRefPtr<T>::Adopt, *ptr);
+        return NonNullReferencePointer<T>(NonNullReferencePointer<T>::Adopt, *ptr);
     }
 
     ALWAYS_INLINE T* ptr() { return as_ptr(); }
@@ -315,9 +315,9 @@ struct Traits<RefPtr<T>> : public GenericTraits<RefPtr<T>> {
 };
 
 template<typename T, typename U>
-inline NonnullRefPtr<T> static_ptr_cast(NonnullRefPtr<U> const& ptr)
+inline NonNullReferencePointer<T> static_ptr_cast(NonNullReferencePointer<U> const& ptr)
 {
-    return NonnullRefPtr<T>(static_cast<const T&>(*ptr));
+    return NonNullReferencePointer<T>(static_cast<const T&>(*ptr));
 }
 
 template<typename T, typename U>
@@ -344,20 +344,20 @@ inline RefPtr<T> adopt_ref_if_nonnull(T* object) {
 }
 
 template<typename T, class... Args>
-requires(IsConstructible<T, Args...>) inline ErrorOr<NonnullRefPtr<T>> try_make_ref_counted(Args&&... args) {
+requires(IsConstructible<T, Args...>) inline ErrorOr<NonNullReferencePointer<T>> try_make_ref_counted(Args&&... args) {
 
     return adopt_nonnull_ref_or_enomem(new (nothrow) T(forward<Args>(args)...));
 }
 
 // FIXME: Remove once P0960R3 is available in Clang.
 template<typename T, class... Args>
-inline ErrorOr<NonnullRefPtr<T>> try_make_ref_counted(Args&&... args) {
+inline ErrorOr<NonNullReferencePointer<T>> try_make_ref_counted(Args&&... args) {
 
     return adopt_nonnull_ref_or_enomem(new (nothrow) T { forward<Args>(args)... });
 }
 
 template<typename T>
-inline ErrorOr<NonnullRefPtr<T>> adopt_nonnull_ref_or_enomem(T* object) {
+inline ErrorOr<NonNullReferencePointer<T>> adopt_nonnull_ref_or_enomem(T* object) {
 
     auto result = adopt_ref_if_nonnull(object);
 

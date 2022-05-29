@@ -59,7 +59,7 @@ template<typename Out, typename... In>
 class Function<Out(In...)>;
 
 template<typename T>
-class NonnullRefPtr;
+class NonNullReferencePointer;
 
 template<typename T>
 class Optional;

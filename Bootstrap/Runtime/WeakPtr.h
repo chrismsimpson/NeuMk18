@@ -82,7 +82,7 @@ public:
     }
 
     template<typename U>
-    WeakPtr(NonnullRefPtr<U> const& object) requires(IsBaseOf<T, U>) {
+    WeakPtr(NonNullReferencePointer<U> const& object) requires(IsBaseOf<T, U>) {
 
         m_link = object->template makeWeakPointer<U>().take_link();
     }
@@ -116,7 +116,7 @@ public:
     }
 
     template<typename U>
-    WeakPtr& operator=(NonnullRefPtr<U> const& object) requires(IsBaseOf<T, U>) {
+    WeakPtr& operator=(NonNullReferencePointer<U> const& object) requires(IsBaseOf<T, U>) {
 
         m_link = object->template makeWeakPointer<U>().take_link();
         

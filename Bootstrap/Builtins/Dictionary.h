@@ -7,7 +7,7 @@
 #pragma once
 
 #include "../Runtime/HashMap.h"
-#include "../Runtime/NonnullRefPtr.h"
+#include "../Runtime/NonNullReferencePointer.h"
 #include "../Runtime/RefCounted.h"
 #include "../Runtime/Tuple.h"
 
@@ -24,7 +24,7 @@ class DictionaryIterator {
     using Iterator = typename HashMap<K, V>::IteratorType;
 
 public:
-    DictionaryIterator(NonnullRefPtr<Storage> storage)
+    DictionaryIterator(NonNullReferencePointer<Storage> storage)
         : m_storage(move(storage))
         , m_iterator(m_storage->map.begin())
     {
@@ -40,7 +40,7 @@ public:
     }
 
 private:
-    NonnullRefPtr<Storage> m_storage;
+    NonNullReferencePointer<Storage> m_storage;
     Iterator m_iterator;
 };
 
@@ -102,12 +102,12 @@ public:
     DictionaryIterator<K, V> iterator() const { return DictionaryIterator<K, V> { m_storage }; }
 
 private:
-    explicit Dictionary(NonnullRefPtr<Storage> storage)
+    explicit Dictionary(NonNullReferencePointer<Storage> storage)
         : m_storage(move(storage))
     {
     }
 
-    NonnullRefPtr<Storage> m_storage;
+    NonNullReferencePointer<Storage> m_storage;
 };
 
 }

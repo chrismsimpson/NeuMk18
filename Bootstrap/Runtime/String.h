@@ -84,7 +84,7 @@ public:
     {
     }
 
-    String(NonnullRefPtr<StringImpl>&& impl)
+    String(NonNullReferencePointer<StringImpl>&& impl)
         : m_impl(move(impl))
     {
     }
@@ -320,8 +320,8 @@ String operator+(String const&, String const&);
 String escape_html_entities(StringView html);
 
 template<typename T>
-struct Formatter<NonnullRefPtr<T>> : Formatter<StringView> {
-    ErrorOr<void> format(FormatBuilder& builder, NonnullRefPtr<T> const& value)
+struct Formatter<NonNullReferencePointer<T>> : Formatter<StringView> {
+    ErrorOr<void> format(FormatBuilder& builder, NonNullReferencePointer<T> const& value)
     {
         auto str = String::formatted("{}", *value);
         return Formatter<StringView>::format(builder, str);
