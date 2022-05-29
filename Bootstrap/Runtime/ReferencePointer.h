@@ -347,7 +347,7 @@ inline void swap(ReferencePointer<T>& a, ReferencePointer<U>& b) requires(IsConv
 }
 
 template<typename T>
-inline ReferencePointer<T> adopt_ref_if_nonnull(T* object) {
+inline ReferencePointer<T> adoptReferenceIfNonNull(T* object) {
 
     if (object) {
 
@@ -373,7 +373,7 @@ inline ErrorOr<NonNullReferencePointer<T>> try_make_ref_counted(Args&&... args) 
 template<typename T>
 inline ErrorOr<NonNullReferencePointer<T>> adoptNonNullReferenceOrErrorNoMemory(T* object) {
 
-    auto result = adopt_ref_if_nonnull(object);
+    auto result = adoptReferenceIfNonNull(object);
 
     if (!result) {
 

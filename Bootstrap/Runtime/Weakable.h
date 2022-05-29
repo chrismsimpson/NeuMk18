@@ -43,7 +43,7 @@ public:
                 
                 if (ptr && ptr->try_ref()) {
 
-                    ref = adopt_ref(*ptr);
+                    ref = adoptReference(*ptr);
                 }
             }
 

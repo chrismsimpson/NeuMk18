@@ -39,7 +39,7 @@ NonNullReferencePointer<StringImpl> StringImpl::createUninitialized(size_t lengt
     
     VERIFY(slot);
     
-    auto new_stringimpl = adopt_ref(*new (slot) StringImpl(ConstructWithInlineBuffer, length));
+    auto new_stringimpl = adoptReference(*new (slot) StringImpl(ConstructWithInlineBuffer, length));
     
     buffer = const_cast<char*>(new_stringimpl->characters());
     

@@ -231,8 +231,8 @@ private:
 };
 
 template<typename T>
-inline NonNullReferencePointer<T> adopt_ref(T& object)
-{
+inline NonNullReferencePointer<T> adoptReference(T& object) {
+
     return NonNullReferencePointer<T>(NonNullReferencePointer<T>::Adopt, object);
 }
 
