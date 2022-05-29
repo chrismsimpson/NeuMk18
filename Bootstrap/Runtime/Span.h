@@ -238,21 +238,26 @@ public:
         return TypedTransfer<T>::compare(data(), other.data(), size());
     }
 
-    ALWAYS_INLINE constexpr operator Span<T const>() const
-    {
+    ALWAYS_INLINE constexpr operator Span<T const>() const {
+
         return { data(), size() };
     }
 };
 
 template<typename T>
 struct Traits<Span<T>> : public GenericTraits<Span<T>> {
-    static unsigned hash(Span<T> const& span)
-    {
+
+    static unsigned hash(Span<T> const& span) {
+
         unsigned hash = 0;
+
         for (auto const& value : span) {
+
             auto value_hash = Traits<T>::hash(value);
-            hash = pair_int_hash(hash, value_hash);
+            
+            hash = pairUInt32Hash(hash, value_hash);
         }
+
         return hash;
     }
 };

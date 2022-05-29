@@ -406,9 +406,9 @@ requires(HasFormatter<T>) struct Formatter<Vector<T, inlineCapacity>> : Standard
 
         if (m_mode == Mode::Pointer) {
 
-            Formatter<FlatPtr> formatter { *this };
+            Formatter<FlatPointer> formatter { *this };
             
-            TRY(formatter.format(builder, reinterpret_cast<FlatPtr>(value.data())));
+            TRY(formatter.format(builder, reinterpret_cast<FlatPointer>(value.data())));
             
             return { };
         }
@@ -474,9 +474,9 @@ struct Formatter<ReadOnlyBytes> : Formatter<StringView> {
 
         if (m_mode == Mode::Pointer) {
 
-            Formatter<FlatPtr> formatter { *this };
+            Formatter<FlatPointer> formatter { *this };
 
-            return formatter.format(builder, reinterpret_cast<FlatPtr>(value.data()));
+            return formatter.format(builder, reinterpret_cast<FlatPointer>(value.data()));
         }
         
         if (m_mode == Mode::Default || m_mode == Mode::HexDump) {
@@ -500,9 +500,9 @@ struct Formatter<char const*> : Formatter<StringView> {
 
         if (m_mode == Mode::Pointer) {
 
-            Formatter<FlatPtr> formatter { *this };
+            Formatter<FlatPointer> formatter { *this };
             
-            return formatter.format(builder, reinterpret_cast<FlatPtr>(value));
+            return formatter.format(builder, reinterpret_cast<FlatPointer>(value));
         }
 
         return Formatter<StringView>::format(builder, value);
@@ -522,9 +522,9 @@ struct Formatter<unsigned char[Size]> : Formatter<StringView> {
 
         if (m_mode == Mode::Pointer) {
 
-            Formatter<FlatPtr> formatter { *this };
+            Formatter<FlatPointer> formatter { *this };
             
-            return formatter.format(builder, reinterpret_cast<FlatPtr>(value));
+            return formatter.format(builder, reinterpret_cast<FlatPointer>(value));
         }
 
         return Formatter<StringView>::format(builder, { value, Size });
@@ -544,8 +544,8 @@ struct Formatter<T*> : StandardFormatter {
             m_mode = Mode::Pointer;
         }
 
-        Formatter<FlatPtr> formatter { *this };
-        return formatter.format(builder, reinterpret_cast<FlatPtr>(value));
+        Formatter<FlatPointer> formatter { *this };
+        return formatter.format(builder, reinterpret_cast<FlatPointer>(value));
     }
 };
 
@@ -600,7 +600,7 @@ struct Formatter<long double> : StandardFormatter {
 #endif
 
 template<>
-struct Formatter<std::nullptr_t> : Formatter<FlatPtr> {
+struct Formatter<std::nullptr_t> : Formatter<FlatPointer> {
 
     ErrorOr<void> format(FormatBuilder& builder, std::nullptr_t) {
 
@@ -609,7 +609,7 @@ struct Formatter<std::nullptr_t> : Formatter<FlatPtr> {
             m_mode = Mode::Pointer;
         }
 
-        return Formatter<FlatPtr>::format(builder, 0);
+        return Formatter<FlatPointer>::format(builder, 0);
     }
 };
 

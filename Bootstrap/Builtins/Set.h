@@ -64,7 +64,7 @@ public:
     {
         UInt32 hash = 0;
         for (auto& value : *this) {
-            hash = pair_int_hash(hash, value.hash());
+            hash = pairUInt32Hash(hash, value.hash());
         }
         return hash;
     }

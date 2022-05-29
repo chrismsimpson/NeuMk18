@@ -40,11 +40,11 @@ requires(IsIntegral<T>) struct Traits<T> : public GenericTraits<T> {
 
         if constexpr (sizeof(T) < 8) {
 
-            return int_hash(value);
+            return UInt32Hash(value);
         }
         else {
 
-            return u64_hash(value);
+            return UInt64Hash(value);
         }
     }
 };
@@ -59,11 +59,11 @@ requires(IsFloatingPoint<T>) struct Traits<T> : public GenericTraits<T> {
 
         if constexpr (sizeof(T) < 8) {
 
-            return int_hash(bitCast<UInt32>(value));
+            return UInt32Hash(bitCast<UInt32>(value));
         }
         else {
 
-            return u64_hash(bitCast<UInt64>(value));
+            return UInt64Hash(bitCast<UInt64>(value));
         }
     }
 };
@@ -73,7 +73,7 @@ requires(IsFloatingPoint<T>) struct Traits<T> : public GenericTraits<T> {
 template<typename T>
 requires(IsPointer<T> && !Detail::IsPointerOfType<char, T>) struct Traits<T> : public GenericTraits<T> {
     
-    static unsigned hash(T p) { return ptr_hash((FlatPtr)p); }
+    static unsigned hash(T p) { return pointerHash((FlatPointer)p); }
     
     static constexpr bool isTrivial() { return true; }
 };

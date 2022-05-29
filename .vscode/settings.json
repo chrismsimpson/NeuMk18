@@ -45,6 +45,7 @@
         "ios": "cpp",
         "unordered_map": "cpp",
         "__locale": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "__threading_support": "cpp"
     }
 }

@@ -225,8 +225,8 @@ public:
     {
         UInt32 hash = 0;
         for (auto& it : *this) {
-            auto entry_hash = pair_int_hash(it.key.hash(), it.value.hash());
-            hash = pair_int_hash(hash, entry_hash);
+            auto entry_hash = pairUInt32Hash(it.key.hash(), it.value.hash());
+            hash = pairUInt32Hash(hash, entry_hash);
         }
         return hash;
     }

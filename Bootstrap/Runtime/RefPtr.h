@@ -309,7 +309,7 @@ struct Traits<RefPtr<T>> : public GenericTraits<RefPtr<T>> {
     
     using ConstPeekType = const T*;
     
-    static unsigned hash(RefPtr<T> const& p) { return ptr_hash(p.ptr()); }
+    static unsigned hash(RefPtr<T> const& p) { return pointerHash(p.ptr()); }
     
     static bool equals(RefPtr<T> const& a, RefPtr<T> const& b) { return a.ptr() == b.ptr(); }
 };

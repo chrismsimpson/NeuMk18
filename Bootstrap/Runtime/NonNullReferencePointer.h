@@ -259,7 +259,7 @@ struct Traits<NonNullReferencePointer<T>> : public GenericTraits<NonNullReferenc
 
     using PeekType = T*;
     using ConstPeekType = const T*;
-    static unsigned hash(NonNullReferencePointer<T> const& p) { return ptr_hash(p.ptr()); }
+    static unsigned hash(NonNullReferencePointer<T> const& p) { return pointerHash(p.ptr()); }
     static bool equals(NonNullReferencePointer<T> const& a, NonNullReferencePointer<T> const& b) { return a.ptr() == b.ptr(); }
 };
 

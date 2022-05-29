@@ -8,8 +8,8 @@
 
 #include "Types.h"
 
-constexpr unsigned int_hash(UInt32 key)
-{
+constexpr unsigned UInt32Hash(UInt32 key) {
+
     key += ~(key << 15);
     key ^= (key >> 10);
     key += (key << 3);
@@ -19,13 +19,19 @@ constexpr unsigned int_hash(UInt32 key)
     return key;
 }
 
-constexpr unsigned double_hash(UInt32 key)
-{
+constexpr unsigned doubleHash(UInt32 key) {
+
     unsigned const magic = 0xBA5EDB01;
-    if (key == magic)
+
+    if (key == magic) {
+
         return 0u;
-    if (key == 0u)
+    }
+
+    if (key == 0u) {
+
         key = magic;
+    }
 
     key ^= key << 13;
     key ^= key >> 17;
@@ -33,27 +39,31 @@ constexpr unsigned double_hash(UInt32 key)
     return key;
 }
 
-constexpr unsigned pair_int_hash(UInt32 key1, UInt32 key2)
-{
-    return int_hash((int_hash(key1) * 209) ^ (int_hash(key2 * 413)));
+constexpr unsigned pairUInt32Hash(UInt32 key1, UInt32 key2) {
+
+    return UInt32Hash((UInt32Hash(key1) * 209) ^ (UInt32Hash(key2 * 413)));
 }
 
-constexpr unsigned u64_hash(UInt64 key)
-{
+constexpr unsigned UInt64Hash(UInt64 key) {
+
     UInt32 first = key & 0xFFFFFFFF;
     UInt32 last = key >> 32;
-    return pair_int_hash(first, last);
+    return pairUInt32Hash(first, last);
 }
 
-constexpr unsigned ptr_hash(FlatPtr ptr)
-{
-    if constexpr (sizeof(ptr) == 8)
-        return u64_hash(ptr);
-    else
-        return int_hash(ptr);
+constexpr unsigned pointerHash(FlatPointer ptr) {
+
+    if constexpr (sizeof(ptr) == 8) {
+
+        return UInt64Hash(ptr);
+    }
+    else {
+
+        return UInt32Hash(ptr);
+    }
 }
 
-inline unsigned ptr_hash(void const* ptr)
-{
-    return ptr_hash(FlatPtr(ptr));
+inline unsigned pointerHash(void const* ptr) {
+
+    return pointerHash(FlatPointer(ptr));
 }

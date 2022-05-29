@@ -56,7 +56,7 @@ using __ptrdiff_t = __PTRDIFF_TYPE__;
 
 #endif
 
-using FlatPtr = Conditional<sizeof(void*) == 8, UInt64, UInt32>;
+using FlatPointer = Conditional<sizeof(void*) == 8, UInt64, UInt32>;
 
 constexpr UInt64 KiB = 1024;
 constexpr UInt64 MiB = KiB * KiB;
@@ -69,18 +69,23 @@ namespace std { // NOLINT(cert-dcl58-cpp) nullptr_t must be in ::std:: for some 
 using nullptr_t = decltype(nullptr);
 }
 
-static constexpr FlatPtr explode_byte(UInt8 b)
-{
-    FlatPtr value = b;
-    if constexpr (sizeof(FlatPtr) == 4)
+static constexpr FlatPointer explode_byte(UInt8 b) {
+    
+    FlatPointer value = b;
+
+    if constexpr (sizeof(FlatPointer) == 4) {
+
         return value << 24 | value << 16 | value << 8 | value;
-    else if (sizeof(FlatPtr) == 8)
+    }
+    else if (sizeof(FlatPointer) == 8) {
+
         return value << 56 | value << 48 | value << 40 | value << 32 | value << 24 | value << 16 | value << 8 | value;
+    }
 }
 
-static_assert(explode_byte(0xff) == (FlatPtr)0xffffffffffffffffull);
-static_assert(explode_byte(0x80) == (FlatPtr)0x8080808080808080ull);
-static_assert(explode_byte(0x7f) == (FlatPtr)0x7f7f7f7f7f7f7f7full);
+static_assert(explode_byte(0xff) == (FlatPointer)0xffffffffffffffffull);
+static_assert(explode_byte(0x80) == (FlatPointer)0x8080808080808080ull);
+static_assert(explode_byte(0x7f) == (FlatPointer)0x7f7f7f7f7f7f7f7full);
 static_assert(explode_byte(0) == 0);
 
 constexpr size_t align_up_to(const size_t value, const size_t alignment)

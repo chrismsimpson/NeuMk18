@@ -115,7 +115,7 @@ inline Optional<size_t> memmem_optional(void const* haystack, size_t haystack_le
     if (needle_length < 32) {
         auto const* ptr = Detail::bitap_bitwise(haystack, haystack_length, needle, needle_length);
         if (ptr)
-            return static_cast<size_t>((FlatPtr)ptr - (FlatPtr)haystack);
+            return static_cast<size_t>((FlatPointer)ptr - (FlatPointer)haystack);
         return {};
     }
 
