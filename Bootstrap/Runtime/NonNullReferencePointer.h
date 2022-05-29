@@ -158,47 +158,47 @@ public:
 
     ALWAYS_INLINE RETURNS_NONNULL T* ptr()
     {
-        return as_nonnull_ptr();
+        return asNonNullPointer();
     }
     ALWAYS_INLINE RETURNS_NONNULL const T* ptr() const
     {
-        return as_nonnull_ptr();
+        return asNonNullPointer();
     }
 
     ALWAYS_INLINE RETURNS_NONNULL T* operator->()
     {
-        return as_nonnull_ptr();
+        return asNonNullPointer();
     }
     ALWAYS_INLINE RETURNS_NONNULL const T* operator->() const
     {
-        return as_nonnull_ptr();
+        return asNonNullPointer();
     }
 
     ALWAYS_INLINE T& operator*()
     {
-        return *as_nonnull_ptr();
+        return *asNonNullPointer();
     }
     ALWAYS_INLINE const T& operator*() const
     {
-        return *as_nonnull_ptr();
+        return *asNonNullPointer();
     }
 
     ALWAYS_INLINE RETURNS_NONNULL operator T*()
     {
-        return as_nonnull_ptr();
+        return asNonNullPointer();
     }
     ALWAYS_INLINE RETURNS_NONNULL operator const T*() const
     {
-        return as_nonnull_ptr();
+        return asNonNullPointer();
     }
 
     ALWAYS_INLINE operator T&()
     {
-        return *as_nonnull_ptr();
+        return *asNonNullPointer();
     }
     ALWAYS_INLINE operator const T&() const
     {
-        return *as_nonnull_ptr();
+        return *asNonNullPointer();
     }
 
     operator bool() const = delete;
@@ -220,8 +220,8 @@ private:
     NonNullReferencePointer() = delete;
     // clang-format on
 
-    ALWAYS_INLINE RETURNS_NONNULL T* as_nonnull_ptr() const
-    {
+    ALWAYS_INLINE RETURNS_NONNULL T* asNonNullPointer() const {
+        
         VERIFY(m_pointer);
         
         return m_pointer;

@@ -229,59 +229,59 @@ public:
         return NonNullReferencePointer<T>(NonNullReferencePointer<T>::Adopt, *ptr);
     }
 
-    ALWAYS_INLINE T* ptr() { return as_ptr(); }
-    ALWAYS_INLINE const T* ptr() const { return as_ptr(); }
+    ALWAYS_INLINE T* ptr() { return asPointer(); }
+    ALWAYS_INLINE const T* ptr() const { return asPointer(); }
 
-    ALWAYS_INLINE T* operator->()
-    {
-        return as_nonnull_ptr();
+    ALWAYS_INLINE T* operator->() {
+
+        return asNonNullPointer();
     }
 
-    ALWAYS_INLINE const T* operator->() const
-    {
-        return as_nonnull_ptr();
+    ALWAYS_INLINE const T* operator->() const {
+
+        return asNonNullPointer();
     }
 
-    ALWAYS_INLINE T& operator*()
-    {
-        return *as_nonnull_ptr();
+    ALWAYS_INLINE T& operator*() {
+
+        return *asNonNullPointer();
     }
 
-    ALWAYS_INLINE const T& operator*() const
-    {
-        return *as_nonnull_ptr();
+    ALWAYS_INLINE const T& operator*() const {
+        
+        return *asNonNullPointer();
     }
 
-    ALWAYS_INLINE operator const T*() const { return as_ptr(); }
-    ALWAYS_INLINE operator T*() { return as_ptr(); }
+    ALWAYS_INLINE operator const T*() const { return asPointer(); }
+    ALWAYS_INLINE operator T*() { return asPointer(); }
 
     ALWAYS_INLINE operator bool() { return !isNull(); }
 
     bool operator==(std::nullptr_t) const { return isNull(); }
     bool operator!=(std::nullptr_t) const { return !isNull(); }
 
-    bool operator==(RefPtr const& other) const { return as_ptr() == other.as_ptr(); }
-    bool operator!=(RefPtr const& other) const { return as_ptr() != other.as_ptr(); }
+    bool operator==(RefPtr const& other) const { return asPointer() == other.asPointer(); }
+    bool operator!=(RefPtr const& other) const { return asPointer() != other.asPointer(); }
 
-    bool operator==(RefPtr& other) { return as_ptr() == other.as_ptr(); }
-    bool operator!=(RefPtr& other) { return as_ptr() != other.as_ptr(); }
+    bool operator==(RefPtr& other) { return asPointer() == other.asPointer(); }
+    bool operator!=(RefPtr& other) { return asPointer() != other.asPointer(); }
 
-    bool operator==(const T* other) const { return as_ptr() == other; }
-    bool operator!=(const T* other) const { return as_ptr() != other; }
+    bool operator==(const T* other) const { return asPointer() == other; }
+    bool operator!=(const T* other) const { return asPointer() != other; }
 
-    bool operator==(T* other) { return as_ptr() == other; }
-    bool operator!=(T* other) { return as_ptr() != other; }
+    bool operator==(T* other) { return asPointer() == other; }
+    bool operator!=(T* other) { return asPointer() != other; }
 
     ALWAYS_INLINE bool isNull() const { return !m_pointer; }
 
 private:
 
-    ALWAYS_INLINE T* as_ptr() const {
+    ALWAYS_INLINE T* asPointer() const {
 
         return m_pointer;
     }
 
-    ALWAYS_INLINE T* as_nonnull_ptr() const {
+    ALWAYS_INLINE T* asNonNullPointer() const {
 
         VERIFY(m_pointer);
         
