@@ -30,11 +30,11 @@ ALWAYS_INLINE void refIfNotNull(T* ptr) {
 }
 
 template<typename T>
-ALWAYS_INLINE void unrefIfNotNull(T* ptr) {
+ALWAYS_INLINE void dereferenceIfNotNull(T* ptr) {
 
     if (ptr) {
 
-        ptr->unref();
+        ptr->dereference();
     }
 }
 
@@ -57,51 +57,51 @@ public:
     enum AdoptTag { Adopt };
 
     ALWAYS_INLINE NonNullReferencePointer(T const& object)
-        : m_ptr(const_cast<T*>(&object)) {
+        : m_pointer(const_cast<T*>(&object)) {
 
-        m_ptr->ref();
+        m_pointer->ref();
     }
 
     template<typename U>
     ALWAYS_INLINE NonNullReferencePointer(U const& object) requires(IsConvertible<U*, T*>)
-        : m_ptr(const_cast<T*>(static_cast<T const*>(&object)))
+        : m_pointer(const_cast<T*>(static_cast<T const*>(&object)))
     {
-        m_ptr->ref();
+        m_pointer->ref();
     }
 
     ALWAYS_INLINE NonNullReferencePointer(AdoptTag, T& object)
-        : m_ptr(&object)
+        : m_pointer(&object)
     {
     }
 
     ALWAYS_INLINE NonNullReferencePointer(NonNullReferencePointer&& other)
-        : m_ptr(&other.leak_ref())
+        : m_pointer(&other.leak_ref())
     {
     }
 
     template<typename U>
     ALWAYS_INLINE NonNullReferencePointer(NonNullReferencePointer<U>&& other) requires(IsConvertible<U*, T*>)
-        : m_ptr(static_cast<T*>(&other.leak_ref())) { }
+        : m_pointer(static_cast<T*>(&other.leak_ref())) { }
 
     ALWAYS_INLINE NonNullReferencePointer(NonNullReferencePointer const& other)
-        : m_ptr(const_cast<T*>(other.ptr()))
+        : m_pointer(const_cast<T*>(other.ptr()))
     {
-        m_ptr->ref();
+        m_pointer->ref();
     }
 
     template<typename U>
     ALWAYS_INLINE NonNullReferencePointer(NonNullReferencePointer<U> const& other) requires(IsConvertible<U*, T*>)
-        : m_ptr(const_cast<T*>(static_cast<T const*>(other.ptr())))
+        : m_pointer(const_cast<T*>(static_cast<T const*>(other.ptr())))
     {
-        m_ptr->ref();
+        m_pointer->ref();
     }
 
     ALWAYS_INLINE ~NonNullReferencePointer()
     {
-        unrefIfNotNull(m_ptr);
-        m_ptr = nullptr;
+        dereferenceIfNotNull(m_pointer);
+        m_pointer = nullptr;
 #    ifdef SANITIZE_PTRS
-        m_ptr = reinterpret_cast<T*>(explode_byte(NONNULLREFPTR_SCRUB_BYTE));
+        m_pointer = reinterpret_cast<T*>(explode_byte(NONNULLREFPTR_SCRUB_BYTE));
 #    endif
     }
 
@@ -151,7 +151,7 @@ public:
 
     [[nodiscard]] ALWAYS_INLINE T& leak_ref()
     {
-        T* ptr = exchange(m_ptr, nullptr);
+        T* ptr = exchange(m_pointer, nullptr);
         VERIFY(ptr);
         return *ptr;
     }
@@ -206,13 +206,13 @@ public:
 
     void swap(NonNullReferencePointer& other)
     {
-        ::swap(m_ptr, other.m_ptr);
+        ::swap(m_pointer, other.m_pointer);
     }
 
     template<typename U>
     void swap(NonNullReferencePointer<U>& other) requires(IsConvertible<U*, T*>)
     {
-        ::swap(m_ptr, other.m_ptr);
+        ::swap(m_pointer, other.m_pointer);
     }
 
     // clang-format off
@@ -222,11 +222,12 @@ private:
 
     ALWAYS_INLINE RETURNS_NONNULL T* as_nonnull_ptr() const
     {
-        VERIFY(m_ptr);
-        return m_ptr;
+        VERIFY(m_pointer);
+        
+        return m_pointer;
     }
 
-    T* m_ptr { nullptr };
+    T* m_pointer { nullptr };
 };
 
 template<typename T>

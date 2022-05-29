@@ -39,90 +39,88 @@ public:
     RefPtr() = default;
 
     RefPtr(T const* ptr)
-        : m_ptr(const_cast<T*>(ptr)) {
+        : m_pointer(const_cast<T*>(ptr)) {
 
-        refIfNotNull(m_ptr);
+        refIfNotNull(m_pointer);
     }
 
     RefPtr(T const& object)
-        : m_ptr(const_cast<T*>(&object)) {
+        : m_pointer(const_cast<T*>(&object)) {
 
-        m_ptr->ref();
+        m_pointer->ref();
     }
 
     RefPtr(AdoptTag, T& object)
-        : m_ptr(&object) { }
+        : m_pointer(&object) { }
 
     RefPtr(RefPtr&& other)
-        : m_ptr(other.leak_ref()) { }
+        : m_pointer(other.leak_ref()) { }
 
     ALWAYS_INLINE RefPtr(NonNullReferencePointer<T> const& other)
-        : m_ptr(const_cast<T*>(other.ptr())) {
+        : m_pointer(const_cast<T*>(other.ptr())) {
 
-        m_ptr->ref();
+        m_pointer->ref();
     }
 
     template<typename U>
     ALWAYS_INLINE RefPtr(NonNullReferencePointer<U> const& other) requires(IsConvertible<U*, T*>)
-        : m_ptr(const_cast<T*>(static_cast<T const*>(other.ptr())))
-    {
-        m_ptr->ref();
+        : m_pointer(const_cast<T*>(static_cast<T const*>(other.ptr()))) {
+
+        m_pointer->ref();
     }
 
     template<typename U>
     ALWAYS_INLINE RefPtr(NonNullReferencePointer<U>&& other) requires(IsConvertible<U*, T*>)
-        : m_ptr(static_cast<T*>(&other.leak_ref()))
-    {
-    }
+        : m_pointer(static_cast<T*>(&other.leak_ref())) { }
 
     template<typename U>
     RefPtr(RefPtr<U>&& other) requires(IsConvertible<U*, T*>)
-        : m_ptr(static_cast<T*>(other.leak_ref()))
-    {
-    }
+        : m_pointer(static_cast<T*>(other.leak_ref())) { }
 
     RefPtr(RefPtr const& other)
-        : m_ptr(other.m_ptr)
-    {
-        refIfNotNull(m_ptr);
+        : m_pointer(other.m_pointer) {
+
+        refIfNotNull(m_pointer);
     }
 
     template<typename U>
     RefPtr(RefPtr<U> const& other) requires(IsConvertible<U*, T*>)
-        : m_ptr(const_cast<T*>(static_cast<T const*>(other.ptr())))
-    {
-        refIfNotNull(m_ptr);
+        : m_pointer(const_cast<T*>(static_cast<T const*>(other.ptr()))) {
+
+        refIfNotNull(m_pointer);
     }
 
     ALWAYS_INLINE ~RefPtr()
     {
         clear();
 #    ifdef SANITIZE_PTRS
-        m_ptr = reinterpret_cast<T*>(explode_byte(REFPTR_SCRUB_BYTE));
+        m_pointer = reinterpret_cast<T*>(explode_byte(REFPTR_SCRUB_BYTE));
 #    endif
     }
 
     void swap(RefPtr& other)
     {
-        ::swap(m_ptr, other.m_ptr);
+        ::swap(m_pointer, other.m_pointer);
     }
 
     template<typename U>
-    void swap(RefPtr<U>& other) requires(IsConvertible<U*, T*>)
-    {
-        ::swap(m_ptr, other.m_ptr);
+    void swap(RefPtr<U>& other) requires(IsConvertible<U*, T*>) {
+
+        ::swap(m_pointer, other.m_pointer);
     }
 
-    ALWAYS_INLINE RefPtr& operator=(RefPtr&& other)
-    {
+    ALWAYS_INLINE RefPtr& operator=(RefPtr&& other) {
+
         RefPtr tmp { move(other) };
+        
         swap(tmp);
+        
         return *this;
     }
 
     template<typename U>
-    ALWAYS_INLINE RefPtr& operator=(RefPtr<U>&& other) requires(IsConvertible<U*, T*>)
-    {
+    ALWAYS_INLINE RefPtr& operator=(RefPtr<U>&& other) requires(IsConvertible<U*, T*>) {
+
         RefPtr tmp { move(other) };
         swap(tmp);
         return *this;
@@ -213,15 +211,15 @@ public:
 
     ALWAYS_INLINE void clear()
     {
-        unrefIfNotNull(m_ptr);
-        m_ptr = nullptr;
+        dereferenceIfNotNull(m_pointer);
+        m_pointer = nullptr;
     }
 
-    bool operator!() const { return !m_ptr; }
+    bool operator!() const { return !m_pointer; }
 
     [[nodiscard]] T* leak_ref()
     {
-        return exchange(m_ptr, nullptr);
+        return exchange(m_pointer, nullptr);
     }
 
     NonNullReferencePointer<T> release_nonnull()
@@ -274,23 +272,23 @@ public:
     bool operator==(T* other) { return as_ptr() == other; }
     bool operator!=(T* other) { return as_ptr() != other; }
 
-    ALWAYS_INLINE bool isNull() const { return !m_ptr; }
+    ALWAYS_INLINE bool isNull() const { return !m_pointer; }
 
 private:
 
     ALWAYS_INLINE T* as_ptr() const {
 
-        return m_ptr;
+        return m_pointer;
     }
 
     ALWAYS_INLINE T* as_nonnull_ptr() const {
 
-        VERIFY(m_ptr);
+        VERIFY(m_pointer);
         
-        return m_ptr;
+        return m_pointer;
     }
 
-    T* m_ptr { nullptr };
+    T* m_pointer { nullptr };
 };
 
 template<typename T>

@@ -69,7 +69,7 @@ class ReferenceCounted : public ReferenceCountedBase {
 
 public:
 
-    bool unref() const {
+    bool dereference() const {
 
         auto* that = const_cast<T*>(static_cast<T const*>(this));
 

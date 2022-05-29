@@ -39,7 +39,7 @@ public:
         {
             if (!(m_consumers.fetchAdd(1u << 1, MemoryOrder::memory_order_acquire) & 1u)) {
 
-                T* ptr = (T*)m_ptr.load(MemoryOrder::memory_order_acquire);
+                T* ptr = (T*)m_pointer.load(MemoryOrder::memory_order_acquire);
                 
                 if (ptr && ptr->try_ref()) {
 
@@ -66,7 +66,7 @@ public:
         // anyway because we return a raw pointer without ensuring a
         // reference...
         
-        return (T*)m_ptr.load(MemoryOrder::memory_order_acquire);
+        return (T*)m_pointer.load(MemoryOrder::memory_order_acquire);
     }
 
     bool isNull() const {
@@ -90,16 +90,16 @@ public:
         
         // No one is trying to use it (anymore)
         
-        m_ptr.store(nullptr, MemoryOrder::memory_order_release);
+        m_pointer.store(nullptr, MemoryOrder::memory_order_release);
     }
 
 private:
 
     template<typename T>
     explicit WeakLink(T& weakable)
-        : m_ptr(&weakable) { }
+        : m_pointer(&weakable) { }
 
-    mutable Atomic<void*> m_ptr;
+    mutable Atomic<void*> m_pointer;
     mutable Atomic<unsigned> m_consumers; // LSB indicates revocation in progress
 };
 
