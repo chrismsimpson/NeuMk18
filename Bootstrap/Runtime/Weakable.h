@@ -19,7 +19,7 @@ template<typename T>
 class Weakable;
 
 template<typename T>
-class WeakPtr;
+class WeakPointer;
 
 class WeakLink : public ReferenceCounted<WeakLink> {
     
@@ -27,13 +27,13 @@ class WeakLink : public ReferenceCounted<WeakLink> {
     friend class Weakable;
     
     template<typename T>
-    friend class WeakPtr;
+    friend class WeakPointer;
 
 public:
     template<typename T>
     RefPtr<T> strong_ref() const
-        requires(IsBaseOf<ReferenceCountedBase, T>)
-    {
+        requires(IsBaseOf<ReferenceCountedBase, T>) {
+            
         RefPtr<T> ref;
 
         {
@@ -54,7 +54,7 @@ public:
     }
 
     template<typename T>
-    T* unsafe_ptr() const {
+    T* unsafePointer() const {
 
         if (m_consumers.load(MemoryOrder::memory_order_relaxed) & 1u) {
 
@@ -71,7 +71,7 @@ public:
 
     bool isNull() const {
 
-        return unsafe_ptr<void>() == nullptr;
+        return unsafePointer<void>() == nullptr;
     }
 
     void revoke() {
@@ -115,13 +115,13 @@ private:
 public:
 
     template<typename U = T>
-    WeakPtr<U> makeWeakPointer() const {
+    WeakPointer<U> makeWeakPointer() const {
         
         return MUST(tryMakeWeakPointer<U>());
     }
 
     template<typename U = T>
-    ErrorOr<WeakPtr<U>> tryMakeWeakPointer() const;
+    ErrorOr<WeakPointer<U>> tryMakeWeakPointer() const;
 
 protected:
     Weakable() = default;

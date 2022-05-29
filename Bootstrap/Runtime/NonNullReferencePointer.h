@@ -48,7 +48,7 @@ class [[nodiscard]] NonNullReferencePointer {
     friend class NonNullReferencePointer;
 
     template<typename U>
-    friend class WeakPtr;
+    friend class WeakPointer;
 
 public:
 
@@ -84,14 +84,14 @@ public:
         : m_pointer(static_cast<T*>(&other.leak_ref())) { }
 
     ALWAYS_INLINE NonNullReferencePointer(NonNullReferencePointer const& other)
-        : m_pointer(const_cast<T*>(other.ptr()))
+        : m_pointer(const_cast<T*>(other.pointer()))
     {
         m_pointer->ref();
     }
 
     template<typename U>
     ALWAYS_INLINE NonNullReferencePointer(NonNullReferencePointer<U> const& other) requires(IsConvertible<U*, T*>)
-        : m_pointer(const_cast<T*>(static_cast<T const*>(other.ptr())))
+        : m_pointer(const_cast<T*>(static_cast<T const*>(other.pointer())))
     {
         m_pointer->ref();
     }
@@ -156,11 +156,11 @@ public:
         return *ptr;
     }
 
-    ALWAYS_INLINE RETURNS_NONNULL T* ptr()
+    ALWAYS_INLINE RETURNS_NONNULL T* pointer()
     {
         return asNonNullPointer();
     }
-    ALWAYS_INLINE RETURNS_NONNULL const T* ptr() const
+    ALWAYS_INLINE RETURNS_NONNULL const T* pointer() const
     {
         return asNonNullPointer();
     }
@@ -221,7 +221,7 @@ private:
     // clang-format on
 
     ALWAYS_INLINE RETURNS_NONNULL T* asNonNullPointer() const {
-        
+
         VERIFY(m_pointer);
         
         return m_pointer;
@@ -260,8 +260,8 @@ struct Traits<NonNullReferencePointer<T>> : public GenericTraits<NonNullReferenc
 
     using PeekType = T*;
     using ConstPeekType = const T*;
-    static unsigned hash(NonNullReferencePointer<T> const& p) { return pointerHash(p.ptr()); }
-    static bool equals(NonNullReferencePointer<T> const& a, NonNullReferencePointer<T> const& b) { return a.ptr() == b.ptr(); }
+    static unsigned hash(NonNullReferencePointer<T> const& p) { return pointerHash(p.pointer()); }
+    static bool equals(NonNullReferencePointer<T> const& a, NonNullReferencePointer<T> const& b) { return a.pointer() == b.pointer(); }
 };
 
 #endif

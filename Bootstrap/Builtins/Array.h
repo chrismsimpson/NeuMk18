@@ -366,9 +366,9 @@ namespace NeuInternal {
         ErrorOr<ArrayStorage<T>*> ensure_storage()
         {
             if (!m_storage) {
-                m_storage = TRY(adopt_nonnull_ref_or_enomem(new (nothrow) ArrayStorage<T>));
+                m_storage = TRY(adoptNonNullReferenceOrErrorNoMemory(new (nothrow) ArrayStorage<T>));
             }
-            return m_storage.ptr();
+            return m_storage.pointer();
         }
 
         RefPtr<ArrayStorage<T>> m_storage;

@@ -76,13 +76,13 @@ public:
 
     // FIXME: Remove this constructor once Jakt knows how to call Dictionary::create_empty()
     Dictionary()
-        : m_storage(MUST(adopt_nonnull_ref_or_enomem(new (nothrow) Storage)))
+        : m_storage(MUST(adoptNonNullReferenceOrErrorNoMemory(new (nothrow) Storage)))
     {
     }
 
     static ErrorOr<Dictionary> create_empty()
     {
-        auto storage = TRY(adopt_nonnull_ref_or_enomem(new (nothrow) Storage));
+        auto storage = TRY(adoptNonNullReferenceOrErrorNoMemory(new (nothrow) Storage));
         return Dictionary { move(storage) };
     }
 

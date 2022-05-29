@@ -208,8 +208,8 @@ public:
         return StringImpl::the_empty_stringimpl();
     }
 
-    [[nodiscard]] StringImpl* impl() { return m_impl.ptr(); }
-    [[nodiscard]] StringImpl const* impl() const { return m_impl.ptr(); }
+    [[nodiscard]] StringImpl* impl() { return m_impl.pointer(); }
+    [[nodiscard]] StringImpl const* impl() const { return m_impl.pointer(); }
 
     String& operator=(String&& other)
     {

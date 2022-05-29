@@ -76,7 +76,7 @@ class RefPtr;
 #endif
 
 template<typename T>
-class WeakPtr;
+class WeakPointer;
 
 template<typename T, size_t InlineCapacity = 0>
 requires(!IsRValueReference<T>) class Vector;

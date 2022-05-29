@@ -71,7 +71,7 @@ public:
 
     static ErrorOr<Set> create_empty()
     {
-        auto storage = TRY(adopt_nonnull_ref_or_enomem(new (nothrow) Storage));
+        auto storage = TRY(adoptNonNullReferenceOrErrorNoMemory(new (nothrow) Storage));
         return Set { move(storage) };
     }
 

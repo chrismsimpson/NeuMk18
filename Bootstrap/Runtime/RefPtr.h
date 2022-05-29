@@ -28,7 +28,7 @@ class [[nodiscard]] RefPtr {
     friend class RefPtr;
 
     template<typename U>
-    friend class WeakPtr;
+    friend class WeakPointer;
 
 public:
 
@@ -57,14 +57,14 @@ public:
         : m_pointer(other.leak_ref()) { }
 
     ALWAYS_INLINE RefPtr(NonNullReferencePointer<T> const& other)
-        : m_pointer(const_cast<T*>(other.ptr())) {
+        : m_pointer(const_cast<T*>(other.pointer())) {
 
         m_pointer->ref();
     }
 
     template<typename U>
     ALWAYS_INLINE RefPtr(NonNullReferencePointer<U> const& other) requires(IsConvertible<U*, T*>)
-        : m_pointer(const_cast<T*>(static_cast<T const*>(other.ptr()))) {
+        : m_pointer(const_cast<T*>(static_cast<T const*>(other.pointer()))) {
 
         m_pointer->ref();
     }
@@ -85,7 +85,7 @@ public:
 
     template<typename U>
     RefPtr(RefPtr<U> const& other) requires(IsConvertible<U*, T*>)
-        : m_pointer(const_cast<T*>(static_cast<T const*>(other.ptr()))) {
+        : m_pointer(const_cast<T*>(static_cast<T const*>(other.pointer()))) {
 
         refIfNotNull(m_pointer);
     }
@@ -229,8 +229,8 @@ public:
         return NonNullReferencePointer<T>(NonNullReferencePointer<T>::Adopt, *ptr);
     }
 
-    ALWAYS_INLINE T* ptr() { return asPointer(); }
-    ALWAYS_INLINE const T* ptr() const { return asPointer(); }
+    ALWAYS_INLINE T* pointer() { return asPointer(); }
+    ALWAYS_INLINE const T* pointer() const { return asPointer(); }
 
     ALWAYS_INLINE T* operator->() {
 
@@ -248,7 +248,7 @@ public:
     }
 
     ALWAYS_INLINE const T& operator*() const {
-        
+
         return *asNonNullPointer();
     }
 
@@ -296,7 +296,7 @@ struct Formatter<RefPtr<T>> : Formatter<const T*> {
 
     ErrorOr<void> format(FormatBuilder& builder, RefPtr<T> const& value) {
 
-        return Formatter<const T*>::format(builder, value.ptr());
+        return Formatter<const T*>::format(builder, value.pointer());
     }
 };
 
@@ -307,9 +307,9 @@ struct Traits<RefPtr<T>> : public GenericTraits<RefPtr<T>> {
     
     using ConstPeekType = const T*;
     
-    static unsigned hash(RefPtr<T> const& p) { return pointerHash(p.ptr()); }
+    static unsigned hash(RefPtr<T> const& p) { return pointerHash(p.pointer()); }
     
-    static bool equals(RefPtr<T> const& a, RefPtr<T> const& b) { return a.ptr() == b.ptr(); }
+    static bool equals(RefPtr<T> const& a, RefPtr<T> const& b) { return a.pointer() == b.pointer(); }
 };
 
 template<typename T, typename U>
@@ -321,7 +321,7 @@ inline NonNullReferencePointer<T> static_ptr_cast(NonNullReferencePointer<U> con
 template<typename T, typename U>
 inline RefPtr<T> static_ptr_cast(RefPtr<U> const& ptr) {
 
-    return RefPtr<T>(static_cast<const T*>(ptr.ptr()));
+    return RefPtr<T>(static_cast<const T*>(ptr.pointer()));
 }
 
 template<typename T, typename U>
@@ -344,18 +344,18 @@ inline RefPtr<T> adopt_ref_if_nonnull(T* object) {
 template<typename T, class... Args>
 requires(IsConstructible<T, Args...>) inline ErrorOr<NonNullReferencePointer<T>> try_make_ref_counted(Args&&... args) {
 
-    return adopt_nonnull_ref_or_enomem(new (nothrow) T(forward<Args>(args)...));
+    return adoptNonNullReferenceOrErrorNoMemory(new (nothrow) T(forward<Args>(args)...));
 }
 
 // FIXME: Remove once P0960R3 is available in Clang.
 template<typename T, class... Args>
 inline ErrorOr<NonNullReferencePointer<T>> try_make_ref_counted(Args&&... args) {
 
-    return adopt_nonnull_ref_or_enomem(new (nothrow) T { forward<Args>(args)... });
+    return adoptNonNullReferenceOrErrorNoMemory(new (nothrow) T { forward<Args>(args)... });
 }
 
 template<typename T>
-inline ErrorOr<NonNullReferencePointer<T>> adopt_nonnull_ref_or_enomem(T* object) {
+inline ErrorOr<NonNullReferencePointer<T>> adoptNonNullReferenceOrErrorNoMemory(T* object) {
 
     auto result = adopt_ref_if_nonnull(object);
 
