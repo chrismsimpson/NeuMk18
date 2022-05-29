@@ -134,7 +134,7 @@ StringView FormatParser::consumeLiteral() {
             continue;
         }
 
-        if (next_is(is_any_of("{}"))) {
+        if (nextIs(is_any_of("{}"))) {
 
             return m_input.substring_view(begin, tell() - begin);
         }
@@ -151,7 +151,7 @@ bool FormatParser::consumeNumber(size_t& value) {
 
     bool consumed_at_least_one = false;
 
-    while (next_is(isAsciiDigit)) {
+    while (nextIs(isAsciiDigit)) {
 
         value *= 10;
 
@@ -165,7 +165,7 @@ bool FormatParser::consumeNumber(size_t& value) {
 
 bool FormatParser::consumeSpecifier(FormatSpecifier& specifier)
 {
-    VERIFY(!next_is('}'));
+    VERIFY(!nextIs('}'));
 
     if (!consumeSpecific('{'))
         return false;
@@ -535,7 +535,7 @@ ErrorOr<void> FormatBuilder::putF80(
 
 #endif
 
-ErrorOr<void> FormatBuilder::put_hexdump(ReadOnlyBytes bytes, size_t width, char fill) {
+ErrorOr<void> FormatBuilder::putHexDump(ReadOnlyBytes bytes, size_t width, char fill) {
 
     auto put_char_view = [&](auto i) -> ErrorOr<void> {
 
@@ -567,41 +567,60 @@ ErrorOr<void> FormatBuilder::put_hexdump(ReadOnlyBytes bytes, size_t width, char
     return {};
 }
 
-ErrorOr<void> vformat(StringBuilder& builder, StringView fmtstr, TypeErasedFormatParams& params)
-{
+ErrorOr<void> vformat(StringBuilder& builder, StringView fmtstr, TypeErasedFormatParams& params) {
+
     FormatBuilder fmtbuilder { builder };
     FormatParser parser { fmtstr };
 
     TRY(vformat_impl(params, fmtbuilder, parser));
-    return {};
+
+    return { };
 }
 
-void StandardFormatter::parse(TypeErasedFormatParams& params, FormatParser& parser)
-{
+void StandardFormatter::parse(TypeErasedFormatParams& params, FormatParser& parser) {
+
     if (StringView { "<^>" }.contains(parser.peek(1))) {
-        VERIFY(!parser.next_is(is_any_of("{}")));
+        
+        VERIFY(!parser.nextIs(is_any_of("{}")));
+        
         m_fill = parser.consume();
     }
 
-    if (parser.consumeSpecific('<'))
+    if (parser.consumeSpecific('<')) {
+
         m_align = FormatBuilder::Align::Left;
-    else if (parser.consumeSpecific('^'))
+    }
+    else if (parser.consumeSpecific('^')) {
+
         m_align = FormatBuilder::Align::Center;
-    else if (parser.consumeSpecific('>'))
+    }
+    else if (parser.consumeSpecific('>')) {
+
         m_align = FormatBuilder::Align::Right;
+    }
 
-    if (parser.consumeSpecific('-'))
+    if (parser.consumeSpecific('-')) {
+
         m_sign_mode = FormatBuilder::SignMode::OnlyIfNeeded;
-    else if (parser.consumeSpecific('+'))
+    }
+    else if (parser.consumeSpecific('+')) {
+
         m_sign_mode = FormatBuilder::SignMode::Always;
-    else if (parser.consumeSpecific(' '))
+    }
+    else if (parser.consumeSpecific(' ')) {
+
         m_sign_mode = FormatBuilder::SignMode::Reserved;
+    }
 
-    if (parser.consumeSpecific('#'))
+    if (parser.consumeSpecific('#')) {
+
         m_alternative_form = true;
+    }
 
-    if (parser.consumeSpecific('0'))
+    if (parser.consumeSpecific('0')) {
+
         m_zero_pad = true;
+    }
 
     if (size_t index = 0; parser.consumeReplacementField(index)) {
 
@@ -687,28 +706,44 @@ void StandardFormatter::parse(TypeErasedFormatParams& params, FormatParser& pars
         m_mode = Mode::HexDump;
     }
 
-    if (!parser.isEof())
+    if (!parser.isEof()) {
+
         dbgln("{} did not consume '{}'", __PRETTY_FUNCTION__, parser.remaining());
+    }
 
     VERIFY(parser.isEof());
 }
 
-ErrorOr<void> Formatter<StringView>::format(FormatBuilder& builder, StringView value)
-{
-    if (m_sign_mode != FormatBuilder::SignMode::Default)
+ErrorOr<void> Formatter<StringView>::format(FormatBuilder& builder, StringView value) {
+
+    if (m_sign_mode != FormatBuilder::SignMode::Default) {
+
         VERIFY_NOT_REACHED();
-    if (m_alternative_form)
+    }
+
+    if (m_alternative_form) {
+
         VERIFY_NOT_REACHED();
-    if (m_zero_pad)
+    }
+
+    if (m_zero_pad) {
+
         VERIFY_NOT_REACHED();
-    if (m_mode != Mode::Default && m_mode != Mode::String && m_mode != Mode::Character && m_mode != Mode::HexDump)
+    }
+
+    if (m_mode != Mode::Default && m_mode != Mode::String && m_mode != Mode::Character && m_mode != Mode::HexDump) {
+
         VERIFY_NOT_REACHED();
+    }
 
     m_width = m_width.valueOr(0);
     m_precision = m_precision.valueOr(NumericLimits<size_t>::max());
 
-    if (m_mode == Mode::HexDump)
-        return builder.put_hexdump(value.bytes(), m_width.value(), m_fill);
+    if (m_mode == Mode::HexDump) {
+
+        return builder.putHexDump(value.bytes(), m_width.value(), m_fill);
+    }
+
     return builder.putString(value, m_align, m_width.value(), m_precision.value(), m_fill);
 }
 
@@ -721,30 +756,47 @@ ErrorOr<void> Formatter<FormatString>::vformat(FormatBuilder& builder, StringVie
 }
 
 template<Integral T>
-ErrorOr<void> Formatter<T>::format(FormatBuilder& builder, T value)
-{
+ErrorOr<void> Formatter<T>::format(FormatBuilder& builder, T value) {
+
     if (m_mode == Mode::Character) {
+
         // FIXME: We just support ASCII for now, in the future maybe unicode?
+        
         VERIFY(value >= 0 && value <= 127);
 
         m_mode = Mode::String;
 
         Formatter<StringView> formatter { *this };
+        
         return formatter.format(builder, StringView { reinterpret_cast<char const*>(&value), 1 });
     }
 
-    if (m_precision.hasValue())
+    if (m_precision.hasValue()) {
+
         VERIFY_NOT_REACHED();
+    }
 
     if (m_mode == Mode::Pointer) {
-        if (m_sign_mode != FormatBuilder::SignMode::Default)
+
+        if (m_sign_mode != FormatBuilder::SignMode::Default) {
+
             VERIFY_NOT_REACHED();
-        if (m_align != FormatBuilder::Align::Default)
+        }
+
+        if (m_align != FormatBuilder::Align::Default) {
+
             VERIFY_NOT_REACHED();
-        if (m_alternative_form)
+        }
+
+        if (m_alternative_form) {
+
             VERIFY_NOT_REACHED();
-        if (m_width.hasValue())
+        }
+
+        if (m_width.hasValue()) {
+
             VERIFY_NOT_REACHED();
+        }
 
         m_mode = Mode::Hexadecimal;
         m_alternative_form = true;
@@ -753,44 +805,74 @@ ErrorOr<void> Formatter<T>::format(FormatBuilder& builder, T value)
     }
 
     u8 base = 0;
+    
     bool upperCase = false;
+
     if (m_mode == Mode::Binary) {
+
         base = 2;
-    } else if (m_mode == Mode::BinaryUppercase) {
+    } 
+    else if (m_mode == Mode::BinaryUppercase) {
+
         base = 2;
+        
         upperCase = true;
-    } else if (m_mode == Mode::Octal) {
+    } 
+    else if (m_mode == Mode::Octal) {
+        
         base = 8;
-    } else if (m_mode == Mode::Decimal || m_mode == Mode::Default) {
+    } 
+    else if (m_mode == Mode::Decimal || m_mode == Mode::Default) {
+        
         base = 10;
-    } else if (m_mode == Mode::Hexadecimal) {
+    } 
+    else if (m_mode == Mode::Hexadecimal) {
+        
         base = 16;
-    } else if (m_mode == Mode::HexadecimalUppercase) {
+    } 
+    else if (m_mode == Mode::HexadecimalUppercase) {
+        
         base = 16;
+        
         upperCase = true;
-    } else if (m_mode == Mode::HexDump) {
+    } 
+    else if (m_mode == Mode::HexDump) {
+        
         m_width = m_width.valueOr(32);
-        return builder.put_hexdump({ &value, sizeof(value) }, m_width.value(), m_fill);
-    } else {
+        
+        return builder.putHexDump({ &value, sizeof(value) }, m_width.value(), m_fill);
+    } 
+    else {
+        
         VERIFY_NOT_REACHED();
     }
 
     m_width = m_width.valueOr(0);
 
-    if constexpr (IsSame<MakeUnsigned<T>, T>)
+    if constexpr (IsSame<MakeUnsigned<T>, T>) {
+
         return builder.putU64(value, base, m_alternative_form, upperCase, m_zero_pad, m_align, m_width.value(), m_fill, m_sign_mode);
-    else
+    }
+    else {
+
         return builder.putI64(value, base, m_alternative_form, upperCase, m_zero_pad, m_align, m_width.value(), m_fill, m_sign_mode);
+    }
 }
 
 ErrorOr<void> Formatter<char>::format(FormatBuilder& builder, char value)
 {
     if (m_mode == Mode::Binary || m_mode == Mode::BinaryUppercase || m_mode == Mode::Decimal || m_mode == Mode::Octal || m_mode == Mode::Hexadecimal || m_mode == Mode::HexadecimalUppercase) {
+        
         // Trick: signed char != char. (Sometimes weird features are actually helpful.)
+        
         Formatter<signed char> formatter { *this };
+        
         return formatter.format(builder, static_cast<signed char>(value));
-    } else {
+    } 
+    else {
+        
         Formatter<StringView> formatter { *this };
+        
         return formatter.format(builder, { &value, 1 });
     }
 }
@@ -813,15 +895,22 @@ ErrorOr<void> Formatter<wchar_t>::format(FormatBuilder& builder, wchar_t value) 
     }
 }
 
-ErrorOr<void> Formatter<bool>::format(FormatBuilder& builder, bool value)
-{
+ErrorOr<void> Formatter<bool>::format(FormatBuilder& builder, bool value) {
+    
     if (m_mode == Mode::Binary || m_mode == Mode::BinaryUppercase || m_mode == Mode::Decimal || m_mode == Mode::Octal || m_mode == Mode::Hexadecimal || m_mode == Mode::HexadecimalUppercase) {
+        
         Formatter<u8> formatter { *this };
+        
         return formatter.format(builder, static_cast<u8>(value));
-    } else if (m_mode == Mode::HexDump) {
-        return builder.put_hexdump({ &value, sizeof(value) }, m_width.valueOr(32), m_fill);
-    } else {
+    } 
+    else if (m_mode == Mode::HexDump) {
+
+        return builder.putHexDump({ &value, sizeof(value) }, m_width.valueOr(32), m_fill);
+    } 
+    else {
+        
         Formatter<StringView> formatter { *this };
+        
         return formatter.format(builder, value ? "true" : "false");
     }
 }

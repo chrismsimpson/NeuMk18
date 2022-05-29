@@ -272,13 +272,13 @@ public:
         
 #endif
 
-    ErrorOr<void> put_hexdump(
+    ErrorOr<void> putHexDump(
         ReadOnlyBytes,
         size_t width,
         char fill = ' ');
 
     StringBuilder const& builder() const {
-        
+
         return m_builder;
     }
 

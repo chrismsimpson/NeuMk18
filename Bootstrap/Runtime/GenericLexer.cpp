@@ -70,7 +70,7 @@ StringView GenericLexer::consume_until(char stop)
 StringView GenericLexer::consume_until(char const* stop)
 {
     size_t start = m_index;
-    while (!isEof() && !next_is(stop))
+    while (!isEof() && !nextIs(stop))
         m_index++;
     size_t length = m_index - start;
 
@@ -83,7 +83,7 @@ StringView GenericLexer::consume_until(char const* stop)
 StringView GenericLexer::consume_until(StringView stop)
 {
     size_t start = m_index;
-    while (!isEof() && !next_is(stop))
+    while (!isEof() && !nextIs(stop))
         m_index++;
     size_t length = m_index - start;
 
@@ -100,15 +100,15 @@ StringView GenericLexer::consume_until(StringView stop)
  */
 StringView GenericLexer::consume_quoted_string(char escape_char)
 {
-    if (!next_is(is_quote))
+    if (!nextIs(is_quote))
         return {};
 
     char quote_char = consume();
     size_t start = m_index;
     while (!isEof()) {
-        if (next_is(escape_char))
+        if (nextIs(escape_char))
             m_index++;
-        else if (next_is(quote_char))
+        else if (nextIs(quote_char))
             break;
         m_index++;
     }

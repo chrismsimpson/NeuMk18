@@ -27,12 +27,12 @@ public:
         return (m_index + offset < m_input.length()) ? m_input[m_index + offset] : '\0';
     }
 
-    constexpr bool next_is(char expected) const {
+    constexpr bool nextIs(char expected) const {
 
         return peek() == expected;
     }
 
-    constexpr bool next_is(StringView expected) const {
+    constexpr bool nextIs(StringView expected) const {
 
         for (size_t i = 0; i < expected.length(); ++i) {
 
@@ -45,7 +45,7 @@ public:
         return true;
     }
 
-    constexpr bool next_is(char const* expected) const {
+    constexpr bool nextIs(char const* expected) const {
 
         for (size_t i = 0; expected[i] != '\0'; ++i) {
 
@@ -81,7 +81,7 @@ public:
     template<typename T>
     constexpr bool consumeSpecific(const T& next)
     {
-        if (!next_is(next))
+        if (!nextIs(next))
             return false;
 
         if constexpr (requires { next.length(); }) {
@@ -150,7 +150,7 @@ public:
 
     constexpr void ignore_until(char const* stop) {
 
-        while (!isEof() && !next_is(stop)) {
+        while (!isEof() && !nextIs(stop)) {
 
             ++m_index;
         }
@@ -162,14 +162,14 @@ public:
      * Conditions are used to match arbitrary characters. You can use lambdas,
      * ctype functions, or is_any_of() and its derivatives (see below).
      * A few examples:
-     *   - `if (lexer.next_is(isdigit))`
+     *   - `if (lexer.nextIs(isdigit))`
      *   - `auto name = lexer.consume_while([](char c) { return isalnum(c) || c == '_'; });`
      *   - `lexer.ignore_until(is_any_of("<^>"));`
      */
 
     // Test the next character against a Condition
     template<typename TPredicate>
-    constexpr bool next_is(TPredicate pred) const {
+    constexpr bool nextIs(TPredicate pred) const {
 
         return pred(peek());
     }
