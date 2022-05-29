@@ -432,7 +432,7 @@ ErrorOr<void> FormatBuilder::putF64(
             TRY(string_builder.tryAppend(upperCase ? "NAN"sv : "nan"sv));
         else
             TRY(string_builder.tryAppend(upperCase ? "INF"sv : "inf"sv));
-        TRY(putString(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill));
+        TRY(putString(string_builder.stringView(), align, min_width, NumericLimits<size_t>::max(), fill));
         return {};
     }
 
@@ -470,7 +470,7 @@ ErrorOr<void> FormatBuilder::putF64(
             TRY(format_builder.putU64(0, base, false, false, true, Align::Right, precision - visible_precision));
     }
 
-    TRY(putString(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill));
+    TRY(putString(string_builder.stringView(), align, min_width, NumericLimits<size_t>::max(), fill));
     return {};
 }
 
@@ -499,7 +499,7 @@ ErrorOr<void> FormatBuilder::putF80(
             TRY(string_builder.tryAppend(upperCase ? "NAN"sv : "nan"sv));
         else
             TRY(string_builder.tryAppend(upperCase ? "INF"sv : "inf"sv));
-        TRY(putString(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill));
+        TRY(putString(string_builder.stringView(), align, min_width, NumericLimits<size_t>::max(), fill));
         return {};
     }
 
@@ -533,7 +533,7 @@ ErrorOr<void> FormatBuilder::putF80(
         }
     }
 
-    TRY(putString(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill));
+    TRY(putString(string_builder.stringView(), align, min_width, NumericLimits<size_t>::max(), fill));
     return { };
 }
 
@@ -755,7 +755,7 @@ ErrorOr<void> Formatter<FormatString>::vformat(FormatBuilder& builder, StringVie
 {
     StringBuilder string_builder;
     TRY(::vformat(string_builder, fmtstr, params));
-    TRY(Formatter<StringView>::format(builder, string_builder.string_view()));
+    TRY(Formatter<StringView>::format(builder, string_builder.stringView()));
     return {};
 }
 
@@ -895,7 +895,7 @@ ErrorOr<void> Formatter<wchar_t>::format(FormatBuilder& builder, wchar_t value) 
         codepoint.appendCodePoint(value);
 
         Formatter<StringView> formatter { *this };
-        return formatter.format(builder, codepoint.string_view());
+        return formatter.format(builder, codepoint.stringView());
     }
 }
 
@@ -1001,7 +1001,7 @@ void vout(FILE* file, StringView fmtstr, TypeErasedFormatParams& params, bool ne
     if (newline)
         builder.append('\n');
 
-    auto const string = builder.string_view();
+    auto const string = builder.stringView();
     auto const retval = ::fwrite(string.charactersWithoutNullTermination(), 1, string.length(), file);
     
     if (static_cast<size_t>(retval) != string.length()) {
@@ -1065,7 +1065,7 @@ void vdbgln(StringView fmtstr, TypeErasedFormatParams& params) {
 
     builder.append('\n');
 
-    auto const string = builder.string_view();
+    auto const string = builder.stringView();
 
 #ifdef __serenity__
 #    ifdef KERNEL
@@ -1107,7 +1107,7 @@ void vdmesgln(StringView fmtstr, TypeErasedFormatParams& params)
     MUST(vformat(builder, fmtstr, params));
     builder.append('\n');
 
-    auto const string = builder.string_view();
+    auto const string = builder.stringView();
     kernelputstr(string.charactersWithoutNullTermination(), string.length());
 }
 
@@ -1136,7 +1136,7 @@ void v_critical_dmesgln(StringView fmtstr, TypeErasedFormatParams& params) {
     MUST(vformat(builder, fmtstr, params));
     builder.append('\n');
 
-    auto const string = builder.string_view();
+    auto const string = builder.stringView();
     kernelcriticalputstr(string.charactersWithoutNullTermination(), string.length());
 }
 

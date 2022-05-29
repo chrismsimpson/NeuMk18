@@ -33,6 +33,7 @@ class [[nodiscard]] ReferencePointer {
 public:
 
     enum AdoptTag {
+
         Adopt
     };
 
@@ -90,16 +91,20 @@ public:
         refIfNotNull(m_pointer);
     }
 
-    ALWAYS_INLINE ~ReferencePointer()
-    {
+    ALWAYS_INLINE ~ReferencePointer() {
+
         clear();
+
 #    ifdef SANITIZE_PTRS
+
         m_pointer = reinterpret_cast<T*>(explode_byte(REFPTR_SCRUB_BYTE));
+
 #    endif
+
     }
 
-    void swap(ReferencePointer& other)
-    {
+    void swap(ReferencePointer& other) {
+
         ::swap(m_pointer, other.m_pointer);
     }
 
@@ -329,13 +334,13 @@ struct Traits<ReferencePointer<T>> : public GenericTraits<ReferencePointer<T>> {
 };
 
 template<typename T, typename U>
-inline NonNullReferencePointer<T> static_ptr_cast(NonNullReferencePointer<U> const& ptr)
-{
+inline NonNullReferencePointer<T> staticPointerCast(NonNullReferencePointer<U> const& ptr) {
+    
     return NonNullReferencePointer<T>(static_cast<const T&>(*ptr));
 }
 
 template<typename T, typename U>
-inline ReferencePointer<T> static_ptr_cast(ReferencePointer<U> const& ptr) {
+inline ReferencePointer<T> staticPointerCast(ReferencePointer<U> const& ptr) {
 
     return ReferencePointer<T>(static_cast<const T*>(ptr.pointer()));
 }

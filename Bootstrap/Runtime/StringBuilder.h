@@ -34,7 +34,7 @@ public:
     }
 
     ErrorOr<void> tryAppend(char const*, size_t);
-    ErrorOr<void> tryAppendEscapedForJson(StringView);
+    ErrorOr<void> tryAppendEscapedForJSON(StringView);
 
     void append(StringView);
     void append(char);
@@ -42,7 +42,7 @@ public:
     void append(char const*, size_t);
 
     void appendAsLowercase(char);
-    void append_escaped_for_json(StringView);
+    void appendEscapedForJSON(StringView);
 
     template<typename... Parameters>
     void appendff(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters) {
@@ -52,30 +52,42 @@ public:
     }
 
 #ifndef KERNEL
+
     [[nodiscard]] String build() const;
+    
     [[nodiscard]] String toString() const;
+
 #endif
 
-    [[nodiscard]] StringView string_view() const;
+    [[nodiscard]] StringView stringView() const;
+
     void clear();
 
     [[nodiscard]] size_t length() const { return m_buffer.size(); }
     [[nodiscard]] bool isEmpty() const { return m_buffer.isEmpty(); }
 
     template<class SeparatorType, class CollectionType>
-    void join(SeparatorType const& separator, CollectionType const& collection, StringView fmtstr = "{}"sv)
-    {
+    void join(SeparatorType const& separator, CollectionType const& collection, StringView fmtstr = "{}"sv) {
+
         bool first = true;
+        
         for (auto& item : collection) {
-            if (first)
+            
+            if (first) {
+
                 first = false;
-            else
+            }
+            else {
+
                 append(separator);
+            }
+
             appendff(fmtstr, item);
         }
     }
 
 private:
+
     ErrorOr<void> will_append(size_t);
     UInt8* data() { return m_buffer.unsafe_data(); }
     UInt8 const* data() const { return const_cast<StringBuilder*>(this)->m_buffer.unsafe_data(); }
@@ -85,24 +97,35 @@ private:
 
 template<typename T>
 struct Formatter<NeuInternal::Array<T>> : Formatter<StringView> {
-    ErrorOr<void> format(FormatBuilder& builder, NeuInternal::Array<T> const& value)
-    {
-        StringBuilder string_builder;
-        string_builder.append("[");
+
+    ErrorOr<void> format(FormatBuilder& builder, NeuInternal::Array<T> const& value) {
+
+        StringBuilder stringBuilder;
+        
+        stringBuilder.append("[");
+        
         for (size_t i = 0; i < value.size(); ++i) {
+
             if constexpr (IsSame<String, T>) {
-                string_builder.append("\"");
+
+                stringBuilder.append("\"");
             }
-            string_builder.appendff("{}", value[i]);
+
+            stringBuilder.appendff("{}", value[i]);
+            
             if constexpr (IsSame<String, T>) {
-                string_builder.append("\"");
+
+                stringBuilder.append("\"");
             }
 
             if (i != value.size() - 1) {
-                string_builder.append(",");
+
+                stringBuilder.append(",");
             }
         }
-        string_builder.append("]");
-        return Formatter<StringView>::format(builder, string_builder.toString());
+
+        stringBuilder.append("]");
+
+        return Formatter<StringView>::format(builder, stringBuilder.toString());
     }
 };

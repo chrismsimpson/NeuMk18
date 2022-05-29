@@ -68,7 +68,7 @@ String StringBuilder::build() const
     return toString();
 }
 
-StringView StringBuilder::string_view() const
+StringView StringBuilder::stringView() const
 {
     return StringView { data(), m_buffer.size() };
 }
@@ -102,12 +102,12 @@ void StringBuilder::appendAsLowercase(char ch)
         append(ch);
 }
 
-void StringBuilder::append_escaped_for_json(StringView string)
+void StringBuilder::appendEscapedForJSON(StringView string)
 {
-    MUST(tryAppendEscapedForJson(string));
+    MUST(tryAppendEscapedForJSON(string));
 }
 
-ErrorOr<void> StringBuilder::tryAppendEscapedForJson(StringView string)
+ErrorOr<void> StringBuilder::tryAppendEscapedForJSON(StringView string)
 {
     for (auto ch : string) {
         switch (ch) {
