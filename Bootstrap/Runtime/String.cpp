@@ -186,34 +186,43 @@ template Optional<UInt32> String::to_uint(TrimWhitespace) const;
 template Optional<unsigned long> String::to_uint(TrimWhitespace) const;
 template Optional<unsigned long long> String::to_uint(TrimWhitespace) const;
 
-bool String::starts_with(StringView str, CaseSensitivity case_sensitivity) const
-{
-    return StringUtils::starts_with(*this, str, case_sensitivity);
+bool String::startsWith(StringView str, CaseSensitivity case_sensitivity) const {
+
+    return StringUtils::startsWith(*this, str, case_sensitivity);
 }
 
-bool String::starts_with(char ch) const
-{
-    if (isEmpty())
+bool String::startsWith(char ch) const {
+
+    if (isEmpty()) {
+
         return false;
+    }
+
     return characters()[0] == ch;
 }
 
-bool String::ends_with(StringView str, CaseSensitivity case_sensitivity) const
-{
-    return StringUtils::ends_with(*this, str, case_sensitivity);
+bool String::endsWith(StringView str, CaseSensitivity case_sensitivity) const {
+
+    return StringUtils::endsWith(*this, str, case_sensitivity);
 }
 
-bool String::ends_with(char ch) const
-{
-    if (isEmpty())
+bool String::endsWith(char ch) const {
+
+    if (isEmpty()) {
+
         return false;
+    }
+
     return characters()[length() - 1] == ch;
 }
 
-String String::repeated(char ch, size_t count)
-{
-    if (!count)
+String String::repeated(char ch, size_t count) {
+
+    if (!count) {
+
         return empty();
+    }
+
     char* buffer;
     auto impl = StringImpl::create_uninitialized(count, buffer);
     memset(buffer, ch, count);
@@ -348,9 +357,9 @@ bool String::contains(char needle, CaseSensitivity case_sensitivity) const
     return StringUtils::contains(*this, StringView(&needle, 1), case_sensitivity);
 }
 
-bool String::equals_ignoring_case(StringView other) const
+bool String::equalsIgnoringCase(StringView other) const
 {
-    return StringUtils::equals_ignoring_case(view(), other);
+    return StringUtils::equalsIgnoringCase(view(), other);
 }
 
 String String::reverse() const

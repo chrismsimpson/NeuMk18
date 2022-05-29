@@ -111,7 +111,7 @@ Vector<StringView> StringView::lines(bool consider_cr) const {
     return v;
 }
 
-bool StringView::starts_with(char ch) const {
+bool StringView::startsWith(char ch) const {
 
     if (isEmpty()) {
 
@@ -121,12 +121,12 @@ bool StringView::starts_with(char ch) const {
     return ch == charactersWithoutNullTermination()[0];
 }
 
-bool StringView::starts_with(StringView str, CaseSensitivity case_sensitivity) const {
+bool StringView::startsWith(StringView str, CaseSensitivity case_sensitivity) const {
 
-    return StringUtils::starts_with(*this, str, case_sensitivity);
+    return StringUtils::startsWith(*this, str, case_sensitivity);
 }
 
-bool StringView::ends_with(char ch) const {
+bool StringView::endsWith(char ch) const {
 
     if (isEmpty()) {
 
@@ -136,9 +136,9 @@ bool StringView::ends_with(char ch) const {
     return ch == charactersWithoutNullTermination()[length() - 1];
 }
 
-bool StringView::ends_with(StringView str, CaseSensitivity case_sensitivity) const {
+bool StringView::endsWith(StringView str, CaseSensitivity case_sensitivity) const {
 
-    return StringUtils::ends_with(*this, str, case_sensitivity);
+    return StringUtils::endsWith(*this, str, case_sensitivity);
 }
 
 bool StringView::matches(StringView mask, Vector<MaskSpan>& mask_spans, CaseSensitivity case_sensitivity) const {
@@ -169,9 +169,9 @@ bool StringView::contains(StringView needle, CaseSensitivity case_sensitivity) c
     return StringUtils::contains(*this, needle, case_sensitivity);
 }
 
-bool StringView::equals_ignoring_case(StringView other) const {
+bool StringView::equalsIgnoringCase(StringView other) const {
 
-    return StringUtils::equals_ignoring_case(*this, other);
+    return StringUtils::equalsIgnoringCase(*this, other);
 }
 
 #ifndef KERNEL

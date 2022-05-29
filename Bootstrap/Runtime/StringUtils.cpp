@@ -248,7 +248,7 @@ namespace StringUtils {
     template Optional<UInt32> convert_to_uint_from_octal(StringView str, TrimWhitespace);
     template Optional<UInt64> convert_to_uint_from_octal(StringView str, TrimWhitespace);
 
-    bool equals_ignoring_case(StringView a, StringView b)
+    bool equalsIgnoringCase(StringView a, StringView b)
     {
         if (a.length() != b.length())
             return false;
@@ -259,8 +259,8 @@ namespace StringUtils {
         return true;
     }
 
-    bool ends_with(StringView str, StringView end, CaseSensitivity case_sensitivity)
-    {
+    bool endsWith(StringView str, StringView end, CaseSensitivity case_sensitivity) {
+
         if (end.isEmpty())
             return true;
         if (str.isEmpty())
@@ -282,33 +282,51 @@ namespace StringUtils {
         return true;
     }
 
-    bool starts_with(StringView str, StringView start, CaseSensitivity case_sensitivity)
-    {
-        if (start.isEmpty())
-            return true;
-        if (str.isEmpty())
-            return false;
-        if (start.length() > str.length())
-            return false;
-        if (str.charactersWithoutNullTermination() == start.charactersWithoutNullTermination())
-            return true;
+    bool startsWith(StringView str, StringView start, CaseSensitivity case_sensitivity) {
 
-        if (case_sensitivity == CaseSensitivity::CaseSensitive)
+        if (start.isEmpty()) {
+
+            return true;
+        }
+
+        if (str.isEmpty()) {
+
+            return false;
+        }
+
+        if (start.length() > str.length()) {
+
+            return false;
+        }
+
+        if (str.charactersWithoutNullTermination() == start.charactersWithoutNullTermination()) {
+
+            return true;
+        }
+
+        if (case_sensitivity == CaseSensitivity::CaseSensitive) {
+
             return !memcmp(str.charactersWithoutNullTermination(), start.charactersWithoutNullTermination(), start.length());
+        }
 
         auto str_chars = str.charactersWithoutNullTermination();
         auto start_chars = start.charactersWithoutNullTermination();
 
         size_t si = 0;
+        
         for (size_t starti = 0; starti < start.length(); ++si, ++starti) {
-            if (toAsciiLowercase(str_chars[si]) != toAsciiLowercase(start_chars[starti]))
+            
+            if (toAsciiLowercase(str_chars[si]) != toAsciiLowercase(start_chars[starti])) {
+
                 return false;
+            }
         }
+        
         return true;
     }
 
-    bool contains(StringView str, StringView needle, CaseSensitivity case_sensitivity)
-    {
+    bool contains(StringView str, StringView needle, CaseSensitivity case_sensitivity) {
+
         if (str.isNull() || needle.isNull() || str.isEmpty() || needle.length() > str.length()) {
 
             return false;
@@ -595,7 +613,7 @@ namespace StringUtils {
 
         for (size_t i = 0; i < str.length() - needle.length() + 1; ++i) {
 
-            if (str.substringView(i).starts_with(needle)) {
+            if (str.substringView(i).startsWith(needle)) {
 
                 count++;
             }

@@ -126,7 +126,7 @@ public:
         return trimmed_view;
     }
 
-    [[nodiscard]] bool equals_ignoring_case(StringView) const;
+    [[nodiscard]] bool equalsIgnoringCase(StringView) const;
 
     [[nodiscard]] bool contains(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
     [[nodiscard]] bool contains(char, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
@@ -177,10 +177,10 @@ public:
     [[nodiscard]] constexpr ConstIterator begin() const { return ConstIterator::begin(*this); }
     [[nodiscard]] constexpr ConstIterator end() const { return ConstIterator::end(*this); }
 
-    [[nodiscard]] bool starts_with(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
-    [[nodiscard]] bool ends_with(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
-    [[nodiscard]] bool starts_with(char) const;
-    [[nodiscard]] bool ends_with(char) const;
+    [[nodiscard]] bool startsWith(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
+    [[nodiscard]] bool endsWith(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
+    [[nodiscard]] bool startsWith(char) const;
+    [[nodiscard]] bool endsWith(char) const;
 
     bool operator==(String const&) const;
     bool operator!=(String const& other) const { return !(*this == other); }
@@ -278,23 +278,23 @@ public:
     [[nodiscard]] String reverse() const;
 
     template<typename... Ts>
-    [[nodiscard]] ALWAYS_INLINE constexpr bool is_one_of(Ts&&... strings) const {
+    [[nodiscard]] ALWAYS_INLINE constexpr bool isOneOf(Ts&&... strings) const {
 
         return (... || this->operator==(forward<Ts>(strings)));
     }
 
     template<typename... Ts>
-    [[nodiscard]] ALWAYS_INLINE constexpr bool is_one_of_ignoring_case(Ts&&... strings) const {
+    [[nodiscard]] ALWAYS_INLINE constexpr bool isOneOfIgnoringCase(Ts&&... strings) const {
 
         return (... ||
                 [this, &strings]() -> bool {
             if constexpr (requires(Ts a) { a.view()->StringView; }) {
 
-                return this->equals_ignoring_case(forward<Ts>(strings.view()));
+                return this->equalsIgnoringCase(forward<Ts>(strings.view()));
             }
             else {
 
-                return this->equals_ignoring_case(forward<Ts>(strings));
+                return this->equalsIgnoringCase(forward<Ts>(strings));
             }
         }());
     }
@@ -316,7 +316,7 @@ struct CaseInsensitiveStringTraits : public Traits<String> {
 
     static unsigned hash(String const& s) { return s.impl() ? s.impl()->case_insensitive_hash() : 0; }
     
-    static bool equals(String const& a, String const& b) { return a.equals_ignoring_case(b); }
+    static bool equals(String const& a, String const& b) { return a.equalsIgnoringCase(b); }
 };
 
 bool operator<(char const*, String const&);

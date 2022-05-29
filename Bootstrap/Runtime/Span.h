@@ -190,10 +190,12 @@ public:
         return false;
     }
 
-    [[nodiscard]] bool constexpr starts_with(Span<T const> other) const
-    {
-        if (size() < other.size())
+    [[nodiscard]] bool constexpr startsWith(Span<T const> other) const {
+        
+        if (size() < other.size()) {
+
             return false;
+        }
 
         return TypedTransfer<T>::compare(data(), other.data(), other.size());
     }

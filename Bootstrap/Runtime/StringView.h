@@ -88,15 +88,15 @@ public:
         return stringHash(charactersWithoutNullTermination(), length());
     }
 
-    [[nodiscard]] bool starts_with(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
-    [[nodiscard]] bool ends_with(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
-    [[nodiscard]] bool starts_with(char) const;
-    [[nodiscard]] bool ends_with(char) const;
+    [[nodiscard]] bool startsWith(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
+    [[nodiscard]] bool endsWith(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
+    [[nodiscard]] bool startsWith(char) const;
+    [[nodiscard]] bool endsWith(char) const;
     [[nodiscard]] bool matches(StringView mask, CaseSensitivity = CaseSensitivity::CaseInsensitive) const;
     [[nodiscard]] bool matches(StringView mask, Vector<MaskSpan>&, CaseSensitivity = CaseSensitivity::CaseInsensitive) const;
     [[nodiscard]] bool contains(char) const;
     [[nodiscard]] bool contains(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
-    [[nodiscard]] bool equals_ignoring_case(StringView other) const;
+    [[nodiscard]] bool equalsIgnoringCase(StringView other) const;
 
     [[nodiscard]] StringView trim(StringView characters, TrimMode mode = TrimMode::Both) const { return StringUtils::trim(*this, characters, mode); }
     [[nodiscard]] StringView trim_whitespace(TrimMode mode = TrimMode::Both) const { return StringUtils::trim_whitespace(*this, mode); }
@@ -346,24 +346,24 @@ public:
     }
 
     template<typename... Ts>
-    [[nodiscard]] ALWAYS_INLINE constexpr bool is_one_of(Ts&&... strings) const {
+    [[nodiscard]] ALWAYS_INLINE constexpr bool isOneOf(Ts&&... strings) const {
 
         return (... || this->operator==(forward<Ts>(strings)));
     }
 
     template<typename... Ts>
-    [[nodiscard]] ALWAYS_INLINE constexpr bool is_one_of_ignoring_case(Ts&&... strings) const {
+    [[nodiscard]] ALWAYS_INLINE constexpr bool isOneOfIgnoringCase(Ts&&... strings) const {
 
         return (... ||
                 [this, &strings]() -> bool {
 
             if constexpr (requires(Ts a) { a.view()->StringView; }) {
 
-                return this->equals_ignoring_case(forward<Ts>(strings.view()));
+                return this->equalsIgnoringCase(forward<Ts>(strings.view()));
             }
             else {
 
-                return this->equals_ignoring_case(forward<Ts>(strings));
+                return this->equalsIgnoringCase(forward<Ts>(strings));
             }
         }());
     }
