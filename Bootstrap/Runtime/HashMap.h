@@ -13,68 +13,88 @@
 
 template<typename K, typename V, typename KeyTraits, bool IsOrdered>
 class HashMap {
+
 private:
+
     struct Entry {
+
         K key;
         V value;
     };
 
     struct EntryTraits {
+
         static unsigned hash(Entry const& entry) { return KeyTraits::hash(entry.key); }
         static bool equals(Entry const& a, Entry const& b) { return KeyTraits::equals(a.key, b.key); }
     };
 
 public:
+
     using KeyType = K;
     using ValueType = V;
 
     HashMap() = default;
 
-    HashMap(std::initializer_list<Entry> list)
-    {
+    HashMap(std::initializer_list<Entry> list) {
+
         MUST(ensureCapacity(list.size()));
-        for (auto& item : list)
+        
+        for (auto& item : list) {
+
             MUST(set(item.key, item.value));
+        }
     }
 
-    [[nodiscard]] bool isEmpty() const
-    {
+    [[nodiscard]] bool isEmpty() const {
+
         return m_table.isEmpty();
     }
+
     [[nodiscard]] size_t size() const { return m_table.size(); }
     [[nodiscard]] size_t capacity() const { return m_table.capacity(); }
+    
     void clear() { m_table.clear(); }
+    
     void clearWithCapacity() { m_table.clearWithCapacity(); }
 
     ErrorOr<HashSetResult> set(const K& key, const V& value) { return m_table.try_set({ key, value }); }
     ErrorOr<HashSetResult> set(const K& key, V&& value) { return m_table.try_set({ key, move(value) }); }
     ErrorOr<HashSetResult> set(K&& key, V&& value) { return m_table.try_set({ move(key), move(value) }); }
 
-    bool remove(const K& key)
-    {
+    bool remove(const K& key) {
+
         auto it = find(key);
+        
         if (it != end()) {
+
             m_table.remove(it);
+            
             return true;
         }
+
         return false;
     }
 
     template<Concepts::HashCompatible<K> Key>
-    requires(IsSame<KeyTraits, Traits<K>>) bool remove(Key const& key)
-    {
+    requires(IsSame<KeyTraits, Traits<K>>) bool remove(Key const& key) {
+
         auto it = find(key);
+        
         if (it != end()) {
+
             m_table.remove(it);
+            
             return true;
         }
+
         return false;
     }
 
     template<typename TUnaryPredicate>
-    bool remove_all_matching(TUnaryPredicate predicate)
-    {
-        return m_table.template remove_all_matching([&](auto& entry) {
+    bool removeAllMatching(TUnaryPredicate predicate) {
+
+        return m_table.template removeAllMatching([&](auto& entry) {
+
             return predicate(entry.key, entry.value);
         });
     }
@@ -157,32 +177,40 @@ public:
 
     template<Concepts::HashCompatible<K> Key>
     requires(IsSame<KeyTraits, Traits<K>>) Optional<typename Traits<V>::ConstPeekType> get(Key const& key)
-    const requires(IsPointer<typename Traits<V>::PeekType>)
-    {
+    const requires(IsPointer<typename Traits<V>::PeekType>) {
+
         auto it = find(key);
-        if (it == end())
-            return {};
+        
+        if (it == end()) {
+
+            return { };
+        }
+        
         return (*it).value;
     }
 
     template<Concepts::HashCompatible<K> Key>
     requires(IsSame<KeyTraits, Traits<K>>) Optional<typename Traits<V>::PeekType> get(Key const& key)
-    requires(!IsConst<typename Traits<V>::PeekType>)
-    {
+    requires(!IsConst<typename Traits<V>::PeekType>) {
+
         auto it = find(key);
-        if (it == end())
-            return {};
+        
+        if (it == end()) {
+
+            return { };
+        }
+        
         return (*it).value;
     }
 
-    [[nodiscard]] bool contains(const K& key) const
-    {
+    [[nodiscard]] bool contains(const K& key) const {
+
         return find(key) != end();
     }
 
     template<Concepts::HashCompatible<K> Key>
-    requires(IsSame<KeyTraits, Traits<K>>) [[nodiscard]] bool contains(Key const& value)
-    {
+    requires(IsSame<KeyTraits, Traits<K>>) [[nodiscard]] bool contains(Key const& value) {
+
         return find(value) != end();
     }
 
@@ -191,46 +219,68 @@ public:
         m_table.remove(it);
     }
 
-    V& ensure(const K& key)
-    {
+    V& ensure(const K& key) {
+
         auto it = find(key);
-        if (it != end())
+        
+        if (it != end()) {
+
             return it->value;
+        }
+
         auto result = set(key, V());
+        
         VERIFY(result == HashSetResult::InsertedNewEntry);
+        
         return find(key)->value;
     }
 
     template<typename Callback>
-    V& ensure(K const& key, Callback initialization_callback)
-    {
+    V& ensure(K const& key, Callback initializationCallback) {
+
         auto it = find(key);
-        if (it != end())
+        
+        if (it != end()) {
+
             return it->value;
-        auto result = set(key, initialization_callback());
+        }
+        
+        auto result = set(key, initializationCallback());
+        
         VERIFY(result == HashSetResult::InsertedNewEntry);
+        
         return find(key)->value;
     }
 
-    [[nodiscard]] Vector<K> keys() const
-    {
+    [[nodiscard]] Vector<K> keys() const {
+
         Vector<K> list;
+        
         list.ensureCapacity(size());
-        for (auto& it : *this)
+        
+        for (auto& it : *this) {
+
             list.uncheckedAppend(it.key);
+        }
+
         return list;
     }
 
-    [[nodiscard]] UInt32 hash() const
-    {
+    [[nodiscard]] UInt32 hash() const {
+
         UInt32 hash = 0;
+        
         for (auto& it : *this) {
-            auto entry_hash = pairUInt32Hash(it.key.hash(), it.value.hash());
-            hash = pairUInt32Hash(hash, entry_hash);
+
+            auto entryHash = pairUInt32Hash(it.key.hash(), it.value.hash());
+            
+            hash = pairUInt32Hash(hash, entryHash);
         }
+
         return hash;
     }
 
 private:
+
     HashTableType m_table;
 };

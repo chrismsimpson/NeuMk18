@@ -534,7 +534,7 @@ public:
     }
 
     template<typename TUnaryPredicate>
-    bool remove_all_matching(TUnaryPredicate predicate) {
+    bool removeAllMatching(TUnaryPredicate predicate) {
 
         bool something_was_removed = false;
 
