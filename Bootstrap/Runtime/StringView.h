@@ -182,7 +182,7 @@ public:
                 callback(part_with_separator.substring_view(0, separator_index));
             }
 
-            view = view.substring_view_starting_after_substring(part_with_separator);
+            view = view.substringViewStartingAfterSubstring(part_with_separator);
             
             maybe_separator_index = view.find(separator);
         }
@@ -213,7 +213,7 @@ public:
     //    StringView str { "foobar" };
     //    StringView substr = str.substring_view(1, 2);  // "oo"
     //    StringView substr_from = str.substring_view_starting_from_substring(subst);  // "oobar"
-    //    StringView substr_after = str.substring_view_starting_after_substring(subst);  // "bar"
+    //    StringView substr_after = str.substringViewStartingAfterSubstring(subst);  // "bar"
     //
     // Note that this only works if the string view passed as an argument is indeed a substring
     // view of this string view, such as one created by substring_view() and split_view(). It
@@ -224,7 +224,7 @@ public:
     // would not work.
 
     [[nodiscard]] StringView substring_view_starting_from_substring(StringView substring) const;
-    [[nodiscard]] StringView substring_view_starting_after_substring(StringView substring) const;
+    [[nodiscard]] StringView substringViewStartingAfterSubstring(StringView substring) const;
 
     [[nodiscard]] bool copy_characters_to_buffer(char* buffer, size_t buffer_size) const;
 
