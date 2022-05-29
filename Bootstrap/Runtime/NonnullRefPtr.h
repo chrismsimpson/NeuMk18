@@ -28,7 +28,7 @@ ALWAYS_INLINE void ref_if_not_null(T* ptr)
 }
 
 template<typename T>
-ALWAYS_INLINE void unref_if_not_null(T* ptr)
+ALWAYS_INLINE void unrefIfNotNull(T* ptr)
 {
     if (ptr)
         ptr->unref();
@@ -92,7 +92,7 @@ public:
 
     ALWAYS_INLINE ~NonnullRefPtr()
     {
-        unref_if_not_null(m_ptr);
+        unrefIfNotNull(m_ptr);
         m_ptr = nullptr;
 #    ifdef SANITIZE_PTRS
         m_ptr = reinterpret_cast<T*>(explode_byte(NONNULLREFPTR_SCRUB_BYTE));

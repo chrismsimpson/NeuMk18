@@ -213,7 +213,7 @@ public:
 
     ALWAYS_INLINE void clear()
     {
-        unref_if_not_null(m_ptr);
+        unrefIfNotNull(m_ptr);
         m_ptr = nullptr;
     }
 
@@ -279,7 +279,7 @@ public:
 private:
 
     ALWAYS_INLINE T* as_ptr() const {
-        
+
         return m_ptr;
     }
 
