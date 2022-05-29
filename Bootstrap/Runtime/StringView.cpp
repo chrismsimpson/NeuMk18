@@ -16,25 +16,29 @@
 #endif
 
 #ifndef KERNEL
+
 StringView::StringView(String const& string)
-    : m_characters(string.characters())
-    , m_length(string.length())
-{
-}
+    : m_characters(string.characters()), 
+      m_length(string.length()) { }
+
 #endif
 
-Vector<StringView> StringView::split_view(char const separator, bool keep_empty) const
-{
+Vector<StringView> StringView::splitView(char const separator, bool keep_empty) const {
+
     StringView seperator_view { &separator, 1 };
-    return split_view(seperator_view, keep_empty);
+    
+    return splitView(seperator_view, keep_empty);
 }
 
-Vector<StringView> StringView::split_view(StringView separator, bool keep_empty) const
-{
+Vector<StringView> StringView::splitView(StringView separator, bool keep_empty) const {
+
     Vector<StringView> parts;
-    for_each_split_view(separator, keep_empty, [&](StringView view) {
+    
+    forEachSplitView(separator, keep_empty, [&](StringView view) {
+    
         parts.append(view);
     });
+    
     return parts;
 }
 
@@ -47,7 +51,7 @@ Vector<StringView> StringView::lines(bool consider_cr) const {
 
     if (!consider_cr) {
 
-        return split_view('\n', true);
+        return splitView('\n', true);
     }
 
     Vector<StringView> v;
@@ -56,7 +60,7 @@ Vector<StringView> StringView::lines(bool consider_cr) const {
     
     bool last_ch_was_cr = false;
     
-    bool split_view = false;
+    bool splitView = false;
     
     for (size_t i = 0; i < length(); ++i) { 
 
@@ -64,19 +68,19 @@ Vector<StringView> StringView::lines(bool consider_cr) const {
 
         if (ch == '\n') {
 
-            split_view = true;
+            splitView = true;
 
             if (last_ch_was_cr) {
 
                 substart = i + 1;
                 
-                split_view = false;
+                splitView = false;
             }
         }
 
         if (ch == '\r') {
             
-            split_view = true;
+            splitView = true;
             
             last_ch_was_cr = true;
         } 
@@ -85,7 +89,7 @@ Vector<StringView> StringView::lines(bool consider_cr) const {
             last_ch_was_cr = false;
         }
 
-        if (split_view) {
+        if (splitView) {
             
             size_t sublen = i - substart;
             
@@ -94,7 +98,7 @@ Vector<StringView> StringView::lines(bool consider_cr) const {
             substart = i + 1;
         }
 
-        split_view = false;
+        splitView = false;
     }
 
     size_t taillen = length() - substart;
@@ -189,7 +193,7 @@ String StringView::to_titlecase_string() const {
 
 #endif
 
-StringView StringView::substring_view_starting_from_substring(StringView substring) const {
+StringView StringView::substringViewStartingFromSubstring(StringView substring) const {
 
     char const* remainingCharacters = substring.charactersWithoutNullTermination();
     
@@ -274,7 +278,7 @@ Vector<size_t> StringView::find_all(StringView needle) const {
     return StringUtils::find_all(*this, needle);
 }
 
-Vector<StringView> StringView::split_view_if(Function<bool(char)> const& predicate, bool keep_empty) const {
+Vector<StringView> StringView::splitViewIf(Function<bool(char)> const& predicate, bool keep_empty) const {
 
     if (isEmpty()) {
 

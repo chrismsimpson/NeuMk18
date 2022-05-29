@@ -145,20 +145,20 @@ public:
         return substring_view(start, length() - start);
     }
 
-    [[nodiscard]] Vector<StringView> split_view(char, bool keep_empty = false) const;
-    [[nodiscard]] Vector<StringView> split_view(StringView, bool keep_empty = false) const;
+    [[nodiscard]] Vector<StringView> splitView(char, bool keep_empty = false) const;
+    [[nodiscard]] Vector<StringView> splitView(StringView, bool keep_empty = false) const;
 
-    [[nodiscard]] Vector<StringView> split_view_if(Function<bool(char)> const& predicate, bool keep_empty = false) const;
+    [[nodiscard]] Vector<StringView> splitViewIf(Function<bool(char)> const& predicate, bool keep_empty = false) const;
 
     template<VoidFunction<StringView> Callback>
-    void for_each_split_view(char separator, bool keep_empty, Callback callback) const {
+    void forEachSplitView(char separator, bool keep_empty, Callback callback) const {
 
         StringView seperator_view { &separator, 1 };
-        for_each_split_view(seperator_view, keep_empty, callback);
+        forEachSplitView(seperator_view, keep_empty, callback);
     }
 
     template<VoidFunction<StringView> Callback>
-    void for_each_split_view(StringView separator, bool keep_empty, Callback callback) const {
+    void forEachSplitView(StringView separator, bool keep_empty, Callback callback) const {
 
         VERIFY(!separator.isEmpty());
 
@@ -212,18 +212,18 @@ public:
     //
     //    StringView str { "foobar" };
     //    StringView substr = str.substring_view(1, 2);  // "oo"
-    //    StringView substr_from = str.substring_view_starting_from_substring(subst);  // "oobar"
+    //    StringView substr_from = str.substringViewStartingFromSubstring(subst);  // "oobar"
     //    StringView substr_after = str.substringViewStartingAfterSubstring(subst);  // "bar"
     //
     // Note that this only works if the string view passed as an argument is indeed a substring
-    // view of this string view, such as one created by substring_view() and split_view(). It
+    // view of this string view, such as one created by substring_view() and splitView(). It
     // does not work for arbitrary strings; for example declaring substr in the example above as
     //
     //     StringView substr { "oo" };
     //
     // would not work.
 
-    [[nodiscard]] StringView substring_view_starting_from_substring(StringView substring) const;
+    [[nodiscard]] StringView substringViewStartingFromSubstring(StringView substring) const;
     [[nodiscard]] StringView substringViewStartingAfterSubstring(StringView substring) const;
 
     [[nodiscard]] bool copy_characters_to_buffer(char* buffer, size_t buffer_size) const;

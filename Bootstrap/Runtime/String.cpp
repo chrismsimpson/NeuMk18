@@ -115,7 +115,7 @@ Vector<String> String::split_limit(char separator, size_t limit, bool keep_empty
     return v;
 }
 
-Vector<StringView> String::split_view(Function<bool(char)> separator, bool keep_empty) const
+Vector<StringView> String::splitView(Function<bool(char)> separator, bool keep_empty) const
 {
     if (isEmpty())
         return {};
@@ -137,9 +137,9 @@ Vector<StringView> String::split_view(Function<bool(char)> separator, bool keep_
     return v;
 }
 
-Vector<StringView> String::split_view(char const separator, bool keep_empty) const
+Vector<StringView> String::splitView(char const separator, bool keep_empty) const
 {
-    return split_view([separator](char ch) { return ch == separator; }, keep_empty);
+    return splitView([separator](char ch) { return ch == separator; }, keep_empty);
 }
 
 template<typename T>
