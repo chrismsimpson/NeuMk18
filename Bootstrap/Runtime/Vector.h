@@ -853,7 +853,7 @@ public:
             return { };
         }
 
-        return tryEnsureCapacity(padded_capacity(needed_capacity));
+        return tryEnsureCapacity(paddedCapacity(needed_capacity));
     }
 
     ErrorOr<void> tryEnsureCapacity(size_t needed_capacity) {
@@ -989,14 +989,14 @@ public:
     ReverseIterator rend() { return ReverseIterator::rend(*this); }
     ReverseConstIterator rend() const { return ReverseConstIterator::rend(*this); }
 
-    ALWAYS_INLINE constexpr auto in_reverse()
-    {
-        return ReverseWrapper::in_reverse(*this);
+    ALWAYS_INLINE constexpr auto inReverse() {
+
+        return ReverseWrapper::inReverse(*this);
     }
 
-    ALWAYS_INLINE constexpr auto in_reverse() const
-    {
-        return ReverseWrapper::in_reverse(*this);
+    ALWAYS_INLINE constexpr auto inReverse() const {
+
+        return ReverseWrapper::inReverse(*this);
     }
 
     template<typename TUnaryPredicate>
@@ -1021,7 +1021,7 @@ public:
         return find(begin(), end(), value);
     }
 
-    Optional<size_t> find_first_index(VisibleType const& value) const {
+    Optional<size_t> findFirstIndex(VisibleType const& value) const {
         
         if (auto const index = findIndex(begin(), end(), value); index < size()) {
 
@@ -1046,7 +1046,7 @@ private:
         m_capacity = InlineCapacity;
     }
 
-    static size_t padded_capacity(size_t capacity) {
+    static size_t paddedCapacity(size_t capacity) {
 
         return max(static_cast<size_t>(4), capacity + (capacity / 4) + 4);
     }

@@ -11,6 +11,7 @@
 template<typename Container, typename ValueType>
 class SimpleReverseIterator {
 public:
+
     friend Container;
 
     constexpr bool isEnd() const { return m_index == SimpleReverseIterator::rend(m_container).m_index; }
@@ -26,24 +27,30 @@ public:
     constexpr SimpleReverseIterator operator+(int delta) const { return SimpleReverseIterator { m_container, m_index - delta }; }
     constexpr SimpleReverseIterator operator-(int delta) const { return SimpleReverseIterator { m_container, m_index + delta }; }
 
-    constexpr SimpleReverseIterator operator++()
-    {
+    constexpr SimpleReverseIterator operator++() {
+
         --m_index;
+        
         return *this;
     }
-    constexpr SimpleReverseIterator operator++(int)
-    {
+
+    constexpr SimpleReverseIterator operator++(int) {
+
         --m_index;
+
         return SimpleReverseIterator { m_container, m_index + 1 };
     }
-    constexpr SimpleReverseIterator operator--()
-    {
+
+    constexpr SimpleReverseIterator operator--() {
+
         ++m_index;
+        
         return *this;
     }
-    constexpr SimpleReverseIterator operator--(int)
-    {
+    constexpr SimpleReverseIterator operator--(int) {
+
         ++m_index;
+        
         return SimpleReverseIterator { m_container, m_index - 1 };
     }
 
@@ -53,52 +60,59 @@ public:
     ALWAYS_INLINE constexpr ValueType const* operator->() const { return &m_container[m_index]; }
     ALWAYS_INLINE constexpr ValueType* operator->() { return &m_container[m_index]; }
 
-    SimpleReverseIterator& operator=(SimpleReverseIterator const& other)
-    {
+    SimpleReverseIterator& operator=(SimpleReverseIterator const& other) {
+
         m_index = other.m_index;
+        
         return *this;
     }
+
     SimpleReverseIterator(SimpleReverseIterator const& obj) = default;
 
 private:
-    static constexpr SimpleReverseIterator rbegin(Container& container)
-    {
+
+    static constexpr SimpleReverseIterator rbegin(Container& container) {
+
         using RawContainerType = RemoveConstVolatile<Container>;
-        if constexpr (IsSame<StringView, RawContainerType> || IsSame<String, RawContainerType>)
+        
+        if constexpr (IsSame<StringView, RawContainerType> || IsSame<String, RawContainerType>) {
+
             return { container, static_cast<int>(container.length()) - 1 };
-        else
+        }
+        else {
+
             return { container, static_cast<int>(container.size()) - 1 };
+        }
     }
 
-    static constexpr SimpleReverseIterator rend(Container& container)
-    {
+    static constexpr SimpleReverseIterator rend(Container& container) {
+
         return { container, -1 };
     }
 
     constexpr SimpleReverseIterator(Container& container, int index)
-        : m_container(container)
-        , m_index(index)
-    {
-    }
+        : m_container(container), 
+          m_index(index) { }
 
     Container& m_container;
+
     int m_index { 0 };
 };
 
 namespace ReverseWrapper {
 
-template<typename Container>
-struct ReverseWrapper {
-    Container& container;
-};
+    template<typename Container>
+    struct ReverseWrapper {
 
-template<typename Container>
-auto begin(ReverseWrapper<Container> wrapper) { return wrapper.container.rbegin(); }
+        Container& container;
+    };
 
-template<typename Container>
-auto end(ReverseWrapper<Container> wrapper) { return wrapper.container.rend(); }
+    template<typename Container>
+    auto begin(ReverseWrapper<Container> wrapper) { return wrapper.container.rbegin(); }
 
-template<typename Container>
-ReverseWrapper<Container> in_reverse(Container&& container) { return { container }; }
+    template<typename Container>
+    auto end(ReverseWrapper<Container> wrapper) { return wrapper.container.rend(); }
 
+    template<typename Container>
+    ReverseWrapper<Container> inReverse(Container&& container) { return { container }; }
 }
