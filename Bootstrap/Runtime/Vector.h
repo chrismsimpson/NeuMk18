@@ -46,14 +46,14 @@ requires(!IsRValueReference<T>) class Vector {
 
 private:
 
-    static constexpr bool contains_reference = IsLValueReference<T>;
+    static constexpr bool ContainsReference = IsLValueReference<T>;
 
-    using StorageType = Conditional<contains_reference, RawPtr<RemoveReference<T>>, T>;
+    using StorageType = Conditional<ContainsReference, RawPtr<RemoveReference<T>>, T>;
 
     using VisibleType = RemoveReference<T>;
 
     template<typename U>
-    static constexpr bool CanBePlacedInsideVector = Detail::CanBePlacedInsideVectorHelper<StorageType, contains_reference>::template value<U>;
+    static constexpr bool CanBePlacedInsideVector = Detail::CanBePlacedInsideVectorHelper<StorageType, ContainsReference>::template value<U>;
 
 public:
 
@@ -92,7 +92,7 @@ public:
 
         other.m_outline_buffer = nullptr;
         other.m_size = 0;
-        other.reset_capacity();
+        other.resetCapacity();
     }
 
     Vector(Vector const& other) {
@@ -162,7 +162,7 @@ public:
 
         VERIFY(i < m_size);
         
-        if constexpr (contains_reference) {
+        if constexpr (ContainsReference) {
 
             return *data()[i];
         }
@@ -176,7 +176,7 @@ public:
 
         VERIFY(i < m_size);
 
-        if constexpr (contains_reference) {
+        if constexpr (ContainsReference) {
 
             return *data()[i];
         }
@@ -196,7 +196,7 @@ public:
     VisibleType& last() { return at(size() - 1); }
 
     template<typename TUnaryPredicate>
-    Optional<VisibleType&> firstMatching(TUnaryPredicate predicate) requires(!contains_reference) {
+    Optional<VisibleType&> firstMatching(TUnaryPredicate predicate) requires(!ContainsReference) {
 
         for (size_t i = 0; i < size(); ++i) {
 
@@ -210,7 +210,7 @@ public:
     }
 
     template<typename TUnaryPredicate>
-    Optional<VisibleType const&> firstMatching(TUnaryPredicate predicate) const requires(!contains_reference) {
+    Optional<VisibleType const&> firstMatching(TUnaryPredicate predicate) const requires(!ContainsReference) {
 
         for (size_t i = 0; i < size(); ++i) {
 
@@ -224,7 +224,7 @@ public:
     }
 
     template<typename TUnaryPredicate>
-    Optional<VisibleType&> last_matching(TUnaryPredicate predicate) requires(!contains_reference) {
+    Optional<VisibleType&> last_matching(TUnaryPredicate predicate) requires(!ContainsReference) {
 
         for (ssize_t i = size() - 1; i >= 0; --i) {
 
@@ -304,34 +304,46 @@ public:
 
 #endif
 
-    ALWAYS_INLINE void append(T&& value)
-    {
-        if constexpr (contains_reference)
+    ALWAYS_INLINE void append(T&& value) {
+
+        if constexpr (ContainsReference) {
+            
             MUST(tryAppend(value));
-        else
+        }
+        else {
+
             MUST(tryAppend(move(value)));
+        }
     }
 
-    ALWAYS_INLINE void append(T const& value) requires(!contains_reference)
-    {
+    ALWAYS_INLINE void append(T const& value) requires(!ContainsReference) {
+
         MUST(tryAppend(T(value)));
     }
 
 #ifndef KERNEL
-    void append(StorageType const* values, size_t count)
-    {
+
+    void append(StorageType const* values, size_t count) {
+
         MUST(tryAppend(values, count));
     }
+
 #endif
 
     template<typename U = T>
-    ALWAYS_INLINE void uncheckedAppend(U&& value) requires(CanBePlacedInsideVector<U>)
-    {
+    ALWAYS_INLINE void uncheckedAppend(U&& value) requires(CanBePlacedInsideVector<U>) {
+
         VERIFY((size() + 1) <= capacity());
-        if constexpr (contains_reference)
+
+        if constexpr (ContainsReference) {
+
             new (slot(m_size)) StorageType(&value);
-        else
+        }
+        else {
+
             new (slot(m_size)) StorageType(forward<U>(value));
+        }
+
         ++m_size;
     }
 
@@ -352,7 +364,7 @@ public:
 #ifndef KERNEL
 
     template<class... Args>
-    void empend(Args&&... args) requires(!contains_reference) {
+    void empend(Args&&... args) requires(!ContainsReference) {
 
         MUST(try_empend(forward<Args>(args)...));
     }
@@ -402,7 +414,7 @@ public:
 
             other.m_outline_buffer = nullptr;
             other.m_size = 0;
-            other.reset_capacity();
+            other.resetCapacity();
         }
 
         return *this;
@@ -449,7 +461,7 @@ public:
             m_outline_buffer = nullptr;
         }
 
-        reset_capacity();
+        resetCapacity();
     }
 
     void clearWithCapacity() {
@@ -536,7 +548,7 @@ public:
     template<typename TUnaryPredicate>
     bool removeAllMatching(TUnaryPredicate predicate) {
 
-        bool something_was_removed = false;
+        bool somethingWasRemoved = false;
 
         for (size_t i = 0; i < size();) {
 
@@ -544,7 +556,7 @@ public:
                 
                 remove(i);
                 
-                something_was_removed = true;
+                somethingWasRemoved = true;
             } 
             else {
 
@@ -552,23 +564,23 @@ public:
             }
         }
 
-        return something_was_removed;
+        return somethingWasRemoved;
     }
 
-    ALWAYS_INLINE T take_last() {
+    ALWAYS_INLINE T takeLast() {
 
         VERIFY(!isEmpty());
         
         auto value = move(rawLast());
         
-        if constexpr (!contains_reference) {
+        if constexpr (!ContainsReference) {
 
             last().~T();
         }
 
         --m_size;
         
-        if constexpr (contains_reference) {
+        if constexpr (ContainsReference) {
 
             return *value;
         }
@@ -586,7 +598,7 @@ public:
         
         remove(0);
         
-        if constexpr (contains_reference) {
+        if constexpr (ContainsReference) {
 
             return *value;
         }
@@ -602,7 +614,7 @@ public:
         
         remove(index);
         
-        if constexpr (contains_reference) {
+        if constexpr (ContainsReference) {
 
             return *value;
         }
@@ -618,7 +630,7 @@ public:
         
         swap(rawAt(index), rawAt(m_size - 1));
         
-        return take_last();
+        return takeLast();
     }
 
     template<typename U = T>
@@ -652,7 +664,7 @@ public:
             }
         }
 
-        if constexpr (contains_reference) {
+        if constexpr (ContainsReference) {
 
             new (slot(index)) StorageType(&value);
         }
@@ -729,7 +741,7 @@ public:
 
         TRY(try_grow_capacity(size() + 1));
         
-        if constexpr (contains_reference) {
+        if constexpr (ContainsReference) {
 
             new (slot(m_size)) StorageType(&value);
         }
@@ -743,7 +755,7 @@ public:
         return { };
     }
 
-    ErrorOr<void> tryAppend(T const& value) requires(!contains_reference) {
+    ErrorOr<void> tryAppend(T const& value) requires(!ContainsReference) {
 
         return tryAppend(T(value));
     }
@@ -765,7 +777,7 @@ public:
     }
 
     template<class... Args>
-    ErrorOr<void> try_empend(Args&&... args) requires(!contains_reference) {
+    ErrorOr<void> try_empend(Args&&... args) requires(!ContainsReference) {
 
         TRY(try_grow_capacity(m_size + 1));
         
@@ -885,7 +897,7 @@ public:
         return { };
     }
 
-    ErrorOr<void> try_resize(size_t new_size, bool keep_capacity = false) requires(!contains_reference) {
+    ErrorOr<void> try_resize(size_t new_size, bool keep_capacity = false) requires(!ContainsReference) {
 
         if (new_size <= size()) {
 
@@ -906,7 +918,7 @@ public:
         return { };
     }
 
-    ErrorOr<void> try_resize_and_keep_capacity(size_t new_size) requires(!contains_reference) {
+    ErrorOr<void> tryResizeAndKeepCapacity(size_t new_size) requires(!ContainsReference) {
 
         return try_resize(new_size, true);
     }
@@ -952,14 +964,14 @@ public:
         m_size = new_size;
     }
 
-    void resize(size_t new_size, bool keep_capacity = false) requires(!contains_reference)
-    {
+    void resize(size_t new_size, bool keep_capacity = false) requires(!ContainsReference) {
+
         MUST(try_resize(new_size, keep_capacity));
     }
 
-    void resize_and_keep_capacity(size_t new_size) requires(!contains_reference)
-    {
-        MUST(try_resize_and_keep_capacity(new_size));
+    void resize_and_keep_capacity(size_t new_size) requires(!ContainsReference) {
+
+        MUST(tryResizeAndKeepCapacity(new_size));
     }
 
     using ConstIterator = SimpleIterator<Vector const, VisibleType const>;
@@ -988,31 +1000,31 @@ public:
     }
 
     template<typename TUnaryPredicate>
-    ConstIterator findIf(TUnaryPredicate&& finder) const
-    {
+    ConstIterator findIf(TUnaryPredicate&& finder) const {
+
         return findIf(begin(), end(), forward<TUnaryPredicate>(finder));
     }
 
     template<typename TUnaryPredicate>
-    Iterator findIf(TUnaryPredicate&& finder)
-    {
+    Iterator findIf(TUnaryPredicate&& finder) {
+
         return findIf(begin(), end(), forward<TUnaryPredicate>(finder));
     }
 
-    ConstIterator find(VisibleType const& value) const
-    {
+    ConstIterator find(VisibleType const& value) const {
+
         return find(begin(), end(), value);
     }
 
-    Iterator find(VisibleType const& value)
-    {
+    Iterator find(VisibleType const& value) {
+
         return find(begin(), end(), value);
     }
 
-    Optional<size_t> find_first_index(VisibleType const& value) const
-    {
-        if (auto const index = findIndex(begin(), end(), value);
-            index < size()) {
+    Optional<size_t> find_first_index(VisibleType const& value) const {
+        
+        if (auto const index = findIndex(begin(), end(), value); index < size()) {
+
             return index;
         }
 
@@ -1029,7 +1041,7 @@ public:
 
 private:
 
-    void reset_capacity() {
+    void resetCapacity() {
 
         m_capacity = inlineCapacity;
     }
