@@ -210,7 +210,7 @@ String String::repeated(StringView string, size_t count)
     return *impl;
 }
 
-String String::bijective_base_from(size_t value, unsigned base, StringView map) {
+String String::bijectiveBaseFrom(size_t value, unsigned base, StringView map) {
     
     if (map.isNull()) {
 
@@ -220,7 +220,7 @@ String String::bijective_base_from(size_t value, unsigned base, StringView map) 
     VERIFY(base >= 2 && base <= map.length());
 
     // The '8 bits per byte' assumption may need to go?
-    LinearArray<char, round_up_to_power_of_two(sizeof(size_t) * 8 + 1, 2)> buffer;
+    LinearArray<char, roundUpToPowerOfTwo(sizeof(size_t) * 8 + 1, 2)> buffer;
     size_t i = 0;
     do {
         buffer[i++] = map[value % base];
@@ -239,51 +239,66 @@ String String::bijective_base_from(size_t value, unsigned base, StringView map) 
     return String { ReadOnlyBytes(buffer.data(), i) };
 }
 
-String String::roman_number_from(size_t value)
-{
-    if (value > 3999)
+String String::romanNumberFrom(size_t value) {
+
+    if (value > 3999) {
+
         return String::number(value);
+    }
 
     StringBuilder builder;
 
     while (value > 0) {
+
         if (value >= 1000) {
             builder.append('M');
             value -= 1000;
-        } else if (value >= 900) {
+        } 
+        else if (value >= 900) {
             builder.append("CM"sv);
             value -= 900;
-        } else if (value >= 500) {
+        } 
+        else if (value >= 500) {
             builder.append('D');
             value -= 500;
-        } else if (value >= 400) {
+        } 
+        else if (value >= 400) {
             builder.append("CD"sv);
             value -= 400;
-        } else if (value >= 100) {
+        } 
+        else if (value >= 100) {
             builder.append('C');
             value -= 100;
-        } else if (value >= 90) {
+        } 
+        else if (value >= 90) {
             builder.append("XC"sv);
             value -= 90;
-        } else if (value >= 50) {
+        } 
+        else if (value >= 50) {
             builder.append('L');
             value -= 50;
-        } else if (value >= 40) {
+        } 
+        else if (value >= 40) {
             builder.append("XL"sv);
             value -= 40;
-        } else if (value >= 10) {
+        } 
+        else if (value >= 10) {
             builder.append('X');
             value -= 10;
-        } else if (value == 9) {
+        } 
+        else if (value == 9) {
             builder.append("IX"sv);
             value -= 9;
-        } else if (value >= 5 && value <= 8) {
+        } 
+        else if (value >= 5 && value <= 8) {
             builder.append('V');
             value -= 5;
-        } else if (value == 4) {
+        } 
+        else if (value == 4) {
             builder.append("IV"sv);
             value -= 4;
-        } else if (value <= 3) {
+        } 
+        else if (value <= 3) {
             builder.append('I');
             value -= 1;
         }

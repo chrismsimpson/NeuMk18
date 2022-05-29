@@ -92,8 +92,8 @@ public:
     [[nodiscard]] static String repeated(char, size_t count);
     [[nodiscard]] static String repeated(StringView, size_t count);
 
-    [[nodiscard]] static String bijective_base_from(size_t value, unsigned base = 26, StringView map = {});
-    [[nodiscard]] static String roman_number_from(size_t value);
+    [[nodiscard]] static String bijectiveBaseFrom(size_t value, unsigned base = 26, StringView map = {});
+    [[nodiscard]] static String romanNumberFrom(size_t value);
 
     [[nodiscard]] bool matches(StringView mask, CaseSensitivity = CaseSensitivity::CaseInsensitive) const;
     [[nodiscard]] bool matches(StringView mask, Vector<MaskSpan>&, CaseSensitivity = CaseSensitivity::CaseInsensitive) const;
@@ -255,20 +255,21 @@ public:
     [[nodiscard]] static String vformatted(StringView fmtstr, TypeErasedFormatParams&);
 
     template<typename... Parameters>
-    [[nodiscard]] static String formatted(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters)
-    {
+    [[nodiscard]] static String formatted(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters) {
+
         VariadicFormatParams variadic_format_parameters { parameters... };
+        
         return vformatted(fmtstr.view(), variadic_format_parameters);
     }
 
     template<typename T>
-    [[nodiscard]] static String number(T value) requires IsArithmetic<T>
-    {
+    [[nodiscard]] static String number(T value) requires IsArithmetic<T> {
+
         return formatted("{}", value);
     }
 
-    [[nodiscard]] StringView view() const
-    {
+    [[nodiscard]] StringView view() const {
+
         return { characters(), length() };
     }
 
@@ -277,36 +278,44 @@ public:
     [[nodiscard]] String reverse() const;
 
     template<typename... Ts>
-    [[nodiscard]] ALWAYS_INLINE constexpr bool is_one_of(Ts&&... strings) const
-    {
+    [[nodiscard]] ALWAYS_INLINE constexpr bool is_one_of(Ts&&... strings) const {
+
         return (... || this->operator==(forward<Ts>(strings)));
     }
 
     template<typename... Ts>
-    [[nodiscard]] ALWAYS_INLINE constexpr bool is_one_of_ignoring_case(Ts&&... strings) const
-    {
+    [[nodiscard]] ALWAYS_INLINE constexpr bool is_one_of_ignoring_case(Ts&&... strings) const {
+
         return (... ||
                 [this, &strings]() -> bool {
-            if constexpr (requires(Ts a) { a.view()->StringView; })
+            if constexpr (requires(Ts a) { a.view()->StringView; }) {
+
                 return this->equals_ignoring_case(forward<Ts>(strings.view()));
-            else
+            }
+            else {
+
                 return this->equals_ignoring_case(forward<Ts>(strings));
+            }
         }());
     }
 
     String& operator+=(String const&);
 
 private:
+
     RefPtr<StringImpl> m_impl;
 };
 
 template<>
 struct Traits<String> : public GenericTraits<String> {
+
     static unsigned hash(String const& s) { return s.impl() ? s.impl()->hash() : 0; }
 };
 
 struct CaseInsensitiveStringTraits : public Traits<String> {
+
     static unsigned hash(String const& s) { return s.impl() ? s.impl()->case_insensitive_hash() : 0; }
+    
     static bool equals(String const& a, String const& b) { return a.equals_ignoring_case(b); }
 };
 
