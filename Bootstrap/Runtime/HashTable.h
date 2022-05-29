@@ -62,29 +62,43 @@ class HashTableIterator {
 public:
 
     bool operator==(HashTableIterator const& other) const { return m_bucket == other.m_bucket; }
+    
     bool operator!=(HashTableIterator const& other) const { return m_bucket != other.m_bucket; }
+    
     T& operator*() { return *m_bucket->slot(); }
+    
     T* operator->() { return m_bucket->slot(); }
-    void operator++() { skip_to_next(); }
+    
+    void operator++() { skipToNext(); }
 
 private:
-    void skip_to_next()
-    {
-        if (!m_bucket)
+
+    void skipToNext() {
+
+        if (!m_bucket) {
+
             return;
+        }
+
         do {
+
             ++m_bucket;
-            if (m_bucket->state == BucketState::Used)
+
+            if (m_bucket->state == BucketState::Used) {
+
                 return;
-        } while (m_bucket->state != BucketState::End);
-        if (m_bucket->state == BucketState::End)
+            }
+        } 
+        while (m_bucket->state != BucketState::End);
+
+        if (m_bucket->state == BucketState::End) {
+
             m_bucket = nullptr;
+        }
     }
 
     explicit HashTableIterator(BucketType* bucket)
-        : m_bucket(bucket)
-    {
-    }
+        : m_bucket(bucket) { }
 
     BucketType* m_bucket { nullptr };
 };
@@ -322,7 +336,7 @@ public:
     template<typename U = T>
     ErrorOr<HashSetResult> try_set(U&& value, HashSetExistingEntryBehavior existing_entry_behavior = HashSetExistingEntryBehavior::Replace)
     {
-        auto* bucket = TRY(try_lookup_for_writing(value));
+        auto* bucket = TRY(tryLookupForWriting(value));
         
         if (isUsedBucket(bucket->state)) {
 
@@ -780,7 +794,7 @@ private:
         }
     }
 
-    ErrorOr<BucketType*> try_lookup_for_writing(T const& value) {
+    ErrorOr<BucketType*> tryLookupForWriting(T const& value) {
 
         // FIXME: Maybe overrun the "allowed" load factor to avoid OOM
         //        If we are allowed to do that, separate that logic from
@@ -823,7 +837,7 @@ private:
 
     [[nodiscard]] BucketType& lookup_for_writing(T const& value) {
 
-        return *MUST(try_lookup_for_writing(value));
+        return *MUST(tryLookupForWriting(value));
     }
 
     [[nodiscard]] size_t used_bucket_count() const { return m_size + m_deleted_count; }

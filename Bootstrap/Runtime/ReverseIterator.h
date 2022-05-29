@@ -13,7 +13,7 @@ class SimpleReverseIterator {
 public:
     friend Container;
 
-    constexpr bool is_end() const { return m_index == SimpleReverseIterator::rend(m_container).m_index; }
+    constexpr bool isEnd() const { return m_index == SimpleReverseIterator::rend(m_container).m_index; }
     constexpr int index() const { return m_index; }
 
     constexpr bool operator==(SimpleReverseIterator other) const { return m_index == other.m_index; }
