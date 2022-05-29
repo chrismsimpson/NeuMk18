@@ -89,8 +89,8 @@ public:
 private:
 
     ErrorOr<void> will_append(size_t);
-    UInt8* data() { return m_buffer.unsafe_data(); }
-    UInt8 const* data() const { return const_cast<StringBuilder*>(this)->m_buffer.unsafe_data(); }
+    UInt8* data() { return m_buffer.unsafeData(); }
+    UInt8 const* data() const { return const_cast<StringBuilder*>(this)->m_buffer.unsafeData(); }
 
     Array<UInt8> m_buffer;
 };

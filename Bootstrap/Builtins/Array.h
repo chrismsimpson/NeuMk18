@@ -72,7 +72,7 @@ namespace NeuInternal {
             return false;
         }
 
-        ErrorOr<void> add_size(size_t size) {
+        ErrorOr<void> addSize(size_t size) {
 
             if (Checked<size_t>::additionWouldOverflow(m_size, size)) {
 
@@ -143,7 +143,7 @@ namespace NeuInternal {
             return { };
         }
 
-        T* unsafe_data() { return m_elements; }
+        T* unsafeData() { return m_elements; }
 
     private:
 
@@ -255,98 +255,125 @@ namespace NeuInternal {
         size_t size() const { return m_storage ? m_storage->size() : 0; }
         size_t capacity() const { return m_storage ? m_storage->capacity() : 0; }
 
-        ErrorOr<void> push(T value)
-        {
-            auto* storage = TRY(ensure_storage());
+        ErrorOr<void> push(T value) {
+
+            auto* storage = TRY(ensureStorage());
+            
             TRY(storage->push(move(value)));
-            return {};
+            
+            return { };
         }
 
-        ErrorOr<void> push_values(T const* values, size_t count)
-        {
-            auto* storage = TRY(ensure_storage());
+        ErrorOr<void> push_values(T const* values, size_t count) {
+
+            auto* storage = TRY(ensureStorage());
+            
             TRY(storage->push_values(values, count));
-            return {};
+            
+            return { };
         }
 
-        T const& at(size_t index) const
-        {
+        T const& at(size_t index) const {
+
             VERIFY(m_storage);
+            
             return m_storage->at(index);
         }
 
-        T& at(size_t index)
-        {
+        T& at(size_t index) {
+
             VERIFY(m_storage);
+            
             return m_storage->at(index);
         }
 
-        bool contains(T const& value) const
-        {
+        bool contains(T const& value) const {
+
             return m_storage->contains(value);
         }
 
         T const& operator[](size_t index) const { return at(index); }
         T& operator[](size_t index) { return at(index); }
 
-        ErrorOr<void> ensureCapacity(size_t capacity)
-        {
-            auto* storage = TRY(ensure_storage());
+        ErrorOr<void> ensureCapacity(size_t capacity) {
+
+            auto* storage = TRY(ensureStorage());
+            
             TRY(storage->ensureCapacity(capacity));
+            
             return {};
         }
 
-        ErrorOr<void> add_capacity(size_t capacity)
-        {
-            auto* storage = TRY(ensure_storage());
+        ErrorOr<void> add_capacity(size_t capacity) {
+
+            auto* storage = TRY(ensureStorage());
+            
             TRY(storage->add_capacity(capacity));
+            
             return {};
         }
 
-        ErrorOr<void> add_size(size_t size)
-        {
-            auto* storage = TRY(ensure_storage());
-            TRY(storage->add_size(size));
-            return {};
+        ErrorOr<void> addSize(size_t size) {
+
+            auto* storage = TRY(ensureStorage());
+            
+            TRY(storage->addSize(size));
+            
+            return { };
         }
 
-        ArraySlice<T> slice(size_t offset, size_t size)
-        {
-            if (!m_storage)
-                return {};
+        ArraySlice<T> slice(size_t offset, size_t size) {
+
+            if (!m_storage) {
+
+                return { };
+            }
+
             return { *m_storage, offset, size };
         }
 
-        ErrorOr<void> resize(size_t size)
-        {
+        ErrorOr<void> resize(size_t size) {
+
             if (size != this->size()) {
-                auto* storage = TRY(ensure_storage());
+
+                auto* storage = TRY(ensureStorage());
+                
                 TRY(storage->resize(size));
             }
-            return {};
+
+            return { };
         }
 
-        Optional<T> pop()
-        {
-            if (isEmpty())
-                return {};
+        Optional<T> pop() {
+
+            if (isEmpty()) {
+
+                return { };
+            }
+
             auto value = move(at(size() - 1));
+            
             static_cast<void>(resize(size() - 1));
+            
             return value;
         }
 
-        static ErrorOr<Array> filled(size_t size, T value)
-        {
+        static ErrorOr<Array> filled(size_t size, T value) {
+
             Array array;
+            
             TRY(array.ensureCapacity(size));
+            
             for (size_t i = 0; i < size; ++i) {
+                
                 TRY(array.push(value));
             }
+            
             return array;
         }
 
-        Array(Vector<T> const& vector)
-        {
+        Array(Vector<T> const& vector) {
+
             MUST(ensureCapacity(vector.size()));
 
             for (auto value : vector) {
@@ -355,19 +382,25 @@ namespace NeuInternal {
             }
         }
 
-        T* unsafe_data()
-        {
-            if (!m_storage)
+        T* unsafeData() {
+
+            if (!m_storage) {
+
                 return nullptr;
-            return m_storage->unsafe_data();
+            }
+
+            return m_storage->unsafeData();
         }
 
     private:
-        ErrorOr<ArrayStorage<T>*> ensure_storage()
-        {
+
+        ErrorOr<ArrayStorage<T>*> ensureStorage() {
+
             if (!m_storage) {
+                
                 m_storage = TRY(adoptNonNullReferenceOrErrorNoMemory(new (nothrow) ArrayStorage<T>));
             }
+
             return m_storage.pointer();
         }
 

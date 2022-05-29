@@ -236,17 +236,17 @@ public:
     ErrorOr<void> tryEnsureCapacity(size_t capacity)
     {
         VERIFY(capacity >= size());
-        return try_rehash(capacity * 2);
+        return tryRehash(capacity * 2);
     }
 
-    [[nodiscard]] bool contains(T const& value) const
-    {
+    [[nodiscard]] bool contains(T const& value) const {
+
         return find(value) != end();
     }
 
     template<Concepts::HashCompatible<T> K>
-    requires(IsSame<TraitsForT, Traits<T>>) [[nodiscard]] bool contains(K const& value) const
-    {
+    requires(IsSame<TraitsForT, Traits<T>>) [[nodiscard]] bool contains(K const& value) const {
+
         return find(value) != end();
     }
 
@@ -440,7 +440,7 @@ public:
         --m_size;
         ++m_deleted_count;
 
-        rehash_in_place_if_needed();
+        rehashInPlaceIfNeeded();
     }
 
     template<typename TUnaryPredicate>
@@ -466,7 +466,7 @@ public:
             m_size -= removed_count;
         }
         
-        rehash_in_place_if_needed();
+        rehashInPlaceIfNeeded();
 
         return removed_count;
     }
@@ -498,11 +498,13 @@ private:
         }
     }
 
-    ErrorOr<void> try_rehash(size_t new_capacity)
-    {
+    ErrorOr<void> tryRehash(size_t new_capacity) {
+
         if (new_capacity == m_capacity && new_capacity >= 4) {
+            
             rehash_in_place();
-            return {};
+            
+            return { };
         }
 
         new_capacity = max(new_capacity, static_cast<size_t>(4));
@@ -513,37 +515,50 @@ private:
         Iterator old_iter = begin();
 
         auto* new_buckets = kcalloc(1, size_in_bytes(new_capacity));
-        if (!new_buckets)
+        
+        if (!new_buckets) {
+
             return Error::fromErrorCode(ENOMEM);
+        }
 
         m_buckets = (BucketType*)new_buckets;
 
         m_capacity = new_capacity;
         m_deleted_count = 0;
 
-        if constexpr (IsOrdered)
-            m_collection_data = { nullptr, nullptr };
-        else
-            m_buckets[m_capacity].state = BucketState::End;
+        if constexpr (IsOrdered) {
 
-        if (!old_buckets)
+            m_collection_data = { nullptr, nullptr };
+        }
+        else {
+
+            m_buckets[m_capacity].state = BucketState::End;
+        }
+
+        if (!old_buckets) {
+
             return {};
+        }
 
         for (auto it = move(old_iter); it != end(); ++it) {
+            
             insert_during_rehash(move(*it));
+            
             it->~T();
         }
 
         kfree_sized(old_buckets, size_in_bytes(old_capacity));
-        return {};
-    }
-    void rehash(size_t new_capacity)
-    {
-        MUST(try_rehash(new_capacity));
+
+        return { };
     }
 
-    void rehash_in_place()
-    {
+    void rehash(size_t new_capacity) {
+
+        MUST(tryRehash(new_capacity));
+    }
+
+    void rehash_in_place() {
+
         // FIXME: This implementation takes two loops over the entire bucket array, but avoids re-allocation.
         //        Please benchmark your new implementation before you replace this.
         //        The reason is that because of collisions, we use the special "rehashed" bucket state to mark already-rehashed used buckets.
@@ -552,18 +567,25 @@ private:
         // FIXME: Find a way to reduce the cognitive complexity of this function.
 
         for (size_t i = 0; i < m_capacity; ++i) {
+
             auto& bucket = m_buckets[i];
 
             // FIXME: Bail out when we have handled every filled bucket.
 
-            if (bucket.state == BucketState::Rehashed || bucket.state == BucketState::End || bucket.state == BucketState::Free)
+            if (bucket.state == BucketState::Rehashed || bucket.state == BucketState::End || bucket.state == BucketState::Free) {
+
                 continue;
+            }
+
             if (bucket.state == BucketState::Deleted) {
+                
                 bucket.state = BucketState::Free;
+                
                 continue;
             }
 
             auto const new_hash = TraitsForT::hash(*bucket.slot());
+
             if (new_hash % m_capacity == i) {
                 bucket.state = BucketState::Rehashed;
                 continue;
@@ -627,77 +649,121 @@ private:
                     target_bucket = &m_buckets[target_hash % m_capacity];
                 } 
                 else {
+
                     VERIFY(target_bucket->state != BucketState::End);
+                    
                     // The target bucket is a used bucket that hasn't been re-hashed.
                     // Swap the data into the target; now the target's data resides in the bucket to move again.
                     // (That's of course what we want, how neat!)
+                    
                     swap(*bucket_to_move->slot(), *target_bucket->slot());
+                    
                     bucket_to_move->state = target_bucket->state;
+                    
                     target_bucket->state = BucketState::Rehashed;
 
                     if constexpr (IsOrdered) {
+
                         // Update state for the target bucket, we'll do the bucket to move later.
+                        
                         swap(bucket_to_move->previous, target_bucket->previous);
                         swap(bucket_to_move->next, target_bucket->next);
 
-                        if (target_bucket->previous)
+                        if (target_bucket->previous) {
+
                             target_bucket->previous->next = target_bucket;
-                        else
+                        }
+                        else {
+
                             m_collection_data.head = target_bucket;
-                        if (target_bucket->next)
+                        }
+
+                        if (target_bucket->next) {
+
                             target_bucket->next->previous = target_bucket;
-                        else
+                        }
+                        else {
+
                             m_collection_data.tail = target_bucket;
+                        }
                     }
 
                     target_hash = TraitsForT::hash(*bucket_to_move->slot());
                     target_bucket = &m_buckets[target_hash % m_capacity];
 
                     // The data is already in the correct location: Adjust the pointers
+                    
                     if (target_hash % m_capacity == to_move_hash) {
+
                         bucket_to_move->state = BucketState::Rehashed;
+                        
                         if constexpr (IsOrdered) {
+
                             // Update state for the bucket to move as it's not actually moved anymore.
-                            if (bucket_to_move->previous)
+                            
+                            if (bucket_to_move->previous) {
+
                                 bucket_to_move->previous->next = bucket_to_move;
-                            else
+                            }
+                            else {
+
                                 m_collection_data.head = bucket_to_move;
-                            if (bucket_to_move->next)
+                            }
+
+                            if (bucket_to_move->next) {
+
                                 bucket_to_move->next->previous = bucket_to_move;
-                            else
+                            }
+                            else {
+
                                 m_collection_data.tail = bucket_to_move;
+                            }
                         }
+
                         break;
                     }
                 }
             }
+            
             // After this, the bucket_to_move either contains data that rehashes to itself, or it contains nothing as we were able to move the last thing.
-            if (bucket_to_move->state == BucketState::Deleted)
+            
+            if (bucket_to_move->state == BucketState::Deleted) {
+
                 bucket_to_move->state = BucketState::Free;
+            }
         }
 
         for (size_t i = 0; i < m_capacity; ++i) {
-            if (m_buckets[i].state == BucketState::Rehashed)
+
+            if (m_buckets[i].state == BucketState::Rehashed) {
+
                 m_buckets[i].state = BucketState::Used;
+            }
         }
 
         m_deleted_count = 0;
     }
 
-    void rehash_in_place_if_needed()
-    {
+    void rehashInPlaceIfNeeded() {
+
         // This signals a "thrashed" hash table with many deleted slots.
-        if (m_deleted_count >= m_size && should_grow())
+
+        if (m_deleted_count >= m_size && should_grow()) {
+
             rehash_in_place();
+        }
     }
 
     template<typename TUnaryPredicate>
-    [[nodiscard]] BucketType* lookup_with_hash(unsigned hash, TUnaryPredicate predicate) const
-    {
-        if (isEmpty())
+    [[nodiscard]] BucketType* lookup_with_hash(unsigned hash, TUnaryPredicate predicate) const {
+
+        if (isEmpty()) {
+
             return nullptr;
+        }
 
         for (;;) {
+
             auto& bucket = m_buckets[hash % m_capacity];
 
             if (isUsedBucket(bucket.state) && predicate(*bucket.slot())) {
@@ -722,7 +788,7 @@ private:
         
         if (should_grow()) {
 
-            TRY(try_rehash(capacity() * 2));
+            TRY(tryRehash(capacity() * 2));
         }
         
         auto hash = TraitsForT::hash(value);

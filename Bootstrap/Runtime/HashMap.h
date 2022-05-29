@@ -105,73 +105,93 @@ public:
 
     [[nodiscard]] IteratorType begin() { return m_table.begin(); }
     [[nodiscard]] IteratorType end() { return m_table.end(); }
-    [[nodiscard]] IteratorType find(const K& key)
-    {
+    [[nodiscard]] IteratorType find(const K& key) {
+
         return m_table.find(KeyTraits::hash(key), [&](auto& entry) { return KeyTraits::equals(key, entry.key); });
     }
+
     template<typename TUnaryPredicate>
-    [[nodiscard]] IteratorType find(unsigned hash, TUnaryPredicate predicate)
-    {
+    [[nodiscard]] IteratorType find(unsigned hash, TUnaryPredicate predicate) {
+
         return m_table.find(hash, predicate);
     }
 
     [[nodiscard]] ConstIteratorType begin() const { return m_table.begin(); }
+    
     [[nodiscard]] ConstIteratorType end() const { return m_table.end(); }
-    [[nodiscard]] ConstIteratorType find(const K& key) const
-    {
+    
+    [[nodiscard]] ConstIteratorType find(const K& key) const {
+
         return m_table.find(KeyTraits::hash(key), [&](auto& entry) { return KeyTraits::equals(key, entry.key); });
     }
+    
     template<typename TUnaryPredicate>
-    [[nodiscard]] ConstIteratorType find(unsigned hash, TUnaryPredicate predicate) const
-    {
+    [[nodiscard]] ConstIteratorType find(unsigned hash, TUnaryPredicate predicate) const {
+
         return m_table.find(hash, predicate);
     }
 
     template<Concepts::HashCompatible<K> Key>
-    requires(IsSame<KeyTraits, Traits<K>>) [[nodiscard]] IteratorType find(Key const& key)
-    {
+    requires(IsSame<KeyTraits, Traits<K>>) [[nodiscard]] IteratorType find(Key const& key) {
+
         return m_table.find(Traits<Key>::hash(key), [&](auto& entry) { return Traits<K>::equals(key, entry.key); });
     }
 
     template<Concepts::HashCompatible<K> Key>
-    requires(IsSame<KeyTraits, Traits<K>>) [[nodiscard]] ConstIteratorType find(Key const& key) const
-    {
+    requires(IsSame<KeyTraits, Traits<K>>) [[nodiscard]] ConstIteratorType find(Key const& key) const {
+
         return m_table.find(Traits<Key>::hash(key), [&](auto& entry) { return Traits<K>::equals(key, entry.key); });
     }
 
     ErrorOr<void> ensureCapacity(size_t capacity) { return m_table.tryEnsureCapacity(capacity); }
 
-    Optional<typename Traits<V>::ConstPeekType> get(const K& key) const requires(!IsPointer<typename Traits<V>::PeekType>)
-    {
+    Optional<typename Traits<V>::ConstPeekType> get(const K& key) const requires(!IsPointer<typename Traits<V>::PeekType>) {
+
         auto it = find(key);
-        if (it == end())
-            return {};
+
+        if (it == end()) {
+
+            return { };
+        }
+        
         return (*it).value;
     }
 
-    Optional<typename Traits<V>::ConstPeekType> get(const K& key) const requires(IsPointer<typename Traits<V>::PeekType>)
-    {
+    Optional<typename Traits<V>::ConstPeekType> get(const K& key) const requires(IsPointer<typename Traits<V>::PeekType>) {
+
         auto it = find(key);
-        if (it == end())
+
+        if (it == end()) {
+
             return {};
+        }
+
         return (*it).value;
     }
 
-    Optional<typename Traits<V>::PeekType> get(const K& key) requires(!IsConst<typename Traits<V>::PeekType>)
-    {
+    Optional<typename Traits<V>::PeekType> get(const K& key) requires(!IsConst<typename Traits<V>::PeekType>) {
+
         auto it = find(key);
-        if (it == end())
-            return {};
+
+        if (it == end()) {
+
+            return { };
+        }
+
         return (*it).value;
     }
 
     template<Concepts::HashCompatible<K> Key>
     requires(IsSame<KeyTraits, Traits<K>>) Optional<typename Traits<V>::PeekType> get(Key const& key)
-    const requires(!IsPointer<typename Traits<V>::PeekType>)
-    {
+    const requires(!IsPointer<typename Traits<V>::PeekType>) {
+
         auto it = find(key);
-        if (it == end())
-            return {};
+
+        if (it == end()) {
+
+            return { };
+        }
+
         return (*it).value;
     }
 
@@ -214,8 +234,8 @@ public:
         return find(value) != end();
     }
 
-    void remove(IteratorType it)
-    {
+    void remove(IteratorType it) {
+        
         m_table.remove(it);
     }
 
