@@ -134,7 +134,7 @@ StringView FormatParser::consumeLiteral() {
             continue;
         }
 
-        if (nextIs(is_any_of("{}"))) {
+        if (nextIs(isAnyOf("{}"))) {
 
             return m_input.substring_view(begin, tell() - begin);
         }
@@ -581,7 +581,7 @@ void StandardFormatter::parse(TypeErasedFormatParams& params, FormatParser& pars
 
     if (StringView { "<^>" }.contains(parser.peek(1))) {
         
-        VERIFY(!parser.nextIs(is_any_of("{}")));
+        VERIFY(!parser.nextIs(isAnyOf("{}")));
         
         m_fill = parser.consume();
     }

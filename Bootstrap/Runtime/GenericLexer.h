@@ -160,11 +160,11 @@ public:
 
     /*
      * Conditions are used to match arbitrary characters. You can use lambdas,
-     * ctype functions, or is_any_of() and its derivatives (see below).
+     * ctype functions, or isAnyOf() and its derivatives (see below).
      * A few examples:
      *   - `if (lexer.nextIs(isdigit))`
      *   - `auto name = lexer.consume_while([](char c) { return isalnum(c) || c == '_'; });`
-     *   - `lexer.ignore_until(is_any_of("<^>"));`
+     *   - `lexer.ignore_until(isAnyOf("<^>"));`
      */
 
     // Test the next character against a Condition
@@ -242,15 +242,15 @@ protected:
     size_t m_index { 0 };
 };
 
-constexpr auto is_any_of(StringView values)
-{
+constexpr auto isAnyOf(StringView values) {
+
     return [values](auto c) { return values.contains(c); };
 }
 
-constexpr auto is_not_any_of(StringView values)
-{
+constexpr auto is_not_any_of(StringView values) {
+
     return [values](auto c) { return !values.contains(c); };
 }
 
-constexpr auto is_path_separator = is_any_of("/\\");
-constexpr auto is_quote = is_any_of("'\"");
+constexpr auto is_path_separator = isAnyOf("/\\");
+constexpr auto is_quote = isAnyOf("'\"");
