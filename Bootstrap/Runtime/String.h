@@ -187,7 +187,7 @@ public:
 
     [[nodiscard]] static String empty()
     {
-        return StringImpl::the_empty_stringimpl();
+        return StringImpl::theEmptyStringImpl();
     }
 
     [[nodiscard]] StringImpl* impl() { return m_impl.pointer(); }
@@ -296,7 +296,7 @@ struct Traits<String> : public GenericTraits<String> {
 
 struct CaseInsensitiveStringTraits : public Traits<String> {
 
-    static unsigned hash(String const& s) { return s.impl() ? s.impl()->case_insensitive_hash() : 0; }
+    static unsigned hash(String const& s) { return s.impl() ? s.impl()->caseInsensitiveHash() : 0; }
     
     static bool equals(String const& a, String const& b) { return a.equalsIgnoringCase(b); }
 };

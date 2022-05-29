@@ -12,124 +12,174 @@
 #include "StringImpl.h"
 #include "kmalloc.h"
 
-static StringImpl* s_the_empty_stringimpl = nullptr;
+static StringImpl* s_theEmptyStringImpl = nullptr;
 
-StringImpl& StringImpl::the_empty_stringimpl()
-{
-    if (!s_the_empty_stringimpl) {
+StringImpl& StringImpl::theEmptyStringImpl() {
+
+    if (!s_theEmptyStringImpl) {
+
         void* slot = kmalloc(sizeof(StringImpl) + sizeof(char));
-        s_the_empty_stringimpl = new (slot) StringImpl(ConstructTheEmptyStringImpl);
+        
+        s_theEmptyStringImpl = new (slot) StringImpl(ConstructTheEmptyStringImpl);
     }
-    return *s_the_empty_stringimpl;
+
+    return *s_theEmptyStringImpl;
 }
 
 StringImpl::StringImpl(ConstructWithInlineBufferTag, size_t length)
-    : m_length(length)
-{
-}
+    : m_length(length) { }
 
-StringImpl::~StringImpl()
-{
-}
+StringImpl::~StringImpl() { }
 
-NonNullReferencePointer<StringImpl> StringImpl::create_uninitialized(size_t length, char*& buffer)
-{
+NonNullReferencePointer<StringImpl> StringImpl::createUninitialized(size_t length, char*& buffer) {
+
     VERIFY(length);
-    void* slot = kmalloc(allocation_size_for_stringimpl(length));
+    
+    void* slot = kmalloc(allocationSizeForStringImpl(length));
+    
     VERIFY(slot);
+    
     auto new_stringimpl = adopt_ref(*new (slot) StringImpl(ConstructWithInlineBuffer, length));
+    
     buffer = const_cast<char*>(new_stringimpl->characters());
+    
     buffer[length] = '\0';
+    
     return new_stringimpl;
 }
 
 ReferencePointer<StringImpl> StringImpl::create(char const* cstring, size_t length, ShouldChomp should_chomp)
 {
-    if (!cstring)
+    if (!cstring) {
+
         return nullptr;
+    }
 
     if (should_chomp) {
+
         while (length) {
+
             char last_ch = cstring[length - 1];
-            if (!last_ch || last_ch == '\n' || last_ch == '\r')
+
+            if (!last_ch || last_ch == '\n' || last_ch == '\r') {
+
                 --length;
-            else
+            }
+            else {
+
                 break;
+            }
         }
     }
 
-    if (!length)
-        return the_empty_stringimpl();
+    if (!length) {
+
+        return theEmptyStringImpl();
+    }
 
     char* buffer;
-    auto new_stringimpl = create_uninitialized(length, buffer);
+    auto new_stringimpl = createUninitialized(length, buffer);
     memcpy(buffer, cstring, length * sizeof(char));
 
     return new_stringimpl;
 }
 
-ReferencePointer<StringImpl> StringImpl::create(char const* cstring, ShouldChomp shouldChomp)
-{
-    if (!cstring)
-        return nullptr;
+ReferencePointer<StringImpl> StringImpl::create(char const* cstring, ShouldChomp shouldChomp) {
 
-    if (!*cstring)
-        return the_empty_stringimpl();
+    if (!cstring) {
+
+        return nullptr;
+    }
+
+    if (!*cstring) {
+
+        return theEmptyStringImpl();
+    }
 
     return create(cstring, strlen(cstring), shouldChomp);
 }
 
-ReferencePointer<StringImpl> StringImpl::create(ReadOnlyBytes bytes, ShouldChomp shouldChomp)
-{
+ReferencePointer<StringImpl> StringImpl::create(ReadOnlyBytes bytes, ShouldChomp shouldChomp) {
+
     return StringImpl::create(reinterpret_cast<char const*>(bytes.data()), bytes.size(), shouldChomp);
 }
 
-ReferencePointer<StringImpl> StringImpl::create_lowercased(char const* cstring, size_t length)
-{
-    if (!cstring)
+ReferencePointer<StringImpl> StringImpl::create_lowercased(char const* cstring, size_t length) {
+
+    if (!cstring) {
+
         return nullptr;
-    if (!length)
-        return the_empty_stringimpl();
+    }
+
+    if (!length) {
+
+        return theEmptyStringImpl();
+    }
+
     char* buffer;
-    auto impl = create_uninitialized(length, buffer);
-    for (size_t i = 0; i < length; ++i)
+    
+    auto impl = createUninitialized(length, buffer);
+    
+    for (size_t i = 0; i < length; ++i) {
+
         buffer[i] = (char)toAsciiLowercase(cstring[i]);
+    }
+
     return impl;
 }
 
-ReferencePointer<StringImpl> StringImpl::create_uppercased(char const* cstring, size_t length)
-{
-    if (!cstring)
+ReferencePointer<StringImpl> StringImpl::create_uppercased(char const* cstring, size_t length) {
+
+    if (!cstring) {
+
         return nullptr;
-    if (!length)
-        return the_empty_stringimpl();
+    }
+
+    if (!length) {
+
+        return theEmptyStringImpl();
+    }
+
     char* buffer;
-    auto impl = create_uninitialized(length, buffer);
-    for (size_t i = 0; i < length; ++i)
+    
+    auto impl = createUninitialized(length, buffer);
+    
+    for (size_t i = 0; i < length; ++i) {
+
         buffer[i] = (char)toAsciiUppercase(cstring[i]);
+    }
+
     return impl;
 }
 
-NonNullReferencePointer<StringImpl> StringImpl::to_lowercase() const
-{
+NonNullReferencePointer<StringImpl> StringImpl::to_lowercase() const {
+
     for (size_t i = 0; i < m_length; ++i) {
-        if (isAsciiUpperAlpha(characters()[i]))
-            return create_lowercased(characters(), m_length).release_nonnull();
+
+        if (isAsciiUpperAlpha(characters()[i])) {
+
+            return create_lowercased(characters(), m_length).releaseNonNull();
+        }
     }
+
     return const_cast<StringImpl&>(*this);
 }
 
-NonNullReferencePointer<StringImpl> StringImpl::to_uppercase() const
-{
+NonNullReferencePointer<StringImpl> StringImpl::to_uppercase() const {
+
     for (size_t i = 0; i < m_length; ++i) {
-        if (isAsciiLowerAlpha(characters()[i]))
-            return create_uppercased(characters(), m_length).release_nonnull();
+
+        if (isAsciiLowerAlpha(characters()[i])) {
+
+            return create_uppercased(characters(), m_length).releaseNonNull();
+        }
     }
+
     return const_cast<StringImpl&>(*this);
 }
 
-unsigned StringImpl::case_insensitive_hash() const
-{
+unsigned StringImpl::caseInsensitiveHash() const {
+
     return caseInsensitiveStringHash(characters(), length());
 }
 

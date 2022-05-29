@@ -197,7 +197,7 @@ public:
         return *this;
     }
 
-    ALWAYS_INLINE bool assign_if_null(ReferencePointer&& other) {
+    ALWAYS_INLINE bool assignIfNull(ReferencePointer&& other) {
 
         if (this == &other) {
 
@@ -210,7 +210,7 @@ public:
     }
 
     template<typename U>
-    ALWAYS_INLINE bool assign_if_null(ReferencePointer<U>&& other) {
+    ALWAYS_INLINE bool assignIfNull(ReferencePointer<U>&& other) {
 
         if (this == &other) {
 
@@ -222,23 +222,26 @@ public:
         return true;
     }
 
-    ALWAYS_INLINE void clear()
-    {
+    ALWAYS_INLINE void clear() {
+
         dereferenceIfNotNull(m_pointer);
+        
         m_pointer = nullptr;
     }
 
     bool operator!() const { return !m_pointer; }
 
-    [[nodiscard]] T* leak_ref()
-    {
+    [[nodiscard]] T* leak_ref() {
+
         return exchange(m_pointer, nullptr);
     }
 
-    NonNullReferencePointer<T> release_nonnull()
-    {
+    NonNullReferencePointer<T> releaseNonNull() {
+
         auto* ptr = leak_ref();
+        
         VERIFY(ptr);
+        
         return NonNullReferencePointer<T>(NonNullReferencePointer<T>::Adopt, *ptr);
     }
 
@@ -377,7 +380,7 @@ inline ErrorOr<NonNullReferencePointer<T>> adoptNonNullReferenceOrErrorNoMemory(
         return Error::fromErrorCode(ENOMEM);
     }
 
-    return result.release_nonnull();
+    return result.releaseNonNull();
 }
 
 #endif

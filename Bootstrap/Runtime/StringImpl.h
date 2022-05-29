@@ -17,12 +17,12 @@ enum ShouldChomp {
     Chomp
 };
 
-size_t allocation_size_for_stringimpl(size_t length);
+size_t allocationSizeForStringImpl(size_t length);
 
 class StringImpl : public ReferenceCounted<StringImpl> {
 public:
 
-    static NonNullReferencePointer<StringImpl> create_uninitialized(size_t length, char*& buffer);
+    static NonNullReferencePointer<StringImpl> createUninitialized(size_t length, char*& buffer);
     static ReferencePointer<StringImpl> create(char const* cstring, ShouldChomp = NoChomp);
     static ReferencePointer<StringImpl> create(char const* cstring, size_t length, ShouldChomp = NoChomp);
     static ReferencePointer<StringImpl> create(ReadOnlyBytes, ShouldChomp = NoChomp);
@@ -32,12 +32,12 @@ public:
     NonNullReferencePointer<StringImpl> to_lowercase() const;
     NonNullReferencePointer<StringImpl> to_uppercase() const;
 
-    void operator delete(void* ptr)
-    {
-        kfree_sized(ptr, allocation_size_for_stringimpl(static_cast<StringImpl*>(ptr)->m_length));
+    void operator delete(void* ptr) {
+
+        kfree_sized(ptr, allocationSizeForStringImpl(static_cast<StringImpl*>(ptr)->m_length));
     }
 
-    static StringImpl& the_empty_stringimpl();
+    static StringImpl& theEmptyStringImpl();
 
     ~StringImpl();
 
@@ -73,39 +73,48 @@ public:
         return m_hash;
     }
 
-    unsigned case_insensitive_hash() const;
+    unsigned caseInsensitiveHash() const;
 
 private:
+
     enum ConstructTheEmptyStringImplTag {
+
         ConstructTheEmptyStringImpl
     };
-    explicit StringImpl(ConstructTheEmptyStringImplTag)
-    {
+
+    explicit StringImpl(ConstructTheEmptyStringImplTag) {
+
         m_inline_buffer[0] = '\0';
     }
 
     enum ConstructWithInlineBufferTag {
+
         ConstructWithInlineBuffer
     };
+
     StringImpl(ConstructWithInlineBufferTag, size_t length);
 
     void compute_hash() const;
 
     size_t m_length { 0 };
+    
     mutable unsigned m_hash { 0 };
+    
     mutable bool m_has_hash { false };
+    
     char m_inline_buffer[0];
 };
 
-inline size_t allocation_size_for_stringimpl(size_t length)
-{
+inline size_t allocationSizeForStringImpl(size_t length) {
+
     return sizeof(StringImpl) + (sizeof(char) * length) + sizeof(char);
 }
 
 template<>
 struct Formatter<StringImpl> : Formatter<StringView> {
-    ErrorOr<void> format(FormatBuilder& builder, StringImpl const& value)
-    {
+
+    ErrorOr<void> format(FormatBuilder& builder, StringImpl const& value) {
+
         return Formatter<StringView>::format(builder, { value.characters(), value.length() });
     }
 };

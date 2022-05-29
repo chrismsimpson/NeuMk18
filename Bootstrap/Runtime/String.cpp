@@ -51,7 +51,7 @@ String String::isolated_copy() const
     if (!m_impl->length())
         return empty();
     char* buffer;
-    auto impl = StringImpl::create_uninitialized(length(), buffer);
+    auto impl = StringImpl::createUninitialized(length(), buffer);
     memcpy(buffer, m_impl->characters(), m_impl->length());
     return String(move(*impl));
 }
@@ -224,7 +224,7 @@ String String::repeated(char ch, size_t count) {
     }
 
     char* buffer;
-    auto impl = StringImpl::create_uninitialized(count, buffer);
+    auto impl = StringImpl::createUninitialized(count, buffer);
     memset(buffer, ch, count);
     return *impl;
 }
@@ -234,7 +234,7 @@ String String::repeated(StringView string, size_t count)
     if (!count || string.isEmpty())
         return empty();
     char* buffer;
-    auto impl = StringImpl::create_uninitialized(count * string.length(), buffer);
+    auto impl = StringImpl::createUninitialized(count * string.length(), buffer);
     for (size_t i = 0; i < count; i++)
         __builtin_memcpy(buffer + i * string.length(), string.charactersWithoutNullTermination(), string.length());
     return *impl;
