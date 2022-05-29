@@ -247,7 +247,7 @@ private:
         
         using WrapperType = CallableWrapper<Callable>;
         
-        if constexpr (sizeof(WrapperType) > inline_capacity) {
+        if constexpr (sizeof(WrapperType) > inlineCapacity) {
 
             *bitCast<CallableWrapperBase**>(&m_storage) = new WrapperType(forward<Callable>(callable));
 
@@ -273,7 +273,7 @@ private:
             break;
 
         case FunctionKind::Inline:
-            other_wrapper->init_and_swap(m_storage, inline_capacity);
+            other_wrapper->init_and_swap(m_storage, inlineCapacity);
             m_kind = FunctionKind::Inline;
             break;
 
@@ -293,6 +293,6 @@ private:
     bool m_deferred_clear { false };
     mutable Atomic<u16> m_callNestingLevel { 0 };
     // Empirically determined to fit most lambdas and functions.
-    static constexpr size_t inline_capacity = 4 * sizeof(void*);
-    alignas(max(alignof(CallableWrapperBase), alignof(CallableWrapperBase*))) u8 m_storage[inline_capacity];
+    static constexpr size_t inlineCapacity = 4 * sizeof(void*);
+    alignas(max(alignof(CallableWrapperBase), alignof(CallableWrapperBase*))) u8 m_storage[inlineCapacity];
 };
