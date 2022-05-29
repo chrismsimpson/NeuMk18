@@ -125,7 +125,7 @@ public:
     using SearchDirection = StringUtils::SearchDirection;
     [[nodiscard]] Optional<size_t> find_any_of(StringView needles, SearchDirection direction = SearchDirection::Forward) const { return StringUtils::find_any_of(*this, needles, direction); }
 
-    [[nodiscard]] constexpr StringView substring_view(size_t start, size_t length) const {
+    [[nodiscard]] constexpr StringView substringView(size_t start, size_t length) const {
 
         if (!isConstantEvaluated()) {
 
@@ -135,14 +135,14 @@ public:
         return { m_characters + start, length };
     }
 
-    [[nodiscard]] constexpr StringView substring_view(size_t start) const {
+    [[nodiscard]] constexpr StringView substringView(size_t start) const {
 
         if (!isConstantEvaluated()) {
 
             VERIFY(start <= length());
         }
 
-        return substring_view(start, length() - start);
+        return substringView(start, length() - start);
     }
 
     [[nodiscard]] Vector<StringView> splitView(char, bool keep_empty = false) const;
@@ -175,11 +175,11 @@ public:
 
             auto separator_index = maybe_separator_index.value();
             
-            auto part_with_separator = view.substring_view(0, separator_index + separator.length());
+            auto part_with_separator = view.substringView(0, separator_index + separator.length());
             
             if (keep_empty || separator_index > 0) {
 
-                callback(part_with_separator.substring_view(0, separator_index));
+                callback(part_with_separator.substringView(0, separator_index));
             }
 
             view = view.substringViewStartingAfterSubstring(part_with_separator);
@@ -211,12 +211,12 @@ public:
     // view (that is, for the remaining part of its length). For example,
     //
     //    StringView str { "foobar" };
-    //    StringView substr = str.substring_view(1, 2);  // "oo"
+    //    StringView substr = str.substringView(1, 2);  // "oo"
     //    StringView substr_from = str.substringViewStartingFromSubstring(subst);  // "oobar"
     //    StringView substr_after = str.substringViewStartingAfterSubstring(subst);  // "bar"
     //
     // Note that this only works if the string view passed as an argument is indeed a substring
-    // view of this string view, such as one created by substring_view() and splitView(). It
+    // view of this string view, such as one created by substringView() and splitView(). It
     // does not work for arbitrary strings; for example declaring substr in the example above as
     //
     //     StringView substr { "oo" };

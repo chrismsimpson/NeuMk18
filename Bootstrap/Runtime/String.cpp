@@ -73,18 +73,23 @@ String String::substring(size_t start) const
     return { characters() + start, length() - start };
 }
 
-StringView String::substring_view(size_t start, size_t length) const
-{
+StringView String::substringView(size_t start, size_t length) const {
+
     VERIFY(m_impl);
+    
     VERIFY(!Checked<size_t>::additionWouldOverflow(start, length));
+    
     VERIFY(start + length <= m_impl->length());
+    
     return { characters() + start, length };
 }
 
-StringView String::substring_view(size_t start) const
-{
+StringView String::substringView(size_t start) const {
+
     VERIFY(m_impl);
+    
     VERIFY(start <= length());
+    
     return { characters() + start, length() - start };
 }
 
@@ -115,25 +120,41 @@ Vector<String> String::split_limit(char separator, size_t limit, bool keep_empty
     return v;
 }
 
-Vector<StringView> String::splitView(Function<bool(char)> separator, bool keep_empty) const
-{
-    if (isEmpty())
-        return {};
+Vector<StringView> String::splitView(Function<bool(char)> separator, bool keep_empty) const {
+
+    if (isEmpty()) {
+
+        return { };
+    }
 
     Vector<StringView> v;
+    
     size_t substart = 0;
+    
     for (size_t i = 0; i < length(); ++i) {
+        
         char ch = characters()[i];
+        
         if (separator(ch)) {
+            
             size_t sublen = i - substart;
-            if (sublen != 0 || keep_empty)
-                v.append(substring_view(substart, sublen));
+            
+            if (sublen != 0 || keep_empty) {
+
+                v.append(substringView(substart, sublen));
+            }
+            
             substart = i + 1;
         }
     }
+    
     size_t taillen = length() - substart;
-    if (taillen != 0 || keep_empty)
-        v.append(substring_view(substart, taillen));
+    
+    if (taillen != 0 || keep_empty) {
+
+        v.append(substringView(substart, taillen));
+    }
+
     return v;
 }
 

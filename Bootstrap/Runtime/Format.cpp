@@ -136,13 +136,13 @@ StringView FormatParser::consumeLiteral() {
 
         if (nextIs(isAnyOf("{}"))) {
 
-            return m_input.substring_view(begin, tell() - begin);
+            return m_input.substringView(begin, tell() - begin);
         }
 
         consume();
     }
 
-    return m_input.substring_view(begin);
+    return m_input.substringView(begin);
 }
 
 bool FormatParser::consumeNumber(size_t& value) {
@@ -193,10 +193,14 @@ bool FormatParser::consumeSpecifier(FormatSpecifier& specifier)
             consume();
         }
 
-        specifier.flags = m_input.substring_view(begin, tell() - begin - 1);
-    } else {
-        if (!consumeSpecific('}'))
+        specifier.flags = m_input.substringView(begin, tell() - begin - 1);
+    } 
+    else {
+
+        if (!consumeSpecific('}')) {
+
             VERIFY_NOT_REACHED();
+        }
 
         specifier.flags = "";
     }
@@ -251,7 +255,7 @@ ErrorOr<void> FormatBuilder::putString(
 
     if (used_by_string < value.length()) {
 
-        value = value.substring_view(0, used_by_string);
+        value = value.substringView(0, used_by_string);
     }
 
     if (align == Align::Left || align == Align::Default) {

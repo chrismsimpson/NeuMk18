@@ -93,7 +93,7 @@ Vector<StringView> StringView::lines(bool consider_cr) const {
             
             size_t sublen = i - substart;
             
-            v.append(substring_view(substart, sublen));
+            v.append(substringView(substart, sublen));
             
             substart = i + 1;
         }
@@ -105,7 +105,7 @@ Vector<StringView> StringView::lines(bool consider_cr) const {
     
     if (taillen != 0) {
 
-        v.append(substring_view(substart, taillen));
+        v.append(substringView(substart, taillen));
     }
     
     return v;
@@ -299,7 +299,7 @@ Vector<StringView> StringView::splitViewIf(Function<bool(char)> const& predicate
             
             if (sublen != 0 || keep_empty) {
 
-                v.append(substring_view(substart, sublen));
+                v.append(substringView(substart, sublen));
             }
             
             substart = i + 1;
@@ -310,7 +310,7 @@ Vector<StringView> StringView::splitViewIf(Function<bool(char)> const& predicate
 
     if (taillen != 0 || keep_empty) {
 
-        v.append(substring_view(substart, taillen));
+        v.append(substringView(substart, taillen));
     }
 
     return v;

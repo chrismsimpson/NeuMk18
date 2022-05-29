@@ -18,7 +18,7 @@ public:
     constexpr size_t tell() const { return m_index; }
     constexpr size_t tell_remaining() const { return m_input.length() - m_index; }
 
-    StringView remaining() const { return m_input.substring_view(m_index); }
+    StringView remaining() const { return m_input.substringView(m_index); }
 
     constexpr bool isEof() const { return m_index >= m_input.length(); }
 
@@ -106,7 +106,7 @@ public:
         return consumeSpecific(StringView { next });
     }
 
-    constexpr char consume_escaped_character(char escape_char = '\\', StringView escape_map = "n\nr\rt\tb\bf\f") {
+    constexpr char consumeEscapedCharacter(char escape_char = '\\', StringView escape_map = "n\nr\rt\tb\bf\f") {
 
         if (!consumeSpecific(escape_char)) {
 
@@ -124,12 +124,12 @@ public:
     }
 
     StringView consume(size_t count);
-    StringView consume_all();
-    StringView consume_line();
-    StringView consume_until(char);
-    StringView consume_until(char const*);
-    StringView consume_until(StringView);
-    StringView consume_quoted_string(char escape_char = 0);
+    StringView consumeAll();
+    StringView consumeLine();
+    StringView consumeUntil(char);
+    StringView consumeUntil(char const*);
+    StringView consumeUntil(StringView);
+    StringView consumeQuotedString(char escape_char = 0);
 
     constexpr void ignore(size_t count = 1) {
 
@@ -192,12 +192,12 @@ public:
             return { };
         }
 
-        return m_input.substring_view(start, length);
+        return m_input.substringView(start, length);
     }
 
     // Consume and return characters until `pred` return true
     template<typename TPredicate>
-    StringView consume_until(TPredicate pred) {
+    StringView consumeUntil(TPredicate pred) {
 
         size_t start = m_index;
 
@@ -213,7 +213,7 @@ public:
             return { };
         }
 
-        return m_input.substring_view(start, length);
+        return m_input.substringView(start, length);
     }
 
     // Ignore characters while `pred` returns true
@@ -247,10 +247,10 @@ constexpr auto isAnyOf(StringView values) {
     return [values](auto c) { return values.contains(c); };
 }
 
-constexpr auto is_not_any_of(StringView values) {
+constexpr auto isNotAnyOf(StringView values) {
 
     return [values](auto c) { return !values.contains(c); };
 }
 
 constexpr auto is_path_separator = isAnyOf("/\\");
-constexpr auto is_quote = isAnyOf("'\"");
+constexpr auto isQuote = isAnyOf("'\"");

@@ -146,8 +146,8 @@ public:
 
     [[nodiscard]] String substring(size_t start, size_t length) const;
     [[nodiscard]] String substring(size_t start) const;
-    [[nodiscard]] StringView substring_view(size_t start, size_t length) const;
-    [[nodiscard]] StringView substring_view(size_t start) const;
+    [[nodiscard]] StringView substringView(size_t start, size_t length) const;
+    [[nodiscard]] StringView substringView(size_t start) const;
 
     [[nodiscard]] bool isNull() const { return !m_impl; }
     [[nodiscard]] ALWAYS_INLINE bool isEmpty() const { return length() == 0; }

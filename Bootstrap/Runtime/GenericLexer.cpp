@@ -23,73 +23,105 @@ StringView GenericLexer::consume(size_t count)
     size_t length = min(count, m_input.length() - m_index);
     m_index += length;
 
-    return m_input.substring_view(start, length);
+    return m_input.substringView(start, length);
 }
 
 // Consume the rest of the input
-StringView GenericLexer::consume_all()
-{
-    if (isEof())
-        return {};
+StringView GenericLexer::consumeAll() {
 
-    auto rest = m_input.substring_view(m_index, m_input.length() - m_index);
+    if (isEof()) {
+
+        return { };
+    }
+
+    auto rest = m_input.substringView(m_index, m_input.length() - m_index);
+    
     m_index = m_input.length();
+    
     return rest;
 }
 
 // Consume until a new line is found
-StringView GenericLexer::consume_line()
-{
+StringView GenericLexer::consumeLine() {
+
     size_t start = m_index;
-    while (!isEof() && peek() != '\r' && peek() != '\n')
+    
+    while (!isEof() && peek() != '\r' && peek() != '\n') {
+
         m_index++;
+    }
+    
     size_t length = m_index - start;
 
     consumeSpecific('\r');
     consumeSpecific('\n');
 
-    if (length == 0)
-        return {};
-    return m_input.substring_view(start, length);
+    if (length == 0) {
+
+        return { };
+    }
+
+    return m_input.substringView(start, length);
 }
 
 // Consume and return characters until `stop` is peek'd
-StringView GenericLexer::consume_until(char stop)
-{
+StringView GenericLexer::consumeUntil(char stop) {
+
     size_t start = m_index;
-    while (!isEof() && peek() != stop)
+    
+    while (!isEof() && peek() != stop) {
+
         m_index++;
+    }
+    
     size_t length = m_index - start;
 
-    if (length == 0)
-        return {};
-    return m_input.substring_view(start, length);
+    if (length == 0) {
+
+        return { };
+    }
+    
+    return m_input.substringView(start, length);
 }
 
 // Consume and return characters until the string `stop` is found
-StringView GenericLexer::consume_until(char const* stop)
-{
+StringView GenericLexer::consumeUntil(char const* stop) {
+
     size_t start = m_index;
-    while (!isEof() && !nextIs(stop))
+    
+    while (!isEof() && !nextIs(stop)) {
+
         m_index++;
+    }
+    
     size_t length = m_index - start;
 
-    if (length == 0)
-        return {};
-    return m_input.substring_view(start, length);
+    if (length == 0) {
+
+        return { };
+    }
+    
+    return m_input.substringView(start, length);
 }
 
 // Consume and return characters until the string `stop` is found
-StringView GenericLexer::consume_until(StringView stop)
-{
+StringView GenericLexer::consumeUntil(StringView stop) {
+
     size_t start = m_index;
-    while (!isEof() && !nextIs(stop))
+    
+    while (!isEof() && !nextIs(stop)) {
+
         m_index++;
+    }
+    
     size_t length = m_index - start;
 
-    if (length == 0)
+    if (length == 0) {
+
         return {};
-    return m_input.substring_view(start, length);
+    }
+    
+    return m_input.substringView(start, length);
 }
 
 /*
@@ -98,30 +130,45 @@ StringView GenericLexer::consume_until(StringView stop)
  * to capture the enclosing quotes. Please note that the escape character will
  * still be in the resulting StringView
  */
-StringView GenericLexer::consume_quoted_string(char escape_char)
-{
-    if (!nextIs(is_quote))
-        return {};
+StringView GenericLexer::consumeQuotedString(char escape_char) {
+
+    if (!nextIs(isQuote)) {
+
+        return { };
+    }
 
     char quote_char = consume();
+
     size_t start = m_index;
+
     while (!isEof()) {
-        if (nextIs(escape_char))
+
+        if (nextIs(escape_char)) {
+
             m_index++;
-        else if (nextIs(quote_char))
+        }
+        else if (nextIs(quote_char)) {
+
             break;
+        }
+
         m_index++;
     }
+
     size_t length = m_index - start;
 
     if (peek() != quote_char) {
+
         // Restore the index in case the string is unterminated
+        
         m_index = start - 1;
-        return {};
+        
+        return { };
     }
 
     // Ignore closing quote
+
     ignore();
 
-    return m_input.substring_view(start, length);
+    return m_input.substringView(start, length);
 }

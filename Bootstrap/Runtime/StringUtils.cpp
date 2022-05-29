@@ -389,7 +389,7 @@ namespace StringUtils {
             }
         }
 
-        return str.substring_view(substring_start, substring_length);
+        return str.substringView(substring_start, substring_length);
     }
 
     StringView trim_whitespace(StringView str, TrimMode mode)
@@ -569,14 +569,14 @@ namespace StringUtils {
         
         for (auto& position : positions) {
 
-            replaced_string.append(str.substring_view(last_position, position - last_position));
+            replaced_string.append(str.substringView(last_position, position - last_position));
             
             replaced_string.append(replacement);
             
             last_position = position + needle.length();
         }
         
-        replaced_string.append(str.substring_view(last_position, str.length() - last_position));
+        replaced_string.append(str.substringView(last_position, str.length() - last_position));
         
         return replaced_string.build();
     }
@@ -595,7 +595,7 @@ namespace StringUtils {
 
         for (size_t i = 0; i < str.length() - needle.length() + 1; ++i) {
 
-            if (str.substring_view(i).starts_with(needle)) {
+            if (str.substringView(i).starts_with(needle)) {
 
                 count++;
             }
