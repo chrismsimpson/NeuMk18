@@ -23,8 +23,15 @@ namespace Detail {
         constexpr ValueType operator()() const { return value; }
     };
 
+    ///
+
     using FalseType = IntegralConstant<bool, false>;
+
+    ///
+
     using TrueType = IntegralConstant<bool, true>;
+
+    ///
 
     template<class T>
     using AddConst = const T;
@@ -50,6 +57,8 @@ namespace Detail {
     template<class T>
     using AddConstToReferencedType = typename __AddConstToReferencedType<T>::Type;
 
+    ///
+
     template<class T>
     struct __RemoveConst {
 
@@ -64,6 +73,8 @@ namespace Detail {
 
     template<class T>
     using RemoveConst = typename __RemoveConst<T>::Type;
+
+    ///
 
     template<class T>
     struct __RemoveVolatile {
@@ -80,17 +91,25 @@ namespace Detail {
     template<typename T>
     using RemoveVolatile = typename __RemoveVolatile<T>::Type;
 
+    ///
+
     template<class T>
     using RemoveConstVolatile = RemoveVolatile<RemoveConst<T>>;
 
+    ///
+
     template<typename...>
     using VoidType = void;
+
+    ///
 
     template<class T>
     inline constexpr bool IsLValueReference = false;
 
     template<class T>
     inline constexpr bool IsLValueReference<T&> = true;
+
+    ///
 
     template<class T>
     inline constexpr bool __IsPointerHelper = false;
@@ -100,6 +119,8 @@ namespace Detail {
 
     template<class T>
     inline constexpr bool IsPointer = __IsPointerHelper<RemoveConstVolatile<T>>;
+
+    ///
 
     template<class>
     inline constexpr bool IsFunction = false;
@@ -219,11 +240,15 @@ namespace Detail {
     template<typename T>
     using RemovePointer = typename __RemovePointer<T>::Type;
 
+    ///
+
     template<typename T, typename U>
     inline constexpr bool IsSame = false;
 
     template<typename T>
     inline constexpr bool IsSame<T, T> = true;
+
+    ///
 
     template<bool condition, class TrueType, class FalseType>
     struct __Conditional {
@@ -242,6 +267,8 @@ namespace Detail {
 
     template<typename T>
     inline constexpr bool IsNullPointer = IsSame<decltype(nullptr), RemoveConstVolatile<T>>;
+
+    ///
 
     template<typename T>
     struct __RemoveReference {
@@ -264,76 +291,113 @@ namespace Detail {
     template<typename T>
     using RemoveReference = typename __RemoveReference<T>::Type;
 
+    ///
+
     template<typename T>
     using RemoveConstVolatileReference = RemoveConstVolatile<RemoveReference<T>>;
 
+    ///
+
     template<typename T>
     struct __MakeUnsigned {
+
         using Type = void;
     };
+
     template<>
     struct __MakeUnsigned<signed char> {
+
         using Type = unsigned char;
     };
+
     template<>
     struct __MakeUnsigned<short> {
+    
         using Type = unsigned short;
     };
+    
     template<>
     struct __MakeUnsigned<int> {
+    
         using Type = unsigned int;
     };
+    
     template<>
     struct __MakeUnsigned<long> {
+    
         using Type = unsigned long;
     };
+    
     template<>
     struct __MakeUnsigned<long long> {
+    
         using Type = unsigned long long;
     };
+    
     template<>
     struct __MakeUnsigned<unsigned char> {
+    
         using Type = unsigned char;
     };
+    
     template<>
     struct __MakeUnsigned<unsigned short> {
+    
         using Type = unsigned short;
     };
+    
     template<>
     struct __MakeUnsigned<unsigned int> {
+    
         using Type = unsigned int;
     };
+    
     template<>
     struct __MakeUnsigned<unsigned long> {
+    
         using Type = unsigned long;
     };
+    
     template<>
     struct __MakeUnsigned<unsigned long long> {
+
         using Type = unsigned long long;
     };
+    
     template<>
     struct __MakeUnsigned<char> {
+
         using Type = unsigned char;
     };
+
     template<>
     struct __MakeUnsigned<char8_t> {
+
         using Type = char8_t;
     };
+
     template<>
     struct __MakeUnsigned<char16_t> {
+
         using Type = char16_t;
     };
+
     template<>
     struct __MakeUnsigned<char32_t> {
+
         using Type = char32_t;
     };
+
     template<>
     struct __MakeUnsigned<bool> {
+
         using Type = bool;
     };
 
     template<typename T>
     using MakeUnsigned = typename __MakeUnsigned<T>::Type;
+
+    ///
 
     template<typename T>
     struct __MakeSigned {
