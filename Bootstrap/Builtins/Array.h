@@ -2,14 +2,14 @@
 
 #include "../Runtime/Checked.h"
 #include "../Runtime/Error.h"
-#include "../Runtime/RefCounted.h"
+#include "../Runtime/ReferenceCounted.h"
 #include <initializer_list>
 #include <stdlib.h>
 
 namespace NeuInternal {
 
     template<typename T>
-    class ArrayStorage : public RefCounted<ArrayStorage<T>> {
+    class ArrayStorage : public ReferenceCounted<ArrayStorage<T>> {
 
     public:
 

@@ -12,7 +12,7 @@
 namespace NeuInternal {
 
 template<typename T>
-struct SetStorage : public RefCounted<SetStorage<T>> {
+struct SetStorage : public ReferenceCounted<SetStorage<T>> {
     HashTable<T> table;
 };
 

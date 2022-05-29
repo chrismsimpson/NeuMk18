@@ -11,25 +11,28 @@
 #else
 #    include "Assertions.h"
 #    include "Atomic.h"
-#    include "RefCounted.h"
+#    include "ReferenceCounted.h"
 #    include "RefPtr.h"
 #    include "StdLibExtras.h"
 
 template<typename T>
 class Weakable;
+
 template<typename T>
 class WeakPtr;
 
-class WeakLink : public RefCounted<WeakLink> {
+class WeakLink : public ReferenceCounted<WeakLink> {
+    
     template<typename T>
     friend class Weakable;
+    
     template<typename T>
     friend class WeakPtr;
 
 public:
     template<typename T>
     RefPtr<T> strong_ref() const
-        requires(IsBaseOf<RefCountedBase, T>)
+        requires(IsBaseOf<ReferenceCountedBase, T>)
     {
         RefPtr<T> ref;
 

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "RefCounted.h"
+#include "ReferenceCounted.h"
 #include "RefPtr.h"
 #include "Span.h"
 #include "Types.h"
@@ -19,7 +19,7 @@ enum ShouldChomp {
 
 size_t allocation_size_for_stringimpl(size_t length);
 
-class StringImpl : public RefCounted<StringImpl> {
+class StringImpl : public ReferenceCounted<StringImpl> {
 public:
 
     static NonNullReferencePointer<StringImpl> create_uninitialized(size_t length, char*& buffer);

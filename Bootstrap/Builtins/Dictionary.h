@@ -8,13 +8,13 @@
 
 #include "../Runtime/HashMap.h"
 #include "../Runtime/NonNullReferencePointer.h"
-#include "../Runtime/RefCounted.h"
+#include "../Runtime/ReferenceCounted.h"
 #include "../Runtime/Tuple.h"
 
 namespace NeuInternal {
 
 template<typename K, typename V>
-struct DictionaryStorage : public RefCounted<DictionaryStorage<K, V>> {
+struct DictionaryStorage : public ReferenceCounted<DictionaryStorage<K, V>> {
     HashMap<K, V> map;
 };
 
