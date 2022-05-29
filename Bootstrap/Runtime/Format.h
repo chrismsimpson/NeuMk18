@@ -278,6 +278,7 @@ public:
         char fill = ' ');
 
     StringBuilder const& builder() const {
+        
         return m_builder;
     }
 
@@ -288,6 +289,8 @@ private:
     StringBuilder& m_builder;
 };
 
+///
+
 class TypeErasedFormatParams {
 
 public:
@@ -296,14 +299,16 @@ public:
 
     void set_parameters(Span<const TypeErasedParameter> parameters) { m_parameters = parameters; }
     
-    size_t takeNextIndex() { return m_next_index++; }
+    size_t takeNextIndex() { return m_nextIndex++; }
 
 private:
 
     Span<const TypeErasedParameter> m_parameters;
 
-    size_t m_next_index { 0 };
+    size_t m_nextIndex { 0 };
 };
+
+///
 
 template<typename T>
 ErrorOr<void> __format_value(TypeErasedFormatParams& params, FormatBuilder& builder, FormatParser& parser, void const* value) {
