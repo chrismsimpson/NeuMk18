@@ -37,12 +37,17 @@ public:
         RefPtr<T> ref;
 
         {
-            if (!(m_consumers.fetch_add(1u << 1, MemoryOrder::memory_order_acquire) & 1u)) {
+            if (!(m_consumers.fetchAdd(1u << 1, MemoryOrder::memory_order_acquire) & 1u)) {
+
                 T* ptr = (T*)m_ptr.load(MemoryOrder::memory_order_acquire);
-                if (ptr && ptr->try_ref())
+                
+                if (ptr && ptr->try_ref()) {
+
                     ref = adopt_ref(*ptr);
+                }
             }
-            m_consumers.fetch_sub(1u << 1, MemoryOrder::memory_order_release);
+            
+            m_consumers.fetchSub(1u << 1, MemoryOrder::memory_order_release);
         }
 
         return ref;
