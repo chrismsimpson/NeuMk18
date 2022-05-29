@@ -66,9 +66,9 @@ class Optional;
 
 #ifdef KERNEL
 template<typename T>
-struct RefPtrTraits;
+struct ReferencePointerTraits;
 
-template<typename T, typename PtrTraits = RefPtrTraits<T>>
+template<typename T, typename PointerTraits = ReferencePointerTraits<T>>
 class RefPtr;
 #else
 template<typename T>
