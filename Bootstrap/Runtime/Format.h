@@ -311,7 +311,7 @@ private:
 ///
 
 template<typename T>
-ErrorOr<void> __format_value(TypeErasedFormatParams& params, FormatBuilder& builder, FormatParser& parser, void const* value) {
+ErrorOr<void> __formatValue(TypeErasedFormatParams& params, FormatBuilder& builder, FormatParser& parser, void const* value) {
 
     Formatter<T> formatter;
 
@@ -327,7 +327,7 @@ public:
     static_assert(sizeof...(Parameters) <= maxFormatArguments);
 
     explicit VariadicFormatParams(Parameters const&... parameters)
-        : m_data({ TypeErasedParameter { &parameters, TypeErasedParameter::getType<Parameters>(), __format_value<Parameters> }... }) {
+        : m_data({ TypeErasedParameter { &parameters, TypeErasedParameter::getType<Parameters>(), __formatValue<Parameters> }... }) {
 
         this->set_parameters(m_data);
     }

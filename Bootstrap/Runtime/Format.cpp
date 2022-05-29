@@ -1058,6 +1058,7 @@ void vdbgln(StringView fmtstr, TypeErasedFormatParams& params) {
 #endif
 
     MUST(vformat(builder, fmtstr, params));
+    
     builder.append('\n');
 
     auto const string = builder.string_view();
@@ -1082,16 +1083,21 @@ void vdmesgln(StringView fmtstr, TypeErasedFormatParams& params)
     struct timespec ts = {};
 
 #        if !ARCH(AARCH64)
-    if (TimeManagement::is_initialized())
+    if (TimeManagement::is_initialized()) {
+
         ts = TimeManagement::the().monotonic_time(TimePrecision::Coarse).to_timespec();
+    }
 #        endif
 
     if (Kernel::Processor::is_initialized() && Kernel::Thread::current()) {
         auto& thread = *Kernel::Thread::current();
         builder.appendff("{}.{:03} \033[34;1m[{}({}:{})]\033[0m: ", ts.tv_sec, ts.tv_nsec / 1000000, thread.process().name(), thread.pid().value(), thread.tid().value());
-    } else {
+    } 
+    else {
+
         builder.appendff("{}.{:03} \033[34;1m[Kernel]\033[0m: ", ts.tv_sec, ts.tv_nsec / 1000000);
     }
+
 #    endif
 
     MUST(vformat(builder, fmtstr, params));
@@ -1101,19 +1107,26 @@ void vdmesgln(StringView fmtstr, TypeErasedFormatParams& params)
     kernelputstr(string.charactersWithoutNullTermination(), string.length());
 }
 
-void v_critical_dmesgln(StringView fmtstr, TypeErasedFormatParams& params)
-{
+void v_critical_dmesgln(StringView fmtstr, TypeErasedFormatParams& params) {
+
     // FIXME: Try to avoid memory allocations further to prevent faulting
     // at OOM conditions.
 
     StringBuilder builder;
+
 #    ifdef __serenity__
+
     if (Kernel::Processor::is_initialized() && Kernel::Thread::current()) {
+        
         auto& thread = *Kernel::Thread::current();
+        
         builder.appendff("[{}({}:{})]: ", thread.process().name(), thread.pid().value(), thread.tid().value());
-    } else {
+    } 
+    else {
+
         builder.appendff("[Kernel]: ");
     }
+
 #    endif
 
     MUST(vformat(builder, fmtstr, params));
