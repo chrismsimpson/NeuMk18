@@ -138,6 +138,6 @@ void StringImpl::compute_hash() const
     if (!length())
         m_hash = 0;
     else
-        m_hash = string_hash(characters(), m_length);
+        m_hash = stringHash(characters(), m_length);
     m_has_hash = true;
 }

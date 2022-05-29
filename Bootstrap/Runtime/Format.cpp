@@ -100,7 +100,7 @@ namespace {
 
         if (specifier.index == use_next_index) {
 
-            specifier.index = params.take_next_index();
+            specifier.index = params.takeNextIndex();
         }
 
         auto& parameter = params.parameters().at(specifier.index);
@@ -530,20 +530,25 @@ ErrorOr<void> FormatBuilder::putF80(
     }
 
     TRY(putString(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill));
-    return {};
+    return { };
 }
 
 #endif
 
-ErrorOr<void> FormatBuilder::put_hexdump(ReadOnlyBytes bytes, size_t width, char fill)
-{
+ErrorOr<void> FormatBuilder::put_hexdump(ReadOnlyBytes bytes, size_t width, char fill) {
+
     auto put_char_view = [&](auto i) -> ErrorOr<void> {
+
         TRY(putPadding(fill, 4));
+
         for (size_t j = i - width; j < i; ++j) {
+
             auto ch = bytes[j];
+            
             TRY(m_builder.tryAppend(ch >= 32 && ch <= 127 ? ch : '.')); // silly hack
         }
-        return {};
+
+        return { };
     };
 
     for (size_t i = 0; i < bytes.size(); ++i) {
@@ -602,7 +607,7 @@ void StandardFormatter::parse(TypeErasedFormatParams& params, FormatParser& pars
 
         if (index == use_next_index) {
 
-            index = params.take_next_index();
+            index = params.takeNextIndex();
         }
 
         m_width = params.parameters().at(index).toSize();
@@ -618,7 +623,7 @@ void StandardFormatter::parse(TypeErasedFormatParams& params, FormatParser& pars
 
             if (index == use_next_index) {
 
-                index = params.take_next_index();
+                index = params.takeNextIndex();
             }
 
             m_precision = params.parameters().at(index).toSize();

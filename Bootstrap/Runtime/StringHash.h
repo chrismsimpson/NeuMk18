@@ -8,7 +8,7 @@
 
 #include "Types.h"
 
-constexpr u32 string_hash(char const* characters, size_t length, u32 seed = 0)
+constexpr u32 stringHash(char const* characters, size_t length, u32 seed = 0)
 {
     u32 hash = seed;
     for (size_t i = 0; i < length; ++i) {

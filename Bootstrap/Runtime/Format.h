@@ -296,7 +296,7 @@ public:
 
     void set_parameters(Span<const TypeErasedParameter> parameters) { m_parameters = parameters; }
     
-    size_t take_next_index() { return m_next_index++; }
+    size_t takeNextIndex() { return m_next_index++; }
 
 private:
 

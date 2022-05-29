@@ -85,7 +85,7 @@ public:
             return 0;
         }
 
-        return string_hash(charactersWithoutNullTermination(), length());
+        return stringHash(charactersWithoutNullTermination(), length());
     }
 
     [[nodiscard]] bool starts_with(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
