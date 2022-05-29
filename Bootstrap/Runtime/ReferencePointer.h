@@ -9,7 +9,7 @@
 #define REFPTR_SCRUB_BYTE 0xe0
 
 #ifdef KERNEL
-#    include <Kernel/Library/ThreadSafeRefPtr.h>
+#    include <Kernel/Library/ThreadSafeReferencePointer.h>
 #else
 
 #    include "Assertions.h"
@@ -22,10 +22,10 @@
 #    include "Types.h"
 
 template<typename T>
-class [[nodiscard]] RefPtr {
+class [[nodiscard]] ReferencePointer {
 
     template<typename U>
-    friend class RefPtr;
+    friend class ReferencePointer;
 
     template<typename U>
     friend class WeakPointer;
@@ -36,61 +36,61 @@ public:
         Adopt
     };
 
-    RefPtr() = default;
+    ReferencePointer() = default;
 
-    RefPtr(T const* ptr)
+    ReferencePointer(T const* ptr)
         : m_pointer(const_cast<T*>(ptr)) {
 
         refIfNotNull(m_pointer);
     }
 
-    RefPtr(T const& object)
+    ReferencePointer(T const& object)
         : m_pointer(const_cast<T*>(&object)) {
 
         m_pointer->ref();
     }
 
-    RefPtr(AdoptTag, T& object)
+    ReferencePointer(AdoptTag, T& object)
         : m_pointer(&object) { }
 
-    RefPtr(RefPtr&& other)
+    ReferencePointer(ReferencePointer&& other)
         : m_pointer(other.leak_ref()) { }
 
-    ALWAYS_INLINE RefPtr(NonNullReferencePointer<T> const& other)
+    ALWAYS_INLINE ReferencePointer(NonNullReferencePointer<T> const& other)
         : m_pointer(const_cast<T*>(other.pointer())) {
 
         m_pointer->ref();
     }
 
     template<typename U>
-    ALWAYS_INLINE RefPtr(NonNullReferencePointer<U> const& other) requires(IsConvertible<U*, T*>)
+    ALWAYS_INLINE ReferencePointer(NonNullReferencePointer<U> const& other) requires(IsConvertible<U*, T*>)
         : m_pointer(const_cast<T*>(static_cast<T const*>(other.pointer()))) {
 
         m_pointer->ref();
     }
 
     template<typename U>
-    ALWAYS_INLINE RefPtr(NonNullReferencePointer<U>&& other) requires(IsConvertible<U*, T*>)
+    ALWAYS_INLINE ReferencePointer(NonNullReferencePointer<U>&& other) requires(IsConvertible<U*, T*>)
         : m_pointer(static_cast<T*>(&other.leak_ref())) { }
 
     template<typename U>
-    RefPtr(RefPtr<U>&& other) requires(IsConvertible<U*, T*>)
+    ReferencePointer(ReferencePointer<U>&& other) requires(IsConvertible<U*, T*>)
         : m_pointer(static_cast<T*>(other.leak_ref())) { }
 
-    RefPtr(RefPtr const& other)
+    ReferencePointer(ReferencePointer const& other)
         : m_pointer(other.m_pointer) {
 
         refIfNotNull(m_pointer);
     }
 
     template<typename U>
-    RefPtr(RefPtr<U> const& other) requires(IsConvertible<U*, T*>)
+    ReferencePointer(ReferencePointer<U> const& other) requires(IsConvertible<U*, T*>)
         : m_pointer(const_cast<T*>(static_cast<T const*>(other.pointer()))) {
 
         refIfNotNull(m_pointer);
     }
 
-    ALWAYS_INLINE ~RefPtr()
+    ALWAYS_INLINE ~ReferencePointer()
     {
         clear();
 #    ifdef SANITIZE_PTRS
@@ -98,20 +98,20 @@ public:
 #    endif
     }
 
-    void swap(RefPtr& other)
+    void swap(ReferencePointer& other)
     {
         ::swap(m_pointer, other.m_pointer);
     }
 
     template<typename U>
-    void swap(RefPtr<U>& other) requires(IsConvertible<U*, T*>) {
+    void swap(ReferencePointer<U>& other) requires(IsConvertible<U*, T*>) {
 
         ::swap(m_pointer, other.m_pointer);
     }
 
-    ALWAYS_INLINE RefPtr& operator=(RefPtr&& other) {
+    ALWAYS_INLINE ReferencePointer& operator=(ReferencePointer&& other) {
 
-        RefPtr tmp { move(other) };
+        ReferencePointer tmp { move(other) };
         
         swap(tmp);
         
@@ -119,72 +119,85 @@ public:
     }
 
     template<typename U>
-    ALWAYS_INLINE RefPtr& operator=(RefPtr<U>&& other) requires(IsConvertible<U*, T*>) {
+    ALWAYS_INLINE ReferencePointer& operator=(ReferencePointer<U>&& other) requires(IsConvertible<U*, T*>) {
 
-        RefPtr tmp { move(other) };
+        ReferencePointer tmp { move(other) };
         swap(tmp);
         return *this;
     }
 
     template<typename U>
-    ALWAYS_INLINE RefPtr& operator=(NonNullReferencePointer<U>&& other) requires(IsConvertible<U*, T*>)
-    {
-        RefPtr tmp { move(other) };
+    ALWAYS_INLINE ReferencePointer& operator=(NonNullReferencePointer<U>&& other) requires(IsConvertible<U*, T*>) {
+
+        ReferencePointer tmp { move(other) };
+        
         swap(tmp);
+        
         return *this;
     }
 
-    ALWAYS_INLINE RefPtr& operator=(NonNullReferencePointer<T> const& other)
-    {
-        RefPtr tmp { other };
-        swap(tmp);
-        return *this;
-    }
+    ALWAYS_INLINE ReferencePointer& operator=(NonNullReferencePointer<T> const& other) {
 
-    template<typename U>
-    ALWAYS_INLINE RefPtr& operator=(NonNullReferencePointer<U> const& other) requires(IsConvertible<U*, T*>)
-    {
-        RefPtr tmp { other };
+        ReferencePointer tmp { other };
+        
         swap(tmp);
-        return *this;
-    }
-
-    ALWAYS_INLINE RefPtr& operator=(RefPtr const& other)
-    {
-        RefPtr tmp { other };
-        swap(tmp);
+        
         return *this;
     }
 
     template<typename U>
-    ALWAYS_INLINE RefPtr& operator=(RefPtr<U> const& other) requires(IsConvertible<U*, T*>)
+    ALWAYS_INLINE ReferencePointer& operator=(NonNullReferencePointer<U> const& other) requires(IsConvertible<U*, T*>) {
+
+        ReferencePointer tmp { other };
+        
+        swap(tmp);
+        
+        return *this;
+    }
+
+    ALWAYS_INLINE ReferencePointer& operator=(ReferencePointer const& other) {
+
+        ReferencePointer tmp { other };
+        
+        swap(tmp);
+        
+        return *this;
+    }
+
+    template<typename U>
+    ALWAYS_INLINE ReferencePointer& operator=(ReferencePointer<U> const& other) requires(IsConvertible<U*, T*>)
     {
-        RefPtr tmp { other };
+        ReferencePointer tmp { other };
         swap(tmp);
         return *this;
     }
 
-    ALWAYS_INLINE RefPtr& operator=(T const* ptr)
-    {
-        RefPtr tmp { ptr };
+    ALWAYS_INLINE ReferencePointer& operator=(T const* ptr) {
+
+        ReferencePointer tmp { ptr };
+        
         swap(tmp);
+        
         return *this;
     }
 
-    ALWAYS_INLINE RefPtr& operator=(T const& object)
-    {
-        RefPtr tmp { object };
+    ALWAYS_INLINE ReferencePointer& operator=(T const& object) {
+
+        ReferencePointer tmp { object };
+        
         swap(tmp);
+        
         return *this;
     }
 
-    RefPtr& operator=(std::nullptr_t)
-    {
+    ReferencePointer& operator=(std::nullptr_t) {
+
         clear();
+        
         return *this;
     }
 
-    ALWAYS_INLINE bool assign_if_null(RefPtr&& other) {
+    ALWAYS_INLINE bool assign_if_null(ReferencePointer&& other) {
 
         if (this == &other) {
 
@@ -197,7 +210,7 @@ public:
     }
 
     template<typename U>
-    ALWAYS_INLINE bool assign_if_null(RefPtr<U>&& other) {
+    ALWAYS_INLINE bool assign_if_null(ReferencePointer<U>&& other) {
 
         if (this == &other) {
 
@@ -260,11 +273,11 @@ public:
     bool operator==(std::nullptr_t) const { return isNull(); }
     bool operator!=(std::nullptr_t) const { return !isNull(); }
 
-    bool operator==(RefPtr const& other) const { return asPointer() == other.asPointer(); }
-    bool operator!=(RefPtr const& other) const { return asPointer() != other.asPointer(); }
+    bool operator==(ReferencePointer const& other) const { return asPointer() == other.asPointer(); }
+    bool operator!=(ReferencePointer const& other) const { return asPointer() != other.asPointer(); }
 
-    bool operator==(RefPtr& other) { return asPointer() == other.asPointer(); }
-    bool operator!=(RefPtr& other) { return asPointer() != other.asPointer(); }
+    bool operator==(ReferencePointer& other) { return asPointer() == other.asPointer(); }
+    bool operator!=(ReferencePointer& other) { return asPointer() != other.asPointer(); }
 
     bool operator==(const T* other) const { return asPointer() == other; }
     bool operator!=(const T* other) const { return asPointer() != other; }
@@ -292,24 +305,24 @@ private:
 };
 
 template<typename T>
-struct Formatter<RefPtr<T>> : Formatter<const T*> {
+struct Formatter<ReferencePointer<T>> : Formatter<const T*> {
 
-    ErrorOr<void> format(FormatBuilder& builder, RefPtr<T> const& value) {
+    ErrorOr<void> format(FormatBuilder& builder, ReferencePointer<T> const& value) {
 
         return Formatter<const T*>::format(builder, value.pointer());
     }
 };
 
 template<typename T>
-struct Traits<RefPtr<T>> : public GenericTraits<RefPtr<T>> {
+struct Traits<ReferencePointer<T>> : public GenericTraits<ReferencePointer<T>> {
     
     using PeekType = T*;
     
     using ConstPeekType = const T*;
     
-    static unsigned hash(RefPtr<T> const& p) { return pointerHash(p.pointer()); }
+    static unsigned hash(ReferencePointer<T> const& p) { return pointerHash(p.pointer()); }
     
-    static bool equals(RefPtr<T> const& a, RefPtr<T> const& b) { return a.pointer() == b.pointer(); }
+    static bool equals(ReferencePointer<T> const& a, ReferencePointer<T> const& b) { return a.pointer() == b.pointer(); }
 };
 
 template<typename T, typename U>
@@ -319,23 +332,23 @@ inline NonNullReferencePointer<T> static_ptr_cast(NonNullReferencePointer<U> con
 }
 
 template<typename T, typename U>
-inline RefPtr<T> static_ptr_cast(RefPtr<U> const& ptr) {
+inline ReferencePointer<T> static_ptr_cast(ReferencePointer<U> const& ptr) {
 
-    return RefPtr<T>(static_cast<const T*>(ptr.pointer()));
+    return ReferencePointer<T>(static_cast<const T*>(ptr.pointer()));
 }
 
 template<typename T, typename U>
-inline void swap(RefPtr<T>& a, RefPtr<U>& b) requires(IsConvertible<U*, T*>) {
+inline void swap(ReferencePointer<T>& a, ReferencePointer<U>& b) requires(IsConvertible<U*, T*>) {
 
     a.swap(b);
 }
 
 template<typename T>
-inline RefPtr<T> adopt_ref_if_nonnull(T* object) {
+inline ReferencePointer<T> adopt_ref_if_nonnull(T* object) {
 
     if (object) {
 
-        return RefPtr<T>(RefPtr<T>::Adopt, *object);
+        return ReferencePointer<T>(ReferencePointer<T>::Adopt, *object);
     }
 
     return { };

@@ -12,7 +12,7 @@
 #    include "Assertions.h"
 #    include "Atomic.h"
 #    include "ReferenceCounted.h"
-#    include "RefPtr.h"
+#    include "ReferencePointer.h"
 #    include "StdLibExtras.h"
 
 template<typename T>
@@ -30,11 +30,11 @@ class WeakLink : public ReferenceCounted<WeakLink> {
     friend class WeakPointer;
 
 public:
+
     template<typename T>
-    RefPtr<T> strong_ref() const
-        requires(IsBaseOf<ReferenceCountedBase, T>) {
+    ReferencePointer<T> strong_ref() const requires(IsBaseOf<ReferenceCountedBase, T>) {
             
-        RefPtr<T> ref;
+        ReferencePointer<T> ref;
 
         {
             if (!(m_consumers.fetchAdd(1u << 1, MemoryOrder::memory_order_acquire) & 1u)) {
@@ -141,7 +141,7 @@ protected:
 
 private:
 
-    mutable RefPtr<WeakLink> m_link;
+    mutable ReferencePointer<WeakLink> m_link;
 };
 
 #endif

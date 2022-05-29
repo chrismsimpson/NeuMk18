@@ -73,7 +73,7 @@ public:
     }
 
     template<typename U>
-    WeakPointer(RefPtr<U> const& object) requires(IsBaseOf<T, U>) {
+    WeakPointer(ReferencePointer<U> const& object) requires(IsBaseOf<T, U>) {
 
         if (object) {
 
@@ -106,7 +106,7 @@ public:
     }
 
     template<typename U>
-    WeakPointer& operator=(RefPtr<U> const& object) requires(IsBaseOf<T, U>) {
+    WeakPointer& operator=(ReferencePointer<U> const& object) requires(IsBaseOf<T, U>) {
 
         if (object)
             m_link = object->template makeWeakPointer<U>().takeLink();
@@ -123,9 +123,9 @@ public:
         return *this;
     }
 
-    [[nodiscard]] RefPtr<T> strong_ref() const {
+    [[nodiscard]] ReferencePointer<T> strong_ref() const {
 
-        return RefPtr<T> { pointer() };
+        return ReferencePointer<T> { pointer() };
     }
 
     T* pointer() const { return unsafePointer(); }
@@ -154,14 +154,14 @@ public:
 
     void clear() { m_link = nullptr; }
 
-    [[nodiscard]] RefPtr<WeakLink> takeLink() { return move(m_link); }
+    [[nodiscard]] ReferencePointer<WeakLink> takeLink() { return move(m_link); }
 
 private:
 
-    WeakPointer(RefPtr<WeakLink> const& link)
+    WeakPointer(ReferencePointer<WeakLink> const& link)
         : m_link(link) { }
 
-    RefPtr<WeakLink> m_link;
+    ReferencePointer<WeakLink> m_link;
 };
 
 template<typename T>

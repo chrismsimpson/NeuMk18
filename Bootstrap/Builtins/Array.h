@@ -200,7 +200,7 @@ namespace NeuInternal {
         T& operator[](size_t index) { return at(index); }
 
     private:
-        RefPtr<ArrayStorage<T>> m_storage;
+        ReferencePointer<ArrayStorage<T>> m_storage;
         size_t m_offset { 0 };
         size_t m_size { 0 };
     };
@@ -371,7 +371,7 @@ namespace NeuInternal {
             return m_storage.pointer();
         }
 
-        RefPtr<ArrayStorage<T>> m_storage;
+        ReferencePointer<ArrayStorage<T>> m_storage;
     };
 
 }

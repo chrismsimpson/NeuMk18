@@ -43,7 +43,7 @@ NonNullReferencePointer<StringImpl> StringImpl::create_uninitialized(size_t leng
     return new_stringimpl;
 }
 
-RefPtr<StringImpl> StringImpl::create(char const* cstring, size_t length, ShouldChomp should_chomp)
+ReferencePointer<StringImpl> StringImpl::create(char const* cstring, size_t length, ShouldChomp should_chomp)
 {
     if (!cstring)
         return nullptr;
@@ -68,7 +68,7 @@ RefPtr<StringImpl> StringImpl::create(char const* cstring, size_t length, Should
     return new_stringimpl;
 }
 
-RefPtr<StringImpl> StringImpl::create(char const* cstring, ShouldChomp shouldChomp)
+ReferencePointer<StringImpl> StringImpl::create(char const* cstring, ShouldChomp shouldChomp)
 {
     if (!cstring)
         return nullptr;
@@ -79,12 +79,12 @@ RefPtr<StringImpl> StringImpl::create(char const* cstring, ShouldChomp shouldCho
     return create(cstring, strlen(cstring), shouldChomp);
 }
 
-RefPtr<StringImpl> StringImpl::create(ReadOnlyBytes bytes, ShouldChomp shouldChomp)
+ReferencePointer<StringImpl> StringImpl::create(ReadOnlyBytes bytes, ShouldChomp shouldChomp)
 {
     return StringImpl::create(reinterpret_cast<char const*>(bytes.data()), bytes.size(), shouldChomp);
 }
 
-RefPtr<StringImpl> StringImpl::create_lowercased(char const* cstring, size_t length)
+ReferencePointer<StringImpl> StringImpl::create_lowercased(char const* cstring, size_t length)
 {
     if (!cstring)
         return nullptr;
@@ -97,7 +97,7 @@ RefPtr<StringImpl> StringImpl::create_lowercased(char const* cstring, size_t len
     return impl;
 }
 
-RefPtr<StringImpl> StringImpl::create_uppercased(char const* cstring, size_t length)
+ReferencePointer<StringImpl> StringImpl::create_uppercased(char const* cstring, size_t length)
 {
     if (!cstring)
         return nullptr;

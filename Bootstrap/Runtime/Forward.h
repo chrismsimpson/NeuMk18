@@ -69,10 +69,10 @@ template<typename T>
 struct ReferencePointerTraits;
 
 template<typename T, typename PointerTraits = ReferencePointerTraits<T>>
-class RefPtr;
+class ReferencePointer;
 #else
 template<typename T>
-class RefPtr;
+class ReferencePointer;
 #endif
 
 template<typename T>

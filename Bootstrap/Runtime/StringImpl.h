@@ -7,7 +7,7 @@
 #pragma once
 
 #include "ReferenceCounted.h"
-#include "RefPtr.h"
+#include "ReferencePointer.h"
 #include "Span.h"
 #include "Types.h"
 #include "kmalloc.h"
@@ -23,11 +23,11 @@ class StringImpl : public ReferenceCounted<StringImpl> {
 public:
 
     static NonNullReferencePointer<StringImpl> create_uninitialized(size_t length, char*& buffer);
-    static RefPtr<StringImpl> create(char const* cstring, ShouldChomp = NoChomp);
-    static RefPtr<StringImpl> create(char const* cstring, size_t length, ShouldChomp = NoChomp);
-    static RefPtr<StringImpl> create(ReadOnlyBytes, ShouldChomp = NoChomp);
-    static RefPtr<StringImpl> create_lowercased(char const* cstring, size_t length);
-    static RefPtr<StringImpl> create_uppercased(char const* cstring, size_t length);
+    static ReferencePointer<StringImpl> create(char const* cstring, ShouldChomp = NoChomp);
+    static ReferencePointer<StringImpl> create(char const* cstring, size_t length, ShouldChomp = NoChomp);
+    static ReferencePointer<StringImpl> create(ReadOnlyBytes, ShouldChomp = NoChomp);
+    static ReferencePointer<StringImpl> create_lowercased(char const* cstring, size_t length);
+    static ReferencePointer<StringImpl> create_uppercased(char const* cstring, size_t length);
 
     NonNullReferencePointer<StringImpl> to_lowercase() const;
     NonNullReferencePointer<StringImpl> to_uppercase() const;

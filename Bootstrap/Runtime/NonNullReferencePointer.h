@@ -18,7 +18,7 @@
 #    include "Types.h"
 
 template<typename T>
-class RefPtr;
+class ReferencePointer;
 
 template<typename T>
 ALWAYS_INLINE void refIfNotNull(T* ptr) {
@@ -42,7 +42,7 @@ template<typename T>
 class [[nodiscard]] NonNullReferencePointer {
 
     template<typename U>
-    friend class RefPtr;
+    friend class ReferencePointer;
 
     template<typename U>
     friend class NonNullReferencePointer;
@@ -106,11 +106,11 @@ public:
     }
 
     template<typename U>
-    NonNullReferencePointer(RefPtr<U> const&) = delete;
+    NonNullReferencePointer(ReferencePointer<U> const&) = delete;
     template<typename U>
-    NonNullReferencePointer& operator=(RefPtr<U> const&) = delete;
-    NonNullReferencePointer(RefPtr<T> const&) = delete;
-    NonNullReferencePointer& operator=(RefPtr<T> const&) = delete;
+    NonNullReferencePointer& operator=(ReferencePointer<U> const&) = delete;
+    NonNullReferencePointer(ReferencePointer<T> const&) = delete;
+    NonNullReferencePointer& operator=(ReferencePointer<T> const&) = delete;
 
     NonNullReferencePointer& operator=(NonNullReferencePointer const& other)
     {

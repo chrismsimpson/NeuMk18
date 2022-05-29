@@ -8,14 +8,14 @@
 
 #include "Format.h"
 #include "Forward.h"
-#include "RefPtr.h"
+#include "ReferencePointer.h"
 #include "StringImpl.h"
 #include "StringUtils.h"
 #include "Traits.h"
 
 // String is a convenience wrapper around StringImpl, suitable for passing
 // around as a value type. It's basically the same as passing around a
-// RefPtr<StringImpl>, with a bit of syntactic sugar.
+// ReferencePointer<StringImpl>, with a bit of syntactic sugar.
 //
 // Note that StringImpl is an immutable object that cannot shrink or grow.
 // Its allocation size is snugly tailored to the specific string it contains.
@@ -34,60 +34,42 @@
 //     s = builder.toString();
 
 class String {
+
 public:
+
     ~String() = default;
 
     String() = default;
 
     String(StringView view)
-        : m_impl(StringImpl::create(view.charactersWithoutNullTermination(), view.length()))
-    {
-    }
+        : m_impl(StringImpl::create(view.charactersWithoutNullTermination(), view.length())) { }
 
     String(String const& other)
-        : m_impl(const_cast<String&>(other).m_impl)
-    {
-    }
+        : m_impl(const_cast<String&>(other).m_impl) { }
 
     String(String&& other)
-        : m_impl(move(other.m_impl))
-    {
-    }
+        : m_impl(move(other.m_impl)) { }
 
     String(char const* cstring, ShouldChomp shouldChomp = NoChomp)
-        : m_impl(StringImpl::create(cstring, shouldChomp))
-    {
-    }
+        : m_impl(StringImpl::create(cstring, shouldChomp)) { }
 
     String(char const* cstring, size_t length, ShouldChomp shouldChomp = NoChomp)
-        : m_impl(StringImpl::create(cstring, length, shouldChomp))
-    {
-    }
+        : m_impl(StringImpl::create(cstring, length, shouldChomp)) { }
 
     explicit String(ReadOnlyBytes bytes, ShouldChomp shouldChomp = NoChomp)
-        : m_impl(StringImpl::create(bytes, shouldChomp))
-    {
-    }
+        : m_impl(StringImpl::create(bytes, shouldChomp)) { }
 
     String(StringImpl const& impl)
-        : m_impl(const_cast<StringImpl&>(impl))
-    {
-    }
+        : m_impl(const_cast<StringImpl&>(impl)) { }
 
     String(StringImpl const* impl)
-        : m_impl(const_cast<StringImpl*>(impl))
-    {
-    }
+        : m_impl(const_cast<StringImpl*>(impl)) { }
 
-    String(RefPtr<StringImpl>&& impl)
-        : m_impl(move(impl))
-    {
-    }
+    String(ReferencePointer<StringImpl>&& impl)
+        : m_impl(move(impl)) { }
 
     String(NonNullReferencePointer<StringImpl>&& impl)
-        : m_impl(move(impl))
-    {
-    }
+        : m_impl(move(impl)) { }
 
     [[nodiscard]] static String repeated(char, size_t count);
     [[nodiscard]] static String repeated(StringView, size_t count);
@@ -303,7 +285,7 @@ public:
 
 private:
 
-    RefPtr<StringImpl> m_impl;
+    ReferencePointer<StringImpl> m_impl;
 };
 
 template<>
