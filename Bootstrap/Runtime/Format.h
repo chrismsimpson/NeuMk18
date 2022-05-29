@@ -395,8 +395,8 @@ struct Formatter<StringView> : StandardFormatter {
     ErrorOr<void> format(FormatBuilder&, StringView);
 };
 
-template<typename T, size_t inlineCapacity>
-requires(HasFormatter<T>) struct Formatter<Vector<T, inlineCapacity>> : StandardFormatter {
+template<typename T, size_t InlineCapacity>
+requires(HasFormatter<T>) struct Formatter<Vector<T, InlineCapacity>> : StandardFormatter {
 
     Formatter() = default;
     explicit Formatter(StandardFormatter formatter)

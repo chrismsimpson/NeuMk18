@@ -41,7 +41,7 @@ namespace Detail {
     };
 }
 
-template<typename T, size_t inlineCapacity>
+template<typename T, size_t InlineCapacity>
 requires(!IsRValueReference<T>) class Vector {
 
 private:
@@ -60,7 +60,7 @@ public:
     using ValueType = T;
 
     Vector()
-        : m_capacity(inlineCapacity) { }
+        : m_capacity(InlineCapacity) { }
 
     Vector(std::initializer_list<T> list) requires(!IsLValueReference<T>) {
 
@@ -77,7 +77,7 @@ public:
           m_capacity(other.m_capacity), 
           m_outline_buffer(other.m_outline_buffer) {
 
-        if constexpr (inlineCapacity > 0) {
+        if constexpr (InlineCapacity > 0) {
 
             if (!m_outline_buffer) {
 
@@ -140,7 +140,7 @@ public:
 
     ALWAYS_INLINE StorageType* data() {
 
-        if constexpr (inlineCapacity > 0) {
+        if constexpr (InlineCapacity > 0) {
 
             return m_outline_buffer ? m_outline_buffer : inline_buffer();
         }
@@ -150,7 +150,7 @@ public:
 
     ALWAYS_INLINE StorageType const* data() const {
 
-        if constexpr (inlineCapacity > 0) {
+        if constexpr (InlineCapacity > 0) {
 
             return m_outline_buffer ? m_outline_buffer : inline_buffer();
         }
@@ -399,7 +399,7 @@ public:
             m_capacity = other.m_capacity;
             m_outline_buffer = other.m_outline_buffer;
             
-            if constexpr (inlineCapacity > 0) {
+            if constexpr (InlineCapacity > 0) {
 
                 if (!m_outline_buffer) {
                     
@@ -1043,7 +1043,7 @@ private:
 
     void resetCapacity() {
 
-        m_capacity = inlineCapacity;
+        m_capacity = InlineCapacity;
     }
 
     static size_t padded_capacity(size_t capacity) {
@@ -1056,12 +1056,12 @@ private:
 
     StorageType* inline_buffer()
     {
-        static_assert(inlineCapacity > 0);
+        static_assert(InlineCapacity > 0);
         return reinterpret_cast<StorageType*>(m_inline_buffer_storage);
     }
     StorageType const* inline_buffer() const
     {
-        static_assert(inlineCapacity > 0);
+        static_assert(InlineCapacity > 0);
         return reinterpret_cast<StorageType const*>(m_inline_buffer_storage);
     }
 
@@ -1074,19 +1074,19 @@ private:
 
     static constexpr size_t storage_size() {
 
-        if constexpr (inlineCapacity == 0) {
+        if constexpr (InlineCapacity == 0) {
 
             return 0;
         }
         else {
 
-            return sizeof(StorageType) * inlineCapacity;
+            return sizeof(StorageType) * InlineCapacity;
         }
     }
 
     static constexpr size_t storage_alignment() {
 
-        if constexpr (inlineCapacity == 0) {
+        if constexpr (InlineCapacity == 0) {
 
             return 1;
         }

@@ -80,17 +80,17 @@ public:
     // Note: Despite this method being const, a mutable lambda _may_ modify its own captures.
     Out operator()(In... in) const
     {
-        auto* wrapper = callable_wrapper();
+        auto* wrapper = callableWrapper();
         VERIFY(wrapper);
         ++m_callNestingLevel;
         ScopeGuard guard([this] {
-            if (--m_callNestingLevel == 0 && m_deferred_clear)
+            if (--m_callNestingLevel == 0 && m_deferredClear)
                 const_cast<Function*>(this)->clear(false);
         });
         return wrapper->call(forward<In>(in)...);
     }
 
-    explicit operator bool() const { return !!callable_wrapper(); }
+    explicit operator bool() const { return !!callableWrapper(); }
 
     template<typename CallableType>
     Function& operator=(CallableType&& callable) requires((IsFunctionObject<CallableType> && IsCallableWithArguments<CallableType, In...>)) {
@@ -187,7 +187,7 @@ private:
         Outline,
     };
 
-    CallableWrapperBase* callable_wrapper() const {
+    CallableWrapperBase* callableWrapper() const {
 
         switch (m_kind) {
 
@@ -215,14 +215,14 @@ private:
         
         if (called_from_inside_function && may_defer) {
             
-            m_deferred_clear = true;
+            m_deferredClear = true;
             
             return;
         }
 
-        m_deferred_clear = false;
+        m_deferredClear = false;
         
-        auto* wrapper = callable_wrapper();
+        auto* wrapper = callableWrapper();
         
         if (m_kind == FunctionKind::Inline) {
         
@@ -247,7 +247,7 @@ private:
         
         using WrapperType = CallableWrapper<Callable>;
         
-        if constexpr (sizeof(WrapperType) > inlineCapacity) {
+        if constexpr (sizeof(WrapperType) > InlineCapacity) {
 
             *bitCast<CallableWrapperBase**>(&m_storage) = new WrapperType(forward<Callable>(callable));
 
@@ -265,22 +265,28 @@ private:
 
         VERIFY(m_callNestingLevel == 0 && other.m_callNestingLevel == 0);
 
-        auto* other_wrapper = other.callable_wrapper();
+        auto* otherWrapper = other.callableWrapper();
 
         switch (other.m_kind) {
 
         case FunctionKind::NullPointer:
             break;
 
+        ///
+
         case FunctionKind::Inline:
-            other_wrapper->init_and_swap(m_storage, inlineCapacity);
+            otherWrapper->init_and_swap(m_storage, InlineCapacity);
             m_kind = FunctionKind::Inline;
             break;
 
+        ///
+
         case FunctionKind::Outline:
-            *bitCast<CallableWrapperBase**>(&m_storage) = other_wrapper;
+            *bitCast<CallableWrapperBase**>(&m_storage) = otherWrapper;
             m_kind = FunctionKind::Outline;
             break;
+
+        ///
 
         default:
             VERIFY_NOT_REACHED();
@@ -290,9 +296,14 @@ private:
     }
 
     FunctionKind m_kind { FunctionKind::NullPointer };
-    bool m_deferred_clear { false };
+    
+    bool m_deferredClear { false };
+    
     mutable Atomic<UInt16> m_callNestingLevel { 0 };
+    
     // Empirically determined to fit most lambdas and functions.
-    static constexpr size_t inlineCapacity = 4 * sizeof(void*);
-    alignas(max(alignof(CallableWrapperBase), alignof(CallableWrapperBase*))) UInt8 m_storage[inlineCapacity];
+    
+    static constexpr size_t InlineCapacity = 4 * sizeof(void*);
+    
+    alignas(max(alignof(CallableWrapperBase), alignof(CallableWrapperBase*))) UInt8 m_storage[InlineCapacity];
 };
