@@ -81,9 +81,7 @@ public:
 
     template<typename U>
     ALWAYS_INLINE NonNullReferencePointer(NonNullReferencePointer<U>&& other) requires(IsConvertible<U*, T*>)
-        : m_ptr(static_cast<T*>(&other.leak_ref()))
-    {
-    }
+        : m_ptr(static_cast<T*>(&other.leak_ref())) { }
 
     ALWAYS_INLINE NonNullReferencePointer(NonNullReferencePointer const& other)
         : m_ptr(const_cast<T*>(other.ptr()))

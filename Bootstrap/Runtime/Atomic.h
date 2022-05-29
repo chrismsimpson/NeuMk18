@@ -307,7 +307,7 @@ public:
 
     ALWAYS_INLINE T operator&=(T val) volatile noexcept {
         
-        return fetch_and(val) & val;
+        return fetchAnd(val) & val;
     }
 
     ALWAYS_INLINE T fetchAnd(T val, MemoryOrder order = DefaultMemoryOrder) volatile noexcept {
@@ -327,7 +327,7 @@ public:
 
     ALWAYS_INLINE T operator^=(T val) volatile noexcept
     {
-        return fetch_xor(val) ^ val;
+        return fetchXor(val) ^ val;
     }
 
     ALWAYS_INLINE T fetchXor(T val, MemoryOrder order = DefaultMemoryOrder) volatile noexcept {
